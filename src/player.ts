@@ -1,3 +1,5 @@
+import {zeroAccelerationIfBlocked} from "./utils";
+
 export class Player extends Phaser.GameObjects.Container {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -80,19 +82,7 @@ export class Player extends Phaser.GameObjects.Container {
             this.sprite.setVelocityY(this.JUMP_VELOCITY_Y);
         }
 
-        // Zero out the acceleration when body hits sth.
-        if (this.sprite.body.touching.down && this.sprite.body.acceleration.y > 0) {
-            this.sprite.setAccelerationY(0);
-        }
-        if (this.sprite.body.touching.up && this.sprite.body.acceleration.y < 0) {
-            this.sprite.setAccelerationY(0);
-        }
-        if (this.sprite.body.touching.right && this.sprite.body.acceleration.x > 0) {
-            this.sprite.setAccelerationX(0);
-        }
-        if (this.sprite.body.touching.left && this.sprite.body.acceleration.x < 0) {
-            this.sprite.setAccelerationX(0);
-        }
+        zeroAccelerationIfBlocked(this.sprite.body);
 
         let pointer = this.scene.input.activePointer;
         if (pointer.leftButtonDown()) {
