@@ -1,9 +1,9 @@
 export class Player extends Phaser.GameObjects.Container {
     sprite: Phaser.Physics.Arcade.Sprite;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-    numParticles = 200;
     particles;
 
+    NUM_PARTICLES = 200;
     ACCELERATION_X = 3000;
     MAX_VELOCITY_X = 160;
     JUMP_VELOCITY_Y = -500;
@@ -45,33 +45,9 @@ export class Player extends Phaser.GameObjects.Container {
             collideWorldBounds: true,
         });
 
-        for (let i = 0; i < this.numParticles; i++) {
+        for (let i = 0; i < this.NUM_PARTICLES; i++) {
             this.particles.create(0, 0, 'flares', 0, false, false).setScale(0.1, 0.1);
         }
-        console.log("num particles ", this.particles.getLength());
-
-
-        this.sprite.on('pointerdown', function (pointer) {
-
-        });
-        // this.particles = scene.add.particles('flares');
-
-
-        // this.particles.createEmitter({
-        //     frame: 'blue',
-        //     // x: this.sprite.x,
-        //     // y: this.sprite.y,
-        //     x: 0,
-        //     y: 0,
-        //     lifespan: 2000,
-        //     speed: {min: 150, max: 250},
-        //     angle: 330,
-        //     gravityY: 300,
-        //     scale: {start: 0.4, end: 0},
-        //     quantity: 2,
-        //     blendMode: 'ADD'
-        // });
-
     }
 
     public update() {
@@ -100,12 +76,11 @@ export class Player extends Phaser.GameObjects.Container {
         if (pointer.leftButtonDown()) {
             let diff = new Phaser.Math.Vector2(pointer.x - this.sprite.x, pointer.y - this.sprite.y);
 
-            const numToFire = 1;
+            const numToFire = 3;
             for (let i = 0; i < numToFire; i++) {
-                let speed = Phaser.Math.Between(100, 200);
-                let angle = diff.angle();
+                let speed = Phaser.Math.Between(300, 400);
+                let angle = diff.angle() + Phaser.Math.FloatBetween(-0.1, 0.1);
                 let p = this.particles.getFirstDead(false, this.sprite.x, this.sprite.y);
-                // p.setPosition(100, 100);
                 if (p != null) {
                     p?.setVelocity(speed * Math.cos(angle), speed * Math.sin(angle));
                     p?.setVisible(true);
@@ -120,7 +95,5 @@ export class Player extends Phaser.GameObjects.Container {
     public hideParticle(particle) {
         particle.setVisible(false);
         particle.setActive(false);
-        // particle.disableBody(true, true);
-
     }
 }
