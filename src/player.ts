@@ -1,11 +1,12 @@
 export class Player extends Phaser.GameObjects.Container {
-    sprite: Phaser.Physics.Arcade.Sprite;
+    sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     particles;
 
     NUM_PARTICLES = 200;
     ACCELERATION_X = 3000;
     MAX_VELOCITY_X = 160;
+    SPRINKLER_ACC = 100;
     JUMP_VELOCITY_Y = -700;
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
     // so values between 0 and 1 are reasonable
@@ -44,8 +45,8 @@ export class Player extends Phaser.GameObjects.Container {
         // Water sprinkler
 
         this.particles = scene.physics.add.group({
-            bounceX: 0,
-            bounceY: 0,
+            bounceX: 0.4,
+            bounceY: 0.4,
             collideWorldBounds: true,
         });
 
@@ -58,7 +59,7 @@ export class Player extends Phaser.GameObjects.Container {
         this.sprite.setVelocityX(
             this.sprite.body.velocity.x
             * Math.pow(1 - this.FRICTION_COEF, delta / 1000)
-        )
+        );
 
         if (this.cursors.left.isDown) {
             this.sprite.setAccelerationX(-this.ACCELERATION_X);
@@ -81,6 +82,7 @@ export class Player extends Phaser.GameObjects.Container {
 
         let pointer = this.scene.input.activePointer;
         if (pointer.leftButtonDown()) {
+            console.log(this.sprite.body);
             let diff = new Phaser.Math.Vector2(pointer.x - this.sprite.x, pointer.y - this.sprite.y);
 
             const numToFire = 3;
@@ -96,6 +98,10 @@ export class Player extends Phaser.GameObjects.Container {
 
                 this.scene.time.delayedCall(1000, this.hideParticle, [p]);
             }
+
+            this.sprite.setAcceleration(
+                this.sprite.body.acceleration.x - Math.cos(diff.angle()) * this.SPRINKLER_ACC,
+                this.sprite.body.acceleration.y - Math.sin(diff.angle()) * this.SPRINKLER_ACC);
         }
     }
 
