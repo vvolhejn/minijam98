@@ -5,7 +5,7 @@ export class HosePlayer extends Player {
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     particles: Phaser.Physics.Arcade.Group;
 
-    NUM_PARTICLES = 200;
+    NUM_PARTICLES = 5;
     ACCELERATION_X = 3000;
     SPRINKLER_ACC = 25;
     JUMP_VELOCITY_Y = -600;
@@ -86,9 +86,10 @@ export class HosePlayer extends Player {
                 let angle = diff.angle() + Phaser.Math.FloatBetween(-0.1, 0.1);
                 let p = this.particles.getFirstDead(false, this.sprite.x, this.sprite.y);
                 if (p != null) {
-                    p?.setVelocity(speed * Math.cos(angle), speed * Math.sin(angle));
-                    p?.setVisible(true);
-                    p?.setActive(true);
+                    p.body.enable = true;
+                    p.setVelocity(speed * Math.cos(angle), speed * Math.sin(angle));
+                    p.setVisible(true);
+                    p.setActive(true);
                     this.scene.time.delayedCall(1000, this.hideParticle, [p], this);
                 }
 
@@ -101,6 +102,7 @@ export class HosePlayer extends Player {
     }
 
     public hideParticle(particle) {
+        particle.body.enable = false;
         this.particles.killAndHide(particle);
     }
 }
