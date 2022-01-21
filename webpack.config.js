@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const distDir = "dist_post_ld"
+const distDir = "dist"
 
 module.exports = {
   entry: {
