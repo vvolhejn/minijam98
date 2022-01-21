@@ -10,16 +10,16 @@ export class Hose extends Phaser.GameObjects.Container {
 
     DISTANCE_BETWEEN_PARTS: number = 10  // what *should* the distance be?
     SPRING_COEF: number = 100  // how strong the force is that is proportional to the distance
-    DAMPING_COEF: number = 500  // how quickly velocity decays to 0
-    ATTACHED_PULL_COEF = 0 // how strongly the attached object is pulled
+    DAMPING_COEF: number = 200  // how quickly velocity decays to 0
+    ATTACHED_PULL_COEF = 0.001 // how strongly the attached object is pulled
     N_PHYSICS_ITERATIONS = 10 // more = less bouncy, but more CPU
     N_PARTS = 50 // how many parts of the rope
-    MAX_ACCELERATION = 10000
+    MAX_ACCELERATION = 1000000000
 
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
     // so values between 0 and 1 are reasonable
     // Note: this happens for the parts in the air as well
-    FRICTION_COEF = 0.25;
+    FRICTION_COEF = 0.5;
 
     endAttachedTo: Phaser.Physics.Arcade.Body = null
     startPoint: Phaser.Math.Vector2
