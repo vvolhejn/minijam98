@@ -80,6 +80,20 @@ export class Player extends Phaser.GameObjects.Container {
             this.sprite.setVelocityY(this.JUMP_VELOCITY_Y);
         }
 
+        // Zero out the acceleration when body hits sth.
+        if (this.sprite.body.touching.down && this.sprite.body.acceleration.y > 0) {
+            this.sprite.setAccelerationY(0);
+        }
+        if (this.sprite.body.touching.up && this.sprite.body.acceleration.y < 0) {
+            this.sprite.setAccelerationY(0);
+        }
+        if (this.sprite.body.touching.right && this.sprite.body.acceleration.x > 0) {
+            this.sprite.setAccelerationX(0);
+        }
+        if (this.sprite.body.touching.left && this.sprite.body.acceleration.x < 0) {
+            this.sprite.setAccelerationX(0);
+        }
+
         let pointer = this.scene.input.activePointer;
         if (pointer.leftButtonDown()) {
             console.log(this.sprite.body);
