@@ -1,4 +1,4 @@
-import {Player} from './player'
+import {Player, MAX_VELOCITY_X} from './player'
 import {zeroAccelerationIfBlocked} from "./utils";
 
 export class HosePlayer extends Player {
@@ -7,18 +7,14 @@ export class HosePlayer extends Player {
 
     NUM_PARTICLES = 200;
     ACCELERATION_X = 3000;
-    MAX_VELOCITY_X = 160;
     SPRINKLER_ACC = 25;
     JUMP_VELOCITY_Y = -600;
-    // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
-    // so values between 0 and 1 are reasonable
-    FRICTION_COEF = 0.85;
 
     constructor(scene: Phaser.Scene, x : integer, y: integer, spriteKey: string) {
         super(scene, x, y, spriteKey);
 
         // this.sprite.setFrictionX(100000)
-        this.sprite.setMaxVelocity(this.MAX_VELOCITY_X, 100000);
+        this.sprite.setMaxVelocity(MAX_VELOCITY_X, 100000);
 
         scene.anims.create({
             key: 'left',
@@ -56,11 +52,8 @@ export class HosePlayer extends Player {
         }
     }
 
-    public update(_time, delta) {
-        this.sprite.setVelocityX(
-            this.sprite.body.velocity.x
-            * Math.pow(1 - this.FRICTION_COEF, delta / 1000)
-        );
+    public update(time, delta) {
+        super.update(time, delta);
 
         if (this.cursors.left.isDown) {
             this.sprite.setAccelerationX(-this.ACCELERATION_X);
