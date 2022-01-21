@@ -12,7 +12,7 @@ export class Player extends Phaser.GameObjects.Container {
     JUMP_VELOCITY_Y = -500;
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
     // so values between 0 and 1 are reasonable
-    FRICTION_COEF = 0.75;
+    FRICTION_COEF = 0.85;
 
     constructor(scene: Phaser.Scene) {
         super(scene);
