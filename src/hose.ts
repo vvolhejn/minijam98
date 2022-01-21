@@ -117,8 +117,3 @@ export class Hose extends Phaser.GameObjects.Container {
         }
     }
 }
-
-export class HosePart extends Phaser.GameObjects.Container {
-    update(_, delta) {
-    }
-}

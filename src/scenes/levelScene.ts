@@ -78,12 +78,12 @@ export class LevelScene extends Phaser.Scene {
         this.hose.attachTo(this.player.sprite.body);
     }
 
-    public update(time, delta) {
+    public update(time, delta) {  // delta is in ms
         if (this.gameOver) {
             return;
         }
 
-        this.player.update();
+        this.player.update(time, delta);
         this.hose.update(time, delta);
     }
 
