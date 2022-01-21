@@ -8,7 +8,7 @@ export class Player extends Phaser.GameObjects.Container {
     NUM_PARTICLES = 200;
     ACCELERATION_X = 3000;
     MAX_VELOCITY_X = 160;
-    SPRINKLER_ACC = 100;
+    SPRINKLER_ACC = 25;
     JUMP_VELOCITY_Y = -500;
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
     // so values between 0 and 1 are reasonable
@@ -103,9 +103,9 @@ export class Player extends Phaser.GameObjects.Container {
                 this.scene.time.delayedCall(1000, this.hideParticle, [p]);
             }
 
-            this.sprite.setAcceleration(
-                this.sprite.body.acceleration.x - Math.cos(diff.angle()) * this.SPRINKLER_ACC,
-                this.sprite.body.acceleration.y - Math.sin(diff.angle()) * this.SPRINKLER_ACC);
+            this.sprite.setVelocity(
+                this.sprite.body.velocity.x - Math.cos(diff.angle()) * this.SPRINKLER_ACC,
+                this.sprite.body.velocity.y - Math.sin(diff.angle()) * this.SPRINKLER_ACC);
         }
     }
 
