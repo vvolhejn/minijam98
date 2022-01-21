@@ -78,7 +78,6 @@ export class HosePlayer extends Player {
 
         let pointer = this.scene.input.activePointer;
         if (pointer.leftButtonDown()) {
-            console.log(this.sprite.body);
             let diff = new Phaser.Math.Vector2(pointer.x - this.sprite.x, pointer.y - this.sprite.y);
 
             const numToFire = 3;
@@ -90,9 +89,9 @@ export class HosePlayer extends Player {
                     p?.setVelocity(speed * Math.cos(angle), speed * Math.sin(angle));
                     p?.setVisible(true);
                     p?.setActive(true);
+                    this.scene.time.delayedCall(1000, this.hideParticle, [p], this);
                 }
 
-                this.scene.time.delayedCall(1000, this.hideParticle, [p]);
             }
 
             this.sprite.setVelocity(
@@ -102,7 +101,6 @@ export class HosePlayer extends Player {
     }
 
     public hideParticle(particle) {
-        particle.setVisible(false);
-        particle.setActive(false);
+        this.particles.killAndHide(particle);
     }
 }

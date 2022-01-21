@@ -75,6 +75,7 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.hosePlayer.sprite, this.platforms);
         this.physics.add.collider(this.groundPlayer.sprite, this.platforms);
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
+        this.physics.add.collider(this.hosePlayer.particles, this.groundPlayer.sprite);
         this.physics.add.collider(this.stars, this.platforms);
         this.physics.add.collider(this.bombs, this.platforms);
 
