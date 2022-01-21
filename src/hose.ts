@@ -12,6 +12,11 @@ export class Hose extends Phaser.GameObjects.Container {
     N_PHYSICS_ITERATIONS = 100 // more = less bouncy, but more CPU
     N_PARTS = 50 // how many parts of the rope
 
+    // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
+    // so values between 0 and 1 are reasonable
+    // Note: this happens for the parts in the air as well
+    FRICTION_COEF = 0.5;
+
     attachedTo: Phaser.Physics.Arcade.Body = null
 
     constructor(scene: LevelScene, x, y) {
@@ -68,9 +73,12 @@ export class Hose extends Phaser.GameObjects.Container {
         // F = -k(|x|-d)(x/|x|) - bv
         // https://gafferongames.com/post/spring_physics/
 
-
-        // console.log(forces)
         let forces
+
+        let newVelocities: Array<Phaser.Math.Vector2> = []
+        for (let i = 0; i < this.parts.length; i++) {
+            newVelocities.push(this.parts[i].body.velocity)
+        }
 
         const nIterations = this.N_PHYSICS_ITERATIONS
         for (let it = 0; it < nIterations; it++) {
@@ -95,17 +103,23 @@ export class Hose extends Phaser.GameObjects.Container {
                 let coef = 0.00001 * delta;
                 let coef2 = delta / nIterations * 0.0001
 
-                this.parts[i].body.velocity.add(accel.scale(coef))
+                newVelocities[i].add(accel.scale(coef))
 
-                this.parts[i].setX(this.parts[i].x - coef2 * this.parts[i].body.velocity.x)
-                this.parts[i].setY(this.parts[i].y - coef2 * this.parts[i].body.velocity.y)
+                // TODO: only do this when the rope is on the ground?
+                newVelocities[i].x *= Math.pow(this.FRICTION_COEF, (delta / nIterations / 1000));
 
-                // this.parts[i].gra
+                this.parts[i].setX(this.parts[i].x - coef2 * newVelocities[i].x)
+                this.parts[i].setY(this.parts[i].y - coef2 * newVelocities[i].y)
             }
         }
 
         // this.parts[0].setAcceleration(0, 0)
         this.parts[0].setVelocity(0, 0)
+
+        for (let i = 1; i < this.parts.length; i++) {
+            this.parts[i].setVelocity(newVelocities[i].x, newVelocities[i].y);
+        }
+
         if (this.attachedTo !== null) {
             this.parts[0].setPosition(this.attachedTo.position.x, this.attachedTo.position.y)
 
