@@ -5,7 +5,7 @@ export class HosePlayer extends Player {
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     particles: Phaser.Physics.Arcade.Group;
 
-    NUM_PARTICLES = 5;
+    NUM_PARTICLES = 200;
     ACCELERATION_X = 3000;
     SPRINKLER_ACC = 25;
     JUMP_VELOCITY_Y = -600;
