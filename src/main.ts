@@ -5,7 +5,7 @@ let levelScene = new LevelScene();
 
 let levels = [
     levelScene,
-]
+];
 
 const gameConfig = {
     type: Phaser.AUTO,
