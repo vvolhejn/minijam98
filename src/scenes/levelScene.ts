@@ -2,11 +2,10 @@ import { Hose } from "../hose";
 import {Player} from "../player";
 
 export class LevelScene extends Phaser.Scene {
-    player;
+    player: Player;
     stars;
     bombs;
     platforms;
-    cursors;
     score = 0;
     gameOver = false;
     scoreText;
