@@ -1,6 +1,6 @@
 import { Scene } from "phaser";
 import { LevelScene } from "./scenes/levelScene";
-import { zeroAccelerationIfBlocked } from "./utils";
+import { clampIfBlocked, zeroAccelerationIfBlocked } from "./utils";
 
 export class Hose extends Phaser.GameObjects.Container {
 
@@ -108,13 +108,15 @@ export class Hose extends Phaser.GameObjects.Container {
                     accel.setLength(this.MAX_ACCELERATION)
                 }
 
-                let coef = 0.00001 * delta;
+                let coef = 0.0001 * delta / nIterations;
                 let coef2 = delta / nIterations * 0.0001
 
                 newVelocities[i].add(accel.scale(coef))
 
                 // TODO: only do this when the rope is on the ground?
                 newVelocities[i].x *= Math.pow(this.FRICTION_COEF, (delta / nIterations / 1000));
+
+                newVelocities[i] = clampIfBlocked(this.parts[i].body, newVelocities[i])
 
                 this.parts[i].setX(this.parts[i].x - coef2 * newVelocities[i].x)
                 this.parts[i].setY(this.parts[i].y - coef2 * newVelocities[i].y)
