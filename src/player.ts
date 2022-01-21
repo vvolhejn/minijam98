@@ -9,7 +9,7 @@ export class Player extends Phaser.GameObjects.Container {
     ACCELERATION_X = 3000;
     MAX_VELOCITY_X = 160;
     SPRINKLER_ACC = 25;
-    JUMP_VELOCITY_Y = -500;
+    JUMP_VELOCITY_Y = -600;
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
     // so values between 0 and 1 are reasonable
     FRICTION_COEF = 0.85;
