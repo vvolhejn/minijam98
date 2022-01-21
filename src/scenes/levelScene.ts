@@ -1,3 +1,5 @@
+import { Hose } from "../hose";
+
 export class LevelScene extends Phaser.Scene {
     player;
     stars;
@@ -7,6 +9,7 @@ export class LevelScene extends Phaser.Scene {
     score = 0;
     gameOver = false;
     scoreText;
+    hose: Hose;
 
     constructor() {
         super({
@@ -98,9 +101,11 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
 
         this.physics.add.collider(this.player, this.bombs, this.hitBomb, null, this);
+
+        this.hose = new Hose(this)
     }
 
-    public update() {
+    public update(time, delta) {
         if (this.gameOver) {
             return;
         }
@@ -122,6 +127,8 @@ export class LevelScene extends Phaser.Scene {
         if (this.cursors.up.isDown && this.player.body.touching.down) {
             this.player.setVelocityY(-330);
         }
+
+        this.hose.update(time, delta);
     }
 
     public collectStar(player, star) {
