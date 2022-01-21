@@ -16,11 +16,8 @@ export class HosePlayer extends Player {
 
     constructor(scene: Phaser.Scene, x : integer, y: integer, spriteKey: string) {
         super(scene, x, y, spriteKey);
-        this.sprite.setMaxVelocity(this.MAX_VELOCITY_X, 100000);
 
-        this.sprite = scene.physics.add.sprite(100, 450, spriteKey);
         // this.sprite.setFrictionX(100000)
-        this.sprite.setCollideWorldBounds(true);
         this.sprite.setMaxVelocity(this.MAX_VELOCITY_X, 100000);
 
         scene.anims.create({
