@@ -1,3 +1,5 @@
+import {Player} from "../player";
+
 export class LevelScene extends Phaser.Scene {
     player;
     stars;
@@ -20,7 +22,6 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('star', 'assets/star.png');
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet('dude', 'assets/dude.png', {frameWidth: 32, frameHeight: 48});
-
     }
 
     public create() {
@@ -40,35 +41,33 @@ export class LevelScene extends Phaser.Scene {
         this.platforms.create(750, 220, 'ground');
 
         // The this.player and its settings
-        this.player = this.physics.add.sprite(100, 450, 'dude');
 
-        //  Player physics properties. Give the little guy a slight bounce.
-        this.player.setBounce(0.2);
-        this.player.setCollideWorldBounds(true);
-
-        //  Our this.player animations, turning, walking left and walking right.
-        this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('dude', {start: 0, end: 3}),
-            frameRate: 10,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: 'turn',
-            frames: [{key: 'dude', frame: 4}],
-            frameRate: 20
-        });
-
-        this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers('dude', {start: 5, end: 8}),
-            frameRate: 10,
-            repeat: -1
-        });
-
-        //  Input Events
-        this.cursors = this.input.keyboard.createCursorKeys();
+        this.player = new Player(this);
+        // this.player = this.physics.add.sprite(100, 450, 'dude');
+        // //  Player physics properties. Give the little guy a slight bounce.
+        // this.player.setBounce(0.2);
+        // this.player.setCollideWorldBounds(true);
+        //
+        // //  Our this.player animations, turning, walking left and walking right.
+        // this.anims.create({
+        //     key: 'left',
+        //     frames: this.anims.generateFrameNumbers('dude', {start: 0, end: 3}),
+        //     frameRate: 10,
+        //     repeat: -1
+        // });
+        //
+        // this.anims.create({
+        //     key: 'turn',
+        //     frames: [{key: 'dude', frame: 4}],
+        //     frameRate: 20
+        // });
+        //
+        // this.anims.create({
+        //     key: 'right',
+        //     frames: this.anims.generateFrameNumbers('dude', {start: 5, end: 8}),
+        //     frameRate: 10,
+        //     repeat: -1
+        // });
 
         //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
         this.stars = this.physics.add.group({
@@ -90,14 +89,14 @@ export class LevelScene extends Phaser.Scene {
         this.scoreText = this.add.text(16, 16, 'score: 0', {fontSize: '32px'});
 
         //  Collide the this.player and the this.stars with the this.platforms
-        this.physics.add.collider(this.player, this.platforms);
+        this.physics.add.collider(this.player.sprite, this.platforms);
         this.physics.add.collider(this.stars, this.platforms);
         this.physics.add.collider(this.bombs, this.platforms);
 
         //  Checks to see if the this.player overlaps with any of the this.stars, if he does call the collectStar function
-        this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
+        this.physics.add.overlap(this.player.sprite, this.stars, this.collectStar, null, this);
 
-        this.physics.add.collider(this.player, this.bombs, this.hitBomb, null, this);
+        this.physics.add.collider(this.player.sprite, this.bombs, this.hitBomb, null, this);
     }
 
     public update() {
@@ -105,23 +104,7 @@ export class LevelScene extends Phaser.Scene {
             return;
         }
 
-        if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-160);
-
-            this.player.anims.play('left', true);
-        } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(160);
-
-            this.player.anims.play('right', true);
-        } else {
-            this.player.setVelocityX(0);
-
-            this.player.anims.play('turn');
-        }
-
-        if (this.cursors.up.isDown && this.player.body.touching.down) {
-            this.player.setVelocityY(-330);
-        }
+        this.player.update();
     }
 
     public collectStar(player, star) {
