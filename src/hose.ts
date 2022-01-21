@@ -1,5 +1,6 @@
 import { Scene } from "phaser";
 import { LevelScene } from "./scenes/levelScene";
+import { zeroAccelerationIfBlocked } from "./utils";
 
 export class Hose extends Phaser.GameObjects.Container {
 
@@ -11,6 +12,7 @@ export class Hose extends Phaser.GameObjects.Container {
     ATTACHED_PULL_COEF = 0 // how strongly the attached object is pulled
     N_PHYSICS_ITERATIONS = 100 // more = less bouncy, but more CPU
     N_PARTS = 50 // how many parts of the rope
+    MAX_ACCELERATION = 10000
 
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
     // so values between 0 and 1 are reasonable
@@ -77,7 +79,8 @@ export class Hose extends Phaser.GameObjects.Container {
 
         let newVelocities: Array<Phaser.Math.Vector2> = []
         for (let i = 0; i < this.parts.length; i++) {
-            newVelocities.push(this.parts[i].body.velocity)
+            newVelocities.push(this.parts[i].body.velocity);
+            zeroAccelerationIfBlocked(this.parts[i].body)
         }
 
         const nIterations = this.N_PHYSICS_ITERATIONS
@@ -96,9 +99,9 @@ export class Hose extends Phaser.GameObjects.Container {
                 }
                 // console.log(accelY)
 
-                // if (accel.length() > this.maxAcceleration) {
-                //     accel.setLength(this.maxAcceleration)
-                // }
+                if (accel.length() > this.MAX_ACCELERATION) {
+                    accel.setLength(this.MAX_ACCELERATION)
+                }
 
                 let coef = 0.00001 * delta;
                 let coef2 = delta / nIterations * 0.0001
