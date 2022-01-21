@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "target": "es5",
+      "sourceMap": true,
+      "strict": false // Too late for that now :( also, ludum dare no time to cleanup now
+    },
+    "include": [
+      "**/*.ts"
+    ]
+  }
