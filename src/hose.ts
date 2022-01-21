@@ -5,17 +5,21 @@ export class Hose extends Phaser.GameObjects.Container {
 
     parts: Array<Phaser.Physics.Arcade.Sprite> = new Array();
 
-    distanceBetweenParts: number = 5
-    springCoef: number = 3
-    dampingCoef: number = 10
-    maxAcceleration: number = 10
+    DISTANCE_BETWEEN_PARTS: number = 5  // what *should* the distance be?
+    SPRING_COEF: number = 3  // how strong the force is that is proportional to the distance
+    DAMPING_COEF: number = 10  // how quickly velocity decays to 0
+    ATTACHED_PULL_COEF = 0.01 // how strongly the attached object is pulled
+    N_PHYSICS_ITERATIONS = 100 // more = less bouncy, but more CPU
+    N_PARTS = 50 // how many parts of the rope
 
-    constructor(scene: LevelScene) {
+    attachedTo: Phaser.Physics.Arcade.Body = null
+
+    constructor(scene: LevelScene, x, y) {
         super(scene, 0, 0);
 
 
-        for (let i = 0; i < 50; i++) {
-            const part = scene.physics.add.sprite(400 + i * 10, 100 + i * 10, "bomb");
+        for (let i = 0; i < this.N_PARTS; i++) {
+            const part = scene.physics.add.sprite(x + i * 1, y - i * 1, "bomb");
             this.parts.push(part);
             part.setCollideWorldBounds(true);
             scene.physics.add.collider(part, scene.platforms)
@@ -23,12 +27,16 @@ export class Hose extends Phaser.GameObjects.Container {
 
         // this.parts[0].setPosition
 
-        scene.input.on('pointermove', function (pointer) {
-            this.parts[0].setPosition(pointer.x, pointer.y).
-                this.parts[0].setVelocity(0, 0);
-            this.parts[0].setAccelerationY(-300);
-        }, this);
+        // scene.input.on('pointermove', function (pointer) {
+        //     this.parts[0].setPosition(pointer.x, pointer.y);
+        //     this.parts[0].setVelocity(0, 0);
+        //     this.parts[0].setAccelerationY(-300);
+        // }, this);
 
+    }
+
+    attachTo(body: Phaser.Physics.Arcade.Body) {
+        this.attachedTo = body
     }
 
     getSpringForces(): Array<Phaser.Math.Vector2> {
@@ -37,8 +45,8 @@ export class Hose extends Phaser.GameObjects.Container {
             // this.parts[0].setAccelerationX(1)
             // this.parts[0].body.velocity
             const distance = Phaser.Math.Distance.BetweenPoints(this.parts[i], this.parts[i + 1]);
-            const force = - this.springCoef * (
-                distance - this.distanceBetweenParts
+            const force = - this.SPRING_COEF * (
+                distance - this.DISTANCE_BETWEEN_PARTS
             )
             const relativeVelocity = this.parts[i].body.velocity.clone().subtract(this.parts[i + 1].body.velocity)
 
@@ -47,7 +55,7 @@ export class Hose extends Phaser.GameObjects.Container {
                     .clone()
                     .subtract(this.parts[i + 1].body.position)
                     .setLength(distance * force)
-                    .subtract(relativeVelocity.scale(this.dampingCoef))
+                    .subtract(relativeVelocity.scale(this.DAMPING_COEF))
             )
 
             // F = -k(|x|-d)(x/|x|) - bv
@@ -62,9 +70,11 @@ export class Hose extends Phaser.GameObjects.Container {
 
 
         // console.log(forces)
-        const nIterations = 1000
+        let forces
+
+        const nIterations = this.N_PHYSICS_ITERATIONS
         for (let it = 0; it < nIterations; it++) {
-            let forces = this.getSpringForces();
+            forces = this.getSpringForces();
 
             for (let i = 0; i < this.parts.length; i++) {
                 // this.parts[i].setMaxVelocity(100, 100)
@@ -96,11 +106,19 @@ export class Hose extends Phaser.GameObjects.Container {
 
         // this.parts[0].setAcceleration(0, 0)
         this.parts[0].setVelocity(0, 0)
+        if (this.attachedTo !== null) {
+            this.parts[0].setPosition(this.attachedTo.position.x, this.attachedTo.position.y)
+
+            forces[0].scale(this.ATTACHED_PULL_COEF)
+            this.attachedTo.setAcceleration(
+                this.attachedTo.acceleration.x + forces[0].x,
+                this.attachedTo.acceleration.y + forces[0].y,
+            )
+        }
     }
 }
 
 export class HosePart extends Phaser.GameObjects.Container {
     update(_, delta) {
-        console.log("upd")
     }
 }

@@ -74,7 +74,8 @@ export class LevelScene extends Phaser.Scene {
 
         this.physics.add.collider(this.player.sprite, this.bombs, this.hitBomb, null, this);
 
-        this.hose = new Hose(this)
+        this.hose = new Hose(this, this.player.sprite.x, this.player.sprite.y);
+        this.hose.attachTo(this.player.sprite.body);
     }
 
     public update(time, delta) {
@@ -82,8 +83,8 @@ export class LevelScene extends Phaser.Scene {
             return;
         }
 
-        this.hose.update(time, delta);
         this.player.update();
+        this.hose.update(time, delta);
     }
 
     public collectStar(player, star) {

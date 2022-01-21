@@ -2,9 +2,14 @@ export class Player extends Phaser.GameObjects.Container {
     sprite: Phaser.Physics.Arcade.Sprite;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
+    ACCELERATION_X = 3000
+    MAX_VELOCITY_X = 160
+    JUMP_VELOCITY_Y = -500
+
     constructor(scene: Phaser.Scene){
         super(scene);
         this.sprite = scene.physics.add.sprite(100, 450, 'dude');
+        // this.sprite.setFrictionX(100000)
         this.sprite.setCollideWorldBounds(true);
 
         scene.anims.create({
@@ -33,22 +38,25 @@ export class Player extends Phaser.GameObjects.Container {
     }
 
     public update() {
+        this.sprite.setMaxVelocity(this.MAX_VELOCITY_X, 100000)
+
         if (this.cursors.left.isDown) {
-            this.sprite.setVelocityX(-160);
+            this.sprite.setAccelerationX(-this.ACCELERATION_X);
 
             this.sprite.anims.play('left', true);
         } else if (this.cursors.right.isDown) {
-            this.sprite.setVelocityX(160);
+            this.sprite.setAccelerationX(this.ACCELERATION_X);
 
             this.sprite.anims.play('right', true);
         } else {
-            this.sprite.setVelocityX(0);
+            // this.sprite.setVelocityX(0);
 
             this.sprite.anims.play('turn');
         }
 
         if (this.cursors.up.isDown && this.sprite.body.touching.down) {
-            this.sprite.setVelocityY(-330);
+            this.sprite.setAccelerationY(0);
+            this.sprite.setVelocityY(this.JUMP_VELOCITY_Y);
         }
     }
 }
