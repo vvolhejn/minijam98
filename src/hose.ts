@@ -1,27 +1,29 @@
 import { Scene } from "phaser";
 import { LevelScene } from "./scenes/levelScene";
+import { clampIfBlocked, zeroAccelerationIfBlocked } from "./utils";
 
 export class Hose extends Phaser.GameObjects.Container {
 
     parts: Array<Phaser.Physics.Arcade.Sprite> = new Array();
 
     DISTANCE_BETWEEN_PARTS: number = 1  // what *should* the distance be?
-    SPRING_COEF: number = 100  // how strong the force is that is proportional to the distance
-    DAMPING_COEF: number = 100  // how quickly velocity decays to 0
-    ATTACHED_PULL_COEF = 0 // how strongly the attached object is pulled
+    SPRING_COEF: number = 50  // how strong the force is that is proportional to the distance
+    DAMPING_COEF: number = 80  // how quickly velocity decays to 0
+    ATTACHED_PULL_COEF = 0.001 // how strongly the attached object is pulled
     N_PHYSICS_ITERATIONS = 100 // more = less bouncy, but more CPU
     N_PARTS = 50 // how many parts of the rope
+    MAX_ACCELERATION = 10000
 
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
     // so values between 0 and 1 are reasonable
     // Note: this happens for the parts in the air as well
-    FRICTION_COEF = 0.5;
+    FRICTION_COEF = 0.9;
 
-    attachedTo: Phaser.Physics.Arcade.Body = null
+    endAttachedTo: Phaser.Physics.Arcade.Body = null
+    startPoint: Phaser.Math.Vector2
 
     constructor(scene: LevelScene, x, y) {
         super(scene, 0, 0);
-
 
         for (let i = 0; i < this.N_PARTS; i++) {
             const part = scene.physics.add.sprite(x + i * 1, y - i * 1, "bomb");
@@ -38,10 +40,15 @@ export class Hose extends Phaser.GameObjects.Container {
         //     this.parts[0].setAccelerationY(-300);
         // }, this);
 
+        this.startPoint = this.parts[this.parts.length - 1].body.position
     }
 
-    attachTo(body: Phaser.Physics.Arcade.Body) {
-        this.attachedTo = body
+    attachEndTo(body: Phaser.Physics.Arcade.Body) {
+        this.endAttachedTo = body
+    }
+
+    setStartTo(p: Phaser.Math.Vector2) {
+        this.startPoint = p
     }
 
     getSpringForces(): Array<Phaser.Math.Vector2> {
@@ -77,7 +84,8 @@ export class Hose extends Phaser.GameObjects.Container {
 
         let newVelocities: Array<Phaser.Math.Vector2> = []
         for (let i = 0; i < this.parts.length; i++) {
-            newVelocities.push(this.parts[i].body.velocity)
+            newVelocities.push(this.parts[i].body.velocity);
+            zeroAccelerationIfBlocked(this.parts[i].body)
         }
 
         const nIterations = this.N_PHYSICS_ITERATIONS
@@ -96,17 +104,19 @@ export class Hose extends Phaser.GameObjects.Container {
                 }
                 // console.log(accelY)
 
-                // if (accel.length() > this.maxAcceleration) {
-                //     accel.setLength(this.maxAcceleration)
-                // }
+                if (accel.length() > this.MAX_ACCELERATION) {
+                    accel.setLength(this.MAX_ACCELERATION)
+                }
 
-                let coef = 0.00001 * delta;
+                let coef = 0.0001 * delta / nIterations;
                 let coef2 = delta / nIterations * 0.0001
 
                 newVelocities[i].add(accel.scale(coef))
 
                 // TODO: only do this when the rope is on the ground?
                 newVelocities[i].x *= Math.pow(this.FRICTION_COEF, (delta / nIterations / 1000));
+
+                newVelocities[i] = clampIfBlocked(this.parts[i].body, newVelocities[i])
 
                 this.parts[i].setX(this.parts[i].x - coef2 * newVelocities[i].x)
                 this.parts[i].setY(this.parts[i].y - coef2 * newVelocities[i].y)
@@ -120,13 +130,13 @@ export class Hose extends Phaser.GameObjects.Container {
             this.parts[i].setVelocity(newVelocities[i].x, newVelocities[i].y);
         }
 
-        if (this.attachedTo !== null) {
-            this.parts[0].setPosition(this.attachedTo.position.x, this.attachedTo.position.y)
+        if (this.endAttachedTo !== null) {
+            this.parts[0].setPosition(this.endAttachedTo.position.x, this.endAttachedTo.position.y)
 
             forces[0].scale(this.ATTACHED_PULL_COEF)
-            this.attachedTo.setAcceleration(
-                this.attachedTo.acceleration.x + forces[0].x,
-                this.attachedTo.acceleration.y + forces[0].y,
+            this.endAttachedTo.setAcceleration(
+                this.endAttachedTo.acceleration.x + forces[0].x,
+                this.endAttachedTo.acceleration.y + forces[0].y,
             )
         }
     }
