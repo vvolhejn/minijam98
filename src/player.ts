@@ -1,13 +1,15 @@
 export class Player extends Phaser.GameObjects.Container {
     sprite: Phaser.Physics.Arcade.Sprite;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+    particles;
 
-    ACCELERATION_X = 3000
-    MAX_VELOCITY_X = 160
-    JUMP_VELOCITY_Y = -700
+    NUM_PARTICLES = 200;
+    ACCELERATION_X = 3000;
+    MAX_VELOCITY_X = 160;
+    JUMP_VELOCITY_Y = -700;
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
     // so values between 0 and 1 are reasonable
-    FRICTION_COEF = 0.75
+    FRICTION_COEF = 0.75;
 
     constructor(scene: Phaser.Scene) {
         super(scene);
@@ -39,6 +41,17 @@ export class Player extends Phaser.GameObjects.Container {
         //  Input Events
         this.cursors = scene.input.keyboard.createCursorKeys();
 
+        // Water sprinkler
+
+        this.particles = scene.physics.add.group({
+            bounceX: 0,
+            bounceY: 0,
+            collideWorldBounds: true,
+        });
+
+        for (let i = 0; i < this.NUM_PARTICLES; i++) {
+            this.particles.create(0, 0, 'flares', 0, false, false).setScale(0.1, 0.1);
+        }
     }
 
     public update(_time, delta) {
@@ -65,5 +78,29 @@ export class Player extends Phaser.GameObjects.Container {
             this.sprite.setAccelerationY(0);
             this.sprite.setVelocityY(this.JUMP_VELOCITY_Y);
         }
+
+        let pointer = this.scene.input.activePointer;
+        if (pointer.leftButtonDown()) {
+            let diff = new Phaser.Math.Vector2(pointer.x - this.sprite.x, pointer.y - this.sprite.y);
+
+            const numToFire = 3;
+            for (let i = 0; i < numToFire; i++) {
+                let speed = Phaser.Math.Between(300, 400);
+                let angle = diff.angle() + Phaser.Math.FloatBetween(-0.1, 0.1);
+                let p = this.particles.getFirstDead(false, this.sprite.x, this.sprite.y);
+                if (p != null) {
+                    p?.setVelocity(speed * Math.cos(angle), speed * Math.sin(angle));
+                    p?.setVisible(true);
+                    p?.setActive(true);
+                }
+
+                this.scene.time.delayedCall(1000, this.hideParticle, [p]);
+            }
+        }
+    }
+
+    public hideParticle(particle) {
+        particle.setVisible(false);
+        particle.setActive(false);
     }
 }

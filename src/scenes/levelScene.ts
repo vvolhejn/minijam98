@@ -24,6 +24,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('star', 'assets/star.png');
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet('dude', 'assets/dude.png', {frameWidth: 32, frameHeight: 48});
+        this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
     }
 
     public create() {
@@ -66,6 +67,7 @@ export class LevelScene extends Phaser.Scene {
 
         //  Collide the this.player and the this.stars with the this.platforms
         this.physics.add.collider(this.player.sprite, this.platforms);
+        this.physics.add.collider(this.player.particles, this.platforms);
         this.physics.add.collider(this.stars, this.platforms);
         this.physics.add.collider(this.bombs, this.platforms);
 
