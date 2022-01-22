@@ -44,6 +44,7 @@ export class Hose extends Phaser.GameObjects.Container {
             this.parts.push(part);
             part.setCollideWorldBounds(true);
             scene.physics.add.collider(part, scene.platforms)
+            scene.physics.add.collider(part, scene.walls)
         }
 
         // this.startPoint = this.parts[this.parts.length - 1].body.position.clone()
