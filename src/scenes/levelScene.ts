@@ -1,7 +1,7 @@
 import { GroundPlayer } from "../groundPlayer";
 import { Hose } from "../hose";
 import { HosePlayer } from "../hosePlayer";
-import { Fire, createFireGroup } from "../fire";
+import { Fire } from "../fire";
 import { createElVictimoGroup, ElVictimo } from "../elVictimo";
 import { Player } from "../player";
 
@@ -32,6 +32,9 @@ export class LevelScene extends Phaser.Scene {
     public preload() {
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
+
+        // this.load.image('tiles', 'assets/platformPack_tilesheet.png');
+        // this.load.tilemapTiledJSON('testfloor', 'assets/testmap.json');
         this.load.image('tiles', 'assets/TilesetMap.png');
         this.load.tilemapTiledJSON('testfloor', 'assets/room1.json');
 
@@ -56,7 +59,7 @@ export class LevelScene extends Phaser.Scene {
                 repeat: -1
             });
         }
-    
+
         //  A simple background for our game
         this.add.image(400, 300, 'sky').setScale(3);
 
@@ -68,32 +71,38 @@ export class LevelScene extends Phaser.Scene {
         this.platforms.create(600, 716, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
 
         //  Now let's create some ledges
-        // this.platforms.create(600, 400, 'ground');
-        // this.platforms.create(50, 250, 'ground');
-        // this.platforms.create(750, 220, 'ground');
         this.floor = this.make.tilemap({ key: 'testfloor' });
 
         const tileset = this.floor.addTilesetImage('TilesetMapFinal2', 'tiles');
         const FLOOR_WIDTH = 32 * 32;
         const FLOOR_HEIGHT = 32 * 8;
 
-        this.walls = this.floor.createStaticLayer('walls', tileset, (1200 - FLOOR_WIDTH) / 2, 700 - FLOOR_HEIGHT);
-        this.floor.createStaticLayer('window', tileset, (1200 - FLOOR_WIDTH) / 2, 700 - FLOOR_HEIGHT);
+
+        const offsetX = (1200 - FLOOR_WIDTH) / 2;
+        const offsetY = 700 - FLOOR_HEIGHT;
+        this.walls = this.floor.createStaticLayer('walls', tileset, offsetX, offsetY);
+        this.floor.createStaticLayer('window', tileset, offsetX, offsetY);
         this.walls.setCollisionByExclusion(-1, true);
         // Create player
         this.hosePlayer = new HosePlayer(this, 100, 400, HOSE_PLAYER_SPRITE_KEY);
         this.groundPlayer = new GroundPlayer(this, 200, 400, HOSE_PLAYER_SPRITE_KEY);
-        
+
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
         this.hosePlayer.setPhysicsProperties()
         this.groundPlayer.setPhysicsProperties()
 
-        this.fires = createFireGroup(this, [
-            new Phaser.Math.Vector2(100, 350),
-            new Phaser.Math.Vector2(200, 350),
-            new Phaser.Math.Vector2(400, 250),
-            new Phaser.Math.Vector2(500, 150),
-        ]);
+        this.fires = this.physics.add.staticGroup();
+        this.floor.getObjectLayer('fires')?.objects.forEach((fireTile) => {
+            let fire = new Fire(this, offsetX + fireTile.x + 15, offsetY + fireTile.y - 30, 'fire');
+            // fire.setDisplaySize(30, 60);
+            // fire.setOrigin(0.5, 0.5.);
+            this.fires.add(fire, true);
+            // fire.setOrigin(0., 0);
+            // needs to be done after the fire is in the group
+            fire.body.setSize(30, 60, true);
+            fire.updateScale()
+        });
+
 
         this.elVictimos = createElVictimoGroup(this, [
             new Phaser.Math.Vector2(200, 150),

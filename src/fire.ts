@@ -54,18 +54,3 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         this.setAlpha(1);
     }
 }
-
-export function createFireGroup(scene: Phaser.Scene, coords: Array<Phaser.Math.Vector2>): Phaser.Physics.Arcade.StaticGroup {
-    let group = scene.physics.add.staticGroup();
-    for (let vec of coords) {
-        let fire = new Fire(scene, vec.x, vec.y, 'fire');
-
-        group.add(fire, true);
-
-        // needs to be done after the fire is in the group
-        fire.body.setSize(30, 60, true);
-        fire.updateScale();
-    }
-
-    return group;
-}
