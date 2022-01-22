@@ -35,7 +35,7 @@ export class LevelScene extends Phaser.Scene {
 
     public create() {
         //  A simple background for our game
-        this.add.image(400, 300, 'sky');
+        this.add.image(400, 300, 'sky').setScale(3);
 
         //  The platforms group contains the ground and the 2 ledges we can jump on
         this.platforms = this.physics.add.staticGroup();
