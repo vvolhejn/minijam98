@@ -31,9 +31,22 @@ export class LevelScene extends Phaser.Scene {
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', {frameWidth: 32, frameHeight: 48});
         this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', {frameWidth: 32, frameHeight: 48});
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
+
+        for (let i = 1; i <= 3; i++) {
+            this.load.spritesheet(`fire${i}`, `assets/fire${i}.png`, {frameWidth: 50, frameHeight: 60});
+        }        
     }
 
     public create() {
+        for (let i = 1; i <= 3; i++) {
+            this.anims.create({
+                key: `fire${i}anim`,
+                frames: this.anims.generateFrameNumbers(`fire${i}`, { start: 0, end: 60 }),
+                frameRate: 60,
+                repeat: -1
+            });
+        }
+
         //  A simple background for our game
         this.add.image(400, 300, 'sky').setScale(3);
 
