@@ -1,5 +1,5 @@
-import {Player, MAX_VELOCITY_X} from './player'
-import {zeroAccelerationIfBlocked} from "./utils";
+import { Player, MAX_VELOCITY_X } from './player'
+import { zeroAccelerationIfBlocked } from "./utils";
 
 export class HosePlayer extends Player {
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -10,7 +10,7 @@ export class HosePlayer extends Player {
     SPRINKLER_ACC = 25;
     JUMP_VELOCITY_Y = -800;
 
-    constructor(scene: Phaser.Scene, x : integer, y: integer, spriteKey: string) {
+    constructor(scene: Phaser.Scene, x: integer, y: integer, spriteKey: string) {
         super(scene, x, y, spriteKey);
 
         // this.sprite.setFrictionX(100000)
@@ -61,11 +61,11 @@ export class HosePlayer extends Player {
 
         if (this.cursors.left.isDown) {
             this.sprite.setAccelerationX(-this.ACCELERATION_X);
-
+            this.sprite.flipX = false;
             this.sprite.anims.play('left', true);
         } else if (this.cursors.right.isDown) {
             this.sprite.setAccelerationX(this.ACCELERATION_X);
-
+            this.sprite.flipX = true;
             this.sprite.anims.play('right', true);
         } else {
             this.sprite.setAccelerationX(0);
