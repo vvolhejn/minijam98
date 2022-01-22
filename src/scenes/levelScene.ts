@@ -87,6 +87,8 @@ export class LevelScene extends Phaser.Scene {
 
         this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
         this.hose.attachEndTo(this.hosePlayer.sprite.body);
+
+        this.physics.disableUpdate()
     }
 
     public update(time, delta) {  // delta is in ms
@@ -94,9 +96,15 @@ export class LevelScene extends Phaser.Scene {
             return;
         }
 
+        // Increasing iterations could lead to a more stable hose, but more testing needed        
+        const iterations = 1
+        for (let i = 0; i < iterations; i++) {
+            this.physics.world.update(time, delta / iterations)
+            this.hose.update(time, delta / iterations);
+        }
+
         this.hosePlayer.update(time, delta);
         this.groundPlayer.update(time, delta);
-        this.hose.update(time, delta);
     }
 
     public collectStar(player, star) {

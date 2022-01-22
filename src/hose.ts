@@ -1,19 +1,17 @@
 import { Scene } from "phaser";
-import { getDefaultLibFileName } from "typescript";
 import { LevelScene } from "./scenes/levelScene";
 import { clampIfBlocked, zeroAccelerationIfBlocked } from "./utils";
 
 export class Hose extends Phaser.GameObjects.Container {
 
     parts: Array<Phaser.Physics.Arcade.Sprite> = new Array();
-    lastPositions: Array<Phaser.Math.Vector2> = new Array();
 
-    DISTANCE_BETWEEN_PARTS: number = 10  // what *should* the distance be?
+    DISTANCE_BETWEEN_PARTS: number = 1  // what *should* the distance be?
     SPRING_COEF: number = 100  // how strong the force is that is proportional to the distance
     DAMPING_COEF: number = 200  // how quickly velocity decays to 0
     ATTACHED_PULL_COEF = 0.001 // how strongly the attached object is pulled
     N_PHYSICS_ITERATIONS = 10 // more = less bouncy, but more CPU
-    N_PARTS = 50 // how many parts of the rope
+    N_PARTS = 50  // how many parts of the rope
     MAX_ACCELERATION = 1000000000
 
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
@@ -30,9 +28,8 @@ export class Hose extends Phaser.GameObjects.Container {
         for (let i = 0; i < this.N_PARTS; i++) {
             const part = scene.physics.add.sprite(x + i * 1, y - i * 1, "bomb");
             this.parts.push(part);
-            this.lastPositions.push(part.getCenter().clone())
             part.setCollideWorldBounds(true);
-            scene.physics.add.collider(part, scene.platforms);
+            scene.physics.add.collider(part, scene.platforms)
         }
 
         // this.parts[0].setPosition
@@ -54,73 +51,92 @@ export class Hose extends Phaser.GameObjects.Container {
         this.startPoint = p
     }
 
-    physicsUpdate(delta) {
-        const tryToMovePart = (part: Phaser.Physics.Arcade.Sprite, by) => {
-            by = clampIfBlocked(part.body, by)
-            part.setX(part.getCenter().x + by.x)
-            part.setY(part.getCenter().y + by.y)
-        };
-
+    getSpringForces(): Array<Phaser.Math.Vector2> {
+        let forces: Array<Phaser.Math.Vector2> = []
         for (let i = 0; i < this.parts.length - 1; i++) {
-            let diff = (this.parts[i].getCenter()
-                .clone()
-                .subtract(this.parts[i + 1].getCenter()));
+            // this.parts[0].setAccelerationX(1)
+            // this.parts[0].body.velocity
+            const distance = Phaser.Math.Distance.BetweenPoints(this.parts[i], this.parts[i + 1]);
+            const force = - this.SPRING_COEF * (
+                distance - this.DISTANCE_BETWEEN_PARTS
+            )
+            const relativeVelocity = this.parts[i].body.velocity.clone().subtract(this.parts[i + 1].body.velocity)
 
-            const toMove = this.DISTANCE_BETWEEN_PARTS - diff.length();
+            forces.push(
+                this.parts[i].body.position
+                    .clone()
+                    .subtract(this.parts[i + 1].body.position)
+                    .setLength(distance * force)
+                    .subtract(relativeVelocity.scale(this.DAMPING_COEF))
+            )
 
-            diff.setLength(toMove * 0.5);
-
-            tryToMovePart(this.parts[i], diff)
-            diff.negate()
-            tryToMovePart(this.parts[i + 1], diff)
+            // F = -k(|x|-d)(x/|x|) - bv
         }
 
-        for (let i = 0; i < this.parts.length - 1; i++) {
-            let movement = this.parts[i]
-                .getCenter()
-                .clone()
-                .subtract(this.lastPositions[i])
-                .scale(10 * delta / 1000);
-            movement.add(new Phaser.Math.Vector2(0, 1000 * Math.pow(delta / 1000, 2)))
-            tryToMovePart(
-                this.parts[i],
-                movement,
-            );
-            // Use or not?
-            // this.lastPositions[i] = this.parts[i].getCenter().clone()
-        }
-
-        
+        return forces
     }
 
     update(_, delta) {
-        // https://gamedevelopment.tutsplus.com/tutorials/simulate-tearable-cloth-and-ragdolls-with-simple-verlet-integration--gamedev-519
+        // F = -k(|x|-d)(x/|x|) - bv
+        // https://gafferongames.com/post/spring_physics/
 
+        let forces
+
+        let newVelocities: Array<Phaser.Math.Vector2> = []
         for (let i = 0; i < this.parts.length; i++) {
-            const coef = 0.1
-            this.parts[i].setVelocity(
-                (this.parts[i].getCenter().x - this.lastPositions[i].x) * coef,
-                (this.parts[i].getCenter().y - this.lastPositions[i].y) * coef,
-            )
-            this.lastPositions[i] = this.parts[i].getCenter().clone()
+            newVelocities.push(this.parts[i].body.velocity);
+            zeroAccelerationIfBlocked(this.parts[i].body)
         }
 
         const nIterations = this.N_PHYSICS_ITERATIONS
         for (let it = 0; it < nIterations; it++) {
-            this.physicsUpdate(delta / nIterations)
+            forces = this.getSpringForces();
+
+            for (let i = 0; i < this.parts.length; i++) {
+                // this.parts[i].setMaxVelocity(100, 100)
+
+                let accel = new Phaser.Math.Vector2(0, 0)
+                if (i > 0) {
+                    accel.subtract(forces[i - 1])
+                }
+                if (i > 0 && i < this.parts.length - 1) {
+                    accel.add(forces[i])
+                }
+                // console.log(accelY)
+
+                if (accel.length() > this.MAX_ACCELERATION) {
+                    accel.setLength(this.MAX_ACCELERATION)
+                }
+
+                let coef = 0.0001 * delta / nIterations;
+                let coef2 = delta / nIterations * 0.0001
+
+                newVelocities[i].add(accel.scale(coef))
+
+                // TODO: only do this when the rope is on the ground?
+                newVelocities[i].x *= Math.pow(this.FRICTION_COEF, (delta / nIterations / 1000));
+
+                newVelocities[i] = clampIfBlocked(this.parts[i].body, newVelocities[i])
+
+                this.parts[i].setX(this.parts[i].x - coef2 * newVelocities[i].x)
+                this.parts[i].setY(this.parts[i].y - coef2 * newVelocities[i].y)
+            }
+        }
+
+        this.parts[0].setVelocity(0, 0)
+
+        for (let i = 1; i < this.parts.length; i++) {
+            this.parts[i].setVelocity(newVelocities[i].x, newVelocities[i].y);
         }
 
         if (this.endAttachedTo !== null) {
             this.parts[0].setPosition(this.endAttachedTo.position.x, this.endAttachedTo.position.y)
-        }
 
-        // Debugging purposes
-        // for (let i = 0; i < this.parts.length; i++) {
-        //     if (this.parts[i].body.blocked.right) {
-        //         this.parts[i].setTint(0xff0000);
-        //     } else {
-        //         this.parts[i].clearTint();
-        //     }
-        // }
+            forces[0].scale(this.ATTACHED_PULL_COEF)
+            this.endAttachedTo.setAcceleration(
+                this.endAttachedTo.acceleration.x + forces[0].x,
+                this.endAttachedTo.acceleration.y + forces[0].y,
+            )
+        }
     }
 }
