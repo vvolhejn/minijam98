@@ -39,7 +39,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('ground', 'assets/platform.png');
 
         this.load.image('tiles', 'assets/TilesetMap.png');
-        for (let i = 1; i <= 1; i++) {
+        for (let i = 1; i <= 2; i++) {
             this.load.tilemapTiledJSON(`room${i}`, `assets/room${i}.json`);
         }
 
@@ -79,8 +79,8 @@ export class LevelScene extends Phaser.Scene {
         this.fires = this.physics.add.staticGroup();
         this.walls = [];
         this.loadRoom('room1', 0);
-        this.loadRoom('room1', 1);
-        this.loadRoom('room1', 2);
+        this.loadRoom('room2', 1);
+        this.loadRoom('room2', 2);
 
         // Create players.
         this.hosePlayer = new HosePlayer(this, 400, 400, HOSE_PLAYER_SPRITE_KEY);
@@ -203,7 +203,7 @@ export class LevelScene extends Phaser.Scene {
         const offsetX = (1200 - FLOOR_WIDTH) / 2;
         const offsetY = 700 - 32 - (FLOOR_HEIGHT * (floorNum + 1));
         let layer = map.createLayer('walls', tileset, offsetX, offsetY);
-        map.createLayer('window', tileset, offsetX, offsetY);
+        map.createLayer('background', tileset, offsetX, offsetY);
         layer.setCollisionByExclusion([-1], true);
         this.walls.push(layer);
 
