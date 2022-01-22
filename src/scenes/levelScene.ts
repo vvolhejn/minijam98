@@ -1,7 +1,7 @@
-import { GroundPlayer } from "../groundPlayer";
-import { Hose } from "../hose";
-import { HosePlayer } from "../hosePlayer";
-import {Fire} from "../fire";
+import {GroundPlayer} from "../groundPlayer";
+import {Hose} from "../hose";
+import {HosePlayer} from "../hosePlayer";
+import {createFireGroup} from "../fire";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -28,8 +28,8 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('ground', 'assets/platform.png');
         this.load.image('fire', 'assets/star.png');
         this.load.image('bomb', 'assets/bomb.png');
-        this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
-        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
+        this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', {frameWidth: 32, frameHeight: 48});
+        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', {frameWidth: 32, frameHeight: 48});
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
     }
 
@@ -53,17 +53,17 @@ export class LevelScene extends Phaser.Scene {
         this.hosePlayer = new HosePlayer(this, 100, 400, HOSE_PLAYER_SPRITE_KEY);
         this.groundPlayer = new GroundPlayer(this, 200, 400, HOSE_PLAYER_SPRITE_KEY);
 
-        //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-        this.fires = this.physics.add.staticGroup({
-            key: 'fire',
-            repeat: 11,
-            setXY: {x: 12, y: 350, stepX: 70},
-        });
+        this.fires = createFireGroup(this, [
+            new Phaser.Math.Vector2(100, 350),
+            new Phaser.Math.Vector2(200, 350),
+            new Phaser.Math.Vector2(400, 250),
+            new Phaser.Math.Vector2(500, 150),
+        ]);
 
         this.bombs = this.physics.add.group();
 
         //  The score
-        this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px' });
+        this.scoreText = this.add.text(16, 16, 'score: 0', {fontSize: '32px'});
 
         //  Collide the this.hosePlayer and the this.stars with the this.platforms
         this.physics.add.collider(this.hosePlayer.sprite, this.platforms);
@@ -75,9 +75,7 @@ export class LevelScene extends Phaser.Scene {
 
         //  Checks to see if the this.player overlaps with any of the this.stars, if he does call the collectStar function
         // this.physics.add.overlap(this.hosePlayer.sprite, this.fires, this.collectStar, null, this);
-        this.physics.add.overlap(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
-        this.physics.add.overlap(this.hosePlayer.sprite, this.stars, this.collectStar, null, this);
-        this.physics.add.overlap(this.groundPlayer.sprite, this.stars, this.collectStar, null, this);
+        this.physics.add.collider(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
 
         this.physics.add.collider(this.hosePlayer.sprite, this.bombs, this.hitBomb, null, this);
 
@@ -103,29 +101,31 @@ export class LevelScene extends Phaser.Scene {
         this.groundPlayer.update(time, delta);
     }
 
-    public collectStar(player, star) {
-        star.disableBody(true, true);
+    public extinguishFire(particle, fire) {
+        particle.setActive(false);
+        particle.setVisible(false);
+        console.log(fire);
+        fire.lowerHp();
 
         //  Add and update the score
-        this.score += 10;
-        this.scoreText.setText('Score: ' + this.score);
+        if (fire.hp <= 0) {
+            this.score += 1;
+            this.scoreText.setText('Score: ' + this.score);
+        }
 
         if (this.fires.countActive(true) === 0) {
             //  A new batch of fires to collect
             this.fires.children.iterate(function (child) {
-
-                child.enableBody(true, child.x, 0, true, true);
-
+                child.resetHp();
             });
 
-            const x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+            const x = Phaser.Math.Between(0, 400);
 
             let bomb = this.bombs.create(x, 16, 'bomb');
             bomb.setBounce(1);
             bomb.setCollideWorldBounds(true);
             bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
             bomb.allowGravity = false;
-
         }
     }
 
@@ -137,10 +137,6 @@ export class LevelScene extends Phaser.Scene {
         player.anims.play('turn');
 
         this.gameOver = true;
-    }
-
-    public extinguishFire(particle, fire) {
-        fire.extinguish();
     }
 
 }

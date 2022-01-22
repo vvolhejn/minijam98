@@ -1,29 +1,37 @@
-export class FireGroup extends Phaser.GameObjects.Container {
-    sprites;
+export class Fire extends Phaser.Physics.Arcade.Sprite {
+    hp: number;
+    baseHp: number;
 
-    constructor(scene: Phaser.Scene) {
-        super(scene);
-        this.sprites = this.scene.physics.add.staticGroup({
-            key: 'fire',
-            repeat: 11,
-            setXY: {x: 12, y: 350, stepX: 70},
-        });
-
+    constructor(scene: Phaser.Scene, x, y, textureKey, hp = 5) {
+        super(scene, x, y, textureKey);
+        this.hp = hp;
+        this.baseHp = hp;
     }
 
+    public lowerHp() {
+        this.hp--;
+        console.log("HP lowered.");
+        if (this.hp <= 0) {
+            this.setActive(false);
+            this.setVisible(false);
+            this.body.enable = false;
+        }
+    }
 
+    public resetHp() {
+        this.hp = this.baseHp;
+        this.setActive(true);
+        this.setVisible(true);
+        this.body.enable = true;
+    }
 }
 
-
-export class Fire extends Phaser.GameObjects.GameObject {
-    sprite;
-
-    constructor(scene: Phaser.Scene) {
-        super(scene);
-        this.sprite = this.scene.physics.add.staticGroup({
-            key: 'fire',
-            repeat: 11,
-            setXY: {x: 12, y: 350, stepX: 70},
-        });
+export function createFireGroup(scene, coords: Array<Phaser.Math.Vector2>): Phaser.Physics.Arcade.StaticGroup {
+    let group = scene.physics.add.staticGroup();
+    for (let vec of coords) {
+        console.log(vec);
+        group.add(new Fire(scene, vec.x, vec.y, 'fire'), true);
     }
+
+    return group;
 }
