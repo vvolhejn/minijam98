@@ -10,6 +10,9 @@ const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
 const EL_VICTIMO_SPRITE_KEY = 'elVictimo';
 
+const FLOOR_WIDTH = 32 * 32;
+const FLOOR_HEIGHT = 32 * 7;
+
 export class LevelScene extends Phaser.Scene {
     hosePlayer: HosePlayer;
     groundPlayer: GroundPlayer;
@@ -36,7 +39,9 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('ground', 'assets/platform.png');
 
         this.load.image('tiles', 'assets/TilesetMap.png');
-        this.load.tilemapTiledJSON('testfloor', 'assets/room1.json');
+        for (let i = 1; i <= 1; i++) {
+            this.load.tilemapTiledJSON(`room${i}`, `assets/room${i}.json`);
+        }
 
         this.load.image('fire', 'assets/star.png');
         this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
@@ -70,19 +75,10 @@ export class LevelScene extends Phaser.Scene {
         //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
         this.platforms.create(600, 716, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
 
-        this.floor = this.make.tilemap({ key: 'testfloor' });
 
-        const tileset = this.floor.addTilesetImage('TilesetMap', 'tiles');
-        const FLOOR_WIDTH = 32 * 32;
-        const FLOOR_HEIGHT = 32 * 8;
-
-
-        const offsetX = (1200 - FLOOR_WIDTH) / 2;
-        const offsetY = 700 - FLOOR_HEIGHT;
-        this.walls = this.floor.createStaticLayer('walls', tileset, offsetX, offsetY);
-        this.floor.createStaticLayer('window', tileset, offsetX, offsetY);
-        this.walls.setCollisionByExclusion(-1, true);
-
+        this.fires = this.physics.add.staticGroup();
+        this.loadRoom('room1', 0);
+        // this.loadRoom('room1', 1);
 
         // Create players.
         this.hosePlayer = new HosePlayer(this, 100, 400, HOSE_PLAYER_SPRITE_KEY);
@@ -92,15 +88,6 @@ export class LevelScene extends Phaser.Scene {
         this.groundPlayer.setPhysicsProperties();
         this.hosePlayer.sprite.setDepth(1);
 
-
-        // Fires.
-        this.fires = this.physics.add.staticGroup();
-        this.floor.getObjectLayer('fires')?.objects.forEach((fireTile) => {
-            let fire = new Fire(this, offsetX + fireTile.x + 15, offsetY + fireTile.y - 40, 'fire');
-            this.fires.add(fire, true);
-            fire.body.setSize(30, 60, true);
-            fire.updateScale();
-        });
 
         this.doors = this.physics.add.staticGroup();
         // this.doors.add(new Door(this, 500, 500));
@@ -203,4 +190,22 @@ export class LevelScene extends Phaser.Scene {
         water.collided = true;
     }
 
+    private loadRoom(roomId: string, floorNum: number) {
+        this.floor = this.make.tilemap({ key: roomId });
+
+        const tileset = this.floor.addTilesetImage('TilesetMap', 'tiles');
+        const offsetX = (1200 - FLOOR_WIDTH) / 2;
+        const offsetY = 700 - 32 - (FLOOR_HEIGHT * (floorNum + 1));
+        this.walls = this.floor.createStaticLayer('walls', tileset, offsetX, offsetY);
+        this.floor.createStaticLayer('window', tileset, offsetX, offsetY);
+        this.walls.setCollisionByExclusion(-1, true);
+
+        // Fires.
+        this.floor.getObjectLayer('fires')?.objects.forEach((fireTile) => {
+            let fire = new Fire(this, offsetX + fireTile.x + 15, offsetY + fireTile.y - 40, 'fire');
+            this.fires.add(fire, true);
+            fire.body.setSize(30, 60, true);
+            fire.updateScale();
+        });
+    }
 }
