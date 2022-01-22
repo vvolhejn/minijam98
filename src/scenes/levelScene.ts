@@ -16,7 +16,6 @@ const FLOOR_HEIGHT = 32 * 7;
 export class LevelScene extends Phaser.Scene {
     hosePlayer: HosePlayer;
     groundPlayer: GroundPlayer;
-    layer;
     walls: Array<Phaser.Tilemaps.TilemapLayer>;
     fires: Phaser.Physics.Arcade.StaticGroup;
     doors: Phaser.Physics.Arcade.StaticGroup;
@@ -39,7 +38,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('ground', 'assets/platform.png');
 
         this.load.image('tiles', 'assets/TilesetMap.png');
-        for (let i = 1; i <= 1; i++) {
+        for (let i = 1; i <= 2; i++) {
             this.load.tilemapTiledJSON(`room${i}`, `assets/room${i}.json`);
         }
 
@@ -92,16 +91,17 @@ export class LevelScene extends Phaser.Scene {
         this.fires = this.physics.add.staticGroup();
         this.walls = [];
         this.loadRoom('room1', 0);
-        this.loadRoom('room1', 1);
-        this.loadRoom('room1', 2);
+        this.loadRoom('room2', 1);
+        this.loadRoom('room2', 2);
 
         // Create players.
-        this.hosePlayer = new HosePlayer(this, 400, 400, HOSE_PLAYER_SPRITE_KEY);
-        this.groundPlayer = new GroundPlayer(this, 200, 400, GROUND_PLAYER_SPRITE_KEY);
+        this.hosePlayer = new HosePlayer(this, 30, 700 - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
+        this.groundPlayer = new GroundPlayer(this, 60, 700 - 32 - 20, GROUND_PLAYER_SPRITE_KEY);
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
         this.hosePlayer.setPhysicsProperties();
         this.groundPlayer.setPhysicsProperties();
         this.hosePlayer.sprite.setDepth(1);
+        this.groundPlayer.sprite.setDepth(1);
 
 
         let door = new Door(this, 600, 400);
@@ -215,7 +215,7 @@ export class LevelScene extends Phaser.Scene {
         const offsetX = (1200 - FLOOR_WIDTH) / 2;
         const offsetY = 700 - 32 - (FLOOR_HEIGHT * (floorNum + 1));
         let layer = map.createLayer('walls', tileset, offsetX, offsetY);
-        map.createLayer('window', tileset, offsetX, offsetY);
+        map.createLayer('background', tileset, offsetX, offsetY);
         layer.setCollisionByExclusion([-1], true);
         this.walls.push(layer);
 
@@ -226,5 +226,7 @@ export class LevelScene extends Phaser.Scene {
             fire.body.setSize(30, 60, true);
             fire.updateScale();
         });
+
+
     }
 }
