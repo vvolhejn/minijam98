@@ -4,6 +4,7 @@ import { HosePlayer } from "../hosePlayer";
 import { Fire } from "../fire";
 import { createElVictimoGroup, ElVictimo } from "../elVictimo";
 import { Player } from "../player";
+import { Door } from "../door";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -15,6 +16,7 @@ export class LevelScene extends Phaser.Scene {
     floor;
     walls;
     fires: Phaser.Physics.Arcade.StaticGroup;
+    doors: Phaser.Physics.Arcade.StaticGroup;
     elVictimos: Phaser.Physics.Arcade.Group;
     platforms;
     players: Phaser.Physics.Arcade.Group;
@@ -103,9 +105,11 @@ export class LevelScene extends Phaser.Scene {
             // fire.setOrigin(0., 0);
             // needs to be done after the fire is in the group
             fire.body.setSize(30, 60, true);
-            fire.updateScale()
+            fire.updateScale();
         });
 
+        this.doors = this.physics.add.staticGroup();
+        // this.doors.add(new Door(this, 500, 500));
 
         this.elVictimos = createElVictimoGroup(this, [
             new Phaser.Math.Vector2(200, 150),
@@ -152,7 +156,10 @@ export class LevelScene extends Phaser.Scene {
         this.hosePlayer.update(time, delta);
         this.groundPlayer.update(time, delta);
 
+        // if (Math.random() < 0.01){
         this.hose.update(time, delta);
+        // }
+
         this.elVictimos.preUpdate(time, delta);
 
         this.physics.world.update(time, delta);
@@ -190,7 +197,7 @@ export class LevelScene extends Phaser.Scene {
         fire: Fire,
     ) {
         let player: Player = (playerSprite === this.hosePlayer.sprite) ? this.hosePlayer : this.groundPlayer;
-        player.onFireCollision(fire, this)
+        player.onFireCollision(fire, this);
     }
 
     public hitBomb(player, bomb) {

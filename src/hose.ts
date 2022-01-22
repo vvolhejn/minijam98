@@ -15,7 +15,7 @@ export class Hose extends Phaser.GameObjects.Container {
     MAX_ACCELERATION = 1000000000;
 
     // temporary fix
-    HOSE_START_POINT = new Phaser.Math.Vector2(100, 500)
+    HOSE_START_POINT = new Phaser.Math.Vector2(100, 500);
 
     HOSE_DEBUG_VIEW = false;  // Disable the line, switch to particles
     HOSE_COLOR_1 = 0x333333;
@@ -39,14 +39,15 @@ export class Hose extends Phaser.GameObjects.Container {
         for (let i = 0; i < this.N_PARTS; i++) {
             const part = scene.physics.add.sprite(x + i * 1, y - i * 1, "bomb");
             if (!this.HOSE_DEBUG_VIEW) {
-                part.setVisible(false)
+                part.setVisible(false);
             }
             this.parts.push(part);
             part.setCollideWorldBounds(true);
             scene.physics.add.collider(part, scene.platforms);
             scene.physics.add.collider(part, scene.walls);
 
-            part.body.setSize(50, 50)
+            // part.body.setSize(50, 50)
+            part.body.setCircle(15);
         }
 
         // this.startPoint = this.parts[this.parts.length - 1].body.position.clone()
@@ -57,36 +58,37 @@ export class Hose extends Phaser.GameObjects.Container {
     }
 
     attachEndTo(body: Phaser.Physics.Arcade.Body) {
-        this.endAttachedTo = body
+        this.endAttachedTo = body;
     }
 
     setStartTo(p: Phaser.Math.Vector2) {
-        this.startPoint = p
+        this.startPoint = p;
     }
 
-    getSpringForces(): Array<Phaser.Math.Vector2> {
+    getSpringForces(velocities): Array<Phaser.Math.Vector2> {
         let forces: Array<Phaser.Math.Vector2> = [];
         for (let i = 0; i < this.parts.length - 1; i++) {
-            // this.parts[0].setAccelerationX(1)
-            // this.parts[0].body.velocity
             const distance = Phaser.Math.Distance.BetweenPoints(this.parts[i], this.parts[i + 1]);
             const force = - this.SPRING_COEF * (
                 distance - this.DISTANCE_BETWEEN_PARTS
-            )
-            const relativeVelocity = this.parts[i].body.velocity.clone().subtract(this.parts[i + 1].body.velocity);
+            );
+            const relativeVelocity = velocities[i].clone().subtract(velocities[i + 1]);
+            // if (i == 0) {
+            //     console.log(relativeVelocity)
+            // }
 
             forces.push(
-                this.parts[i].body.position
+                this.parts[i].getCenter()
                     .clone()
-                    .subtract(this.parts[i + 1].body.position)
+                    .subtract(this.parts[i + 1].getCenter())
                     .setLength(distance * force)
                     .subtract(relativeVelocity.scale(this.DAMPING_COEF))
-            )
+            );
 
             // F = -k(|x|-d)(x/|x|) - bv
         }
 
-        return forces
+        return forces;
     }
 
     draw() {
@@ -119,27 +121,27 @@ export class Hose extends Phaser.GameObjects.Container {
         let newVelocities: Array<Phaser.Math.Vector2> = [];
         for (let i = 0; i < this.parts.length; i++) {
             newVelocities.push(this.parts[i].body.velocity);
-            zeroAccelerationIfBlocked(this.parts[i].body)
+            zeroAccelerationIfBlocked(this.parts[i].body);
         }
 
         const nIterations = this.N_PHYSICS_ITERATIONS;
         for (let it = 0; it < nIterations; it++) {
-            forces = this.getSpringForces();
+            forces = this.getSpringForces(newVelocities);
 
             for (let i = 0; i < this.parts.length; i++) {
                 // this.parts[i].setMaxVelocity(100, 100)
 
                 let accel = new Phaser.Math.Vector2(0, 0);
                 if (i > 0) {
-                    accel.subtract(forces[i - 1])
+                    accel.subtract(forces[i - 1]);
                 }
                 if (i > 0 && i < this.parts.length - 1) {
-                    accel.add(forces[i])
+                    accel.add(forces[i]);
                 }
                 // console.log(accelY)
 
                 if (accel.length() > this.MAX_ACCELERATION) {
-                    accel.setLength(this.MAX_ACCELERATION)
+                    accel.setLength(this.MAX_ACCELERATION);
                 }
 
                 let coef = 0.0001 * delta / nIterations;
@@ -153,7 +155,7 @@ export class Hose extends Phaser.GameObjects.Container {
                 newVelocities[i] = clampIfBlocked(this.parts[i].body, newVelocities[i]);
 
                 this.parts[i].setX(this.parts[i].x - coef2 * newVelocities[i].x);
-                this.parts[i].setY(this.parts[i].y - coef2 * newVelocities[i].y)
+                this.parts[i].setY(this.parts[i].y - coef2 * newVelocities[i].y);
             }
         }
 
@@ -177,17 +179,17 @@ export class Hose extends Phaser.GameObjects.Container {
             this.endAttachedTo.setVelocity(
                 this.endAttachedTo.velocity.x + forces[0].x,
                 this.endAttachedTo.velocity.y + forces[0].y,
-            )
+            );
         }
 
         if (this.startPoint !== null) {
             this.parts[this.parts.length - 1].setPosition(
                 this.startPoint.x,
                 this.startPoint.y,
-            )
-            this.parts[this.parts.length - 1].setVelocity(0, 0)
+            );
+            this.parts[this.parts.length - 1].setVelocity(0, 0);
         }
 
-        this.draw()
+        this.draw();
     }
 }
