@@ -24,3 +24,19 @@ export function zeroAccelerationIfBlocked(body) {
     body.setAcceleration(accel.x, accel.y);
 }
 
+
+export function parseProperties(propertiesArray) {
+    let ret = {};
+    for (let p of propertiesArray) {
+        ret[p['name']] = p['value'];
+    }
+    return ret;
+}
+
+
+export function parseAllProperties(objectsArray) {
+    console.log(objectsArray);
+    for (let o of objectsArray) {
+        o['properties'] = parseProperties(o['properties'])
+    }
+}

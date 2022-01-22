@@ -5,6 +5,7 @@ import { Fire } from "../fire";
 import { ElVictimo } from "../elVictimo";
 import { Player } from "../player";
 import { Door } from "../door";
+import { parseAllProperties } from "../utils";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -91,7 +92,8 @@ export class LevelScene extends Phaser.Scene {
         this.platforms.create(600, 716, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
 
         // Create players.
-        this.hosePlayer = new HosePlayer(this, 30, 700 - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
+        // this.hosePlayer = new HosePlayer(this, 30, 700 - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
+        this.hosePlayer = new HosePlayer(this, 350, 350, HOSE_PLAYER_SPRITE_KEY);
         this.groundPlayer = new GroundPlayer(this, 60, 700 - 32 - 20, GROUND_PLAYER_SPRITE_KEY);
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
         this.hosePlayer.setPhysicsProperties();
@@ -236,15 +238,24 @@ export class LevelScene extends Phaser.Scene {
         }, this);
 
         // Doors.
-        // TODO: Fix the keys.
-        let keys = map.getObjectLayer('doors')?.objects;
-        map.getObjectLayer('doors')?.objects.forEach((doorTile) => {
+        const keys = map.getObjectLayer('keys')?.objects;
+        if (keys)
+            parseAllProperties(keys);
+        const doors = map.getObjectLayer('doors')?.objects;
+        if (doors)
+            parseAllProperties(doors);
+        doors?.forEach((doorTile) => {
             let door = new Door(this, offsetX + doorTile.x, offsetY + doorTile.y);
             door.doorSprite.setOrigin(0, 1);
             door.doorSprite.setDisplaySize(doorTile.width, doorTile.height);
             door.doorSprite.refreshBody();
             this.doors.add(door.doorSprite, true);
-            door.addKey(this, offsetX + keys[1].x, offsetY + keys[1].y);
+            const fittingKeys = keys.filter((key) => {
+                return key.properties.color == doorTile.properties.color
+            });
+            for (let key of fittingKeys) {
+                door.addKey(this, offsetX + key.x, offsetY + key.y);
+            }
         });
     }
 }
