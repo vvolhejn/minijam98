@@ -87,15 +87,6 @@ export class LevelScene extends Phaser.Scene {
         //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
         this.platforms.create(600, 716, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
 
-
-        this.fires = this.physics.add.staticGroup();
-        this.elVictimos = this.physics.add.group();
-        this.elVictimos.runChildUpdate = true;
-        this.walls = [];
-        this.loadRoom('room1', 0);
-        this.loadRoom('room2', 1);
-        this.loadRoom('room2', 2);
-
         // Create players.
         this.hosePlayer = new HosePlayer(this, 30, 700 - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
         this.groundPlayer = new GroundPlayer(this, 60, 700 - 32 - 20, GROUND_PLAYER_SPRITE_KEY);
@@ -105,10 +96,20 @@ export class LevelScene extends Phaser.Scene {
         this.hosePlayer.sprite.setDepth(1);
         this.groundPlayer.sprite.setDepth(1);
 
+        // Load rooms.
+        this.fires = this.physics.add.staticGroup();
+        this.doors = this.physics.add.staticGroup();
+        this.walls = [];
+        this.elVictimos = this.physics.add.group();
+        this.elVictimos.runChildUpdate = true;
+        this.loadRoom('room1', 0);
+        this.loadRoom('room2', 1);
+        this.loadRoom('room2', 2);
 
-        let door = new Door(this, 600, 400);
-        this.doors = this.physics.add.staticGroup([door.doorSprite]);
-        door.addKey(this, 800, 400);
+
+        // let door = new Door(this, 600, 400);
+        // this.doors = this.physics.add.staticGroup([door.doorSprite]);
+        // door.addKey(this, 800, 400);
 
         //  The score
         this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px' });
@@ -220,6 +221,7 @@ export class LevelScene extends Phaser.Scene {
             fire.updateScale();
         });
 
+        // Victims.
         map.getObjectLayer('victims')?.objects.forEach((victimTile) => {
             let victim = new ElVictimo(
                 this,
@@ -229,5 +231,17 @@ export class LevelScene extends Phaser.Scene {
             );
             this.elVictimos.add(victim, true);
         }, this);
+
+        // Doors.
+        // TODO: Fix the keys.
+        let keys = map.getObjectLayer('doors')?.objects;
+        map.getObjectLayer('doors')?.objects.forEach((doorTile) => {
+            let door = new Door(this, offsetX + doorTile.x, offsetY + doorTile.y);
+            door.doorSprite.setOrigin(0, 1);
+            door.doorSprite.setDisplaySize(doorTile.width, doorTile.height);
+            door.doorSprite.refreshBody();
+            this.doors.add(door.doorSprite, true);
+            door.addKey(this, offsetX + keys[1].x, offsetY + keys[1].y);
+        });
     }
 }

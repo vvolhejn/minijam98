@@ -20,6 +20,8 @@ export class Door {
 
     public addKey(scene: LevelScene, x, y) {
         this.keySprite = scene.physics.add.staticSprite(x, y, "fire");
+        this.keySprite.setOrigin(0, 1);
+        this.keySprite.refreshBody();
         this.keySprite.setTint(0xff00ff);
         this.locked = true;
 
