@@ -80,7 +80,7 @@ export class LevelScene extends Phaser.Scene {
         // this.loadRoom('room1', 1);
 
         // Create players.
-        this.hosePlayer = new HosePlayer(this, 100, 400, HOSE_PLAYER_SPRITE_KEY);
+        this.hosePlayer = new HosePlayer(this, 400, 400, HOSE_PLAYER_SPRITE_KEY);
         this.groundPlayer = new GroundPlayer(this, 200, 400, GROUND_PLAYER_SPRITE_KEY);
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
         this.hosePlayer.setPhysicsProperties();
@@ -88,8 +88,9 @@ export class LevelScene extends Phaser.Scene {
         this.hosePlayer.sprite.setDepth(1);
 
 
-        this.doors = this.physics.add.staticGroup();
-        // this.doors.add(new Door(this, 500, 500));
+        let door = new Door(this, 600, 400);
+        this.doors = this.physics.add.staticGroup([door.doorSprite]);
+        door.addKey(this, 800, 400);
 
         // Victims.
         this.elVictimos = createElVictimoGroup(this, [
@@ -105,6 +106,7 @@ export class LevelScene extends Phaser.Scene {
 
         // Collisions.
         this.physics.add.collider(this.players, this.platforms);
+        this.physics.add.collider(this.players, this.doors);
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
         this.physics.add.overlap(this.hosePlayer.particles, this.groundPlayer.sprite, this.onGrandWaterCollision, null, this);
         this.physics.add.collider(this.elVictimos, this.platforms);
