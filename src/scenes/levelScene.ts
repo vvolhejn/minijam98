@@ -62,6 +62,7 @@ export class LevelScene extends Phaser.Scene {
         const FLOOR_WIDTH = 24 * 32;
         const FLOOR_HEIGHT = 32 * 8;
         this.walls = this.floor.createStaticLayer('walls', tileset, (1200-FLOOR_WIDTH)/2, 742 - FLOOR_HEIGHT);
+        this.floor.createStaticLayer('window', tileset, (1200-FLOOR_WIDTH)/2, 742 - FLOOR_HEIGHT);
         this.walls.setCollisionByExclusion(-1, true);
         // Create player
         this.hosePlayer = new HosePlayer(this, 100, 400, HOSE_PLAYER_SPRITE_KEY);
