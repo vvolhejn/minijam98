@@ -15,8 +15,8 @@ const FLOOR_HEIGHT = 32 * 7;
 export class LevelScene extends Phaser.Scene {
     hosePlayer: HosePlayer;
     groundPlayer: GroundPlayer;
-    floor;
-    walls;
+    layer;
+    walls: Array<Phaser.Tilemaps.TilemapLayer>;
     fires: Phaser.Physics.Arcade.StaticGroup;
     doors: Phaser.Physics.Arcade.StaticGroup;
     elVictimos: Phaser.Physics.Arcade.Group;
@@ -76,8 +76,10 @@ export class LevelScene extends Phaser.Scene {
 
 
         this.fires = this.physics.add.staticGroup();
+        this.walls = [];
         this.loadRoom('room1', 0);
-        // this.loadRoom('room1', 1);
+        this.loadRoom('room1', 1);
+        this.loadRoom('room1', 2);
 
         // Create players.
         this.hosePlayer = new HosePlayer(this, 400, 400, HOSE_PLAYER_SPRITE_KEY);
@@ -112,9 +114,11 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.elVictimos, this.platforms);
 
         // Collide with floor map.
-        this.physics.add.collider(this.players, this.walls);
-        this.physics.add.collider(this.elVictimos, this.walls);
-        this.physics.add.collider(this.hosePlayer.particles, this.walls);
+        for (let wall of this.walls) {
+            this.physics.add.collider(this.players, wall);
+            this.physics.add.collider(this.elVictimos, wall);
+            this.physics.add.collider(this.hosePlayer.particles, wall);
+        }
 
         this.physics.add.overlap(this.groundPlayer.sprite, this.elVictimos, this.pickUpElVictimo, null, this);
         this.physics.add.collider(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
@@ -192,17 +196,18 @@ export class LevelScene extends Phaser.Scene {
     }
 
     private loadRoom(roomId: string, floorNum: number) {
-        this.floor = this.make.tilemap({ key: roomId });
+        let map = this.make.tilemap({ key: roomId });
 
-        const tileset = this.floor.addTilesetImage('TilesetMap', 'tiles');
+        const tileset = map.addTilesetImage('TilesetMap', 'tiles');
         const offsetX = (1200 - FLOOR_WIDTH) / 2;
         const offsetY = 700 - 32 - (FLOOR_HEIGHT * (floorNum + 1));
-        this.walls = this.floor.createStaticLayer('walls', tileset, offsetX, offsetY);
-        this.floor.createStaticLayer('window', tileset, offsetX, offsetY);
-        this.walls.setCollisionByExclusion(-1, true);
+        let layer = map.createLayer('walls', tileset, offsetX, offsetY);
+        map.createLayer('window', tileset, offsetX, offsetY);
+        layer.setCollisionByExclusion([-1], true);
+        this.walls.push(layer);
 
         // Fires.
-        this.floor.getObjectLayer('fires')?.objects.forEach((fireTile) => {
+        map.getObjectLayer('fires')?.objects.forEach((fireTile) => {
             let fire = new Fire(this, offsetX + fireTile.x + 15, offsetY + fireTile.y - 40, 'fire');
             this.fires.add(fire, true);
             fire.body.setSize(30, 60, true);
