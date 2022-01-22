@@ -8,7 +8,7 @@ export class GroundPlayer extends Player {
     lastSavingTimestamp_MS: number;
     lastDirection: VictimDirection = VictimDirection.LEFT; // Just default.
 
-    SAVING_COOLDOWN_MS = 200;
+    SAVING_COOLDOWN_MS = 500;
     WATER_STRENGTH_FACTOR = 10;
     PLAYER_STRENGTH_ON_WATER_FACTOR = 7;
 

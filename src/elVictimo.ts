@@ -22,6 +22,7 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
     }
 
     public update(_time, delta): void {
+        this.setOrigin(0);
         this.setVelocityX(
             this.body.velocity.x
             * Math.pow(1 - this.FRICTION_COEF, delta / 1000)
@@ -30,13 +31,20 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
         if (this.savior == null) {
             return;
         }
-        this.x = this.savior.sprite.body.x;
-        this.y = this.savior.sprite.body.y;
+
+        // Whenever the savior turns, clip the bounding box to the savior from each side.
+        this.y = this.savior.sprite.y - this.savior.sprite.height / 2;
+        if (this.savior.lastDirection == VictimDirection.LEFT) {
+            this.x = this.savior.sprite.x - this.savior.sprite.width / 2;
+        } else {
+            this.x = this.savior.sprite.x - (this.width - this.savior.sprite.width / 2);
+        }
+
         // So that the gravity doesn't drag him down.
         this.setVelocity(0, 0);
     }
 
-    public getThrown(direction : VictimDirection) {
+    public getThrown(direction: VictimDirection) {
         this.savior = null;
         if (direction == VictimDirection.LEFT) {
             this.setVelocityX(-this.THROW_VELOCITY_X);

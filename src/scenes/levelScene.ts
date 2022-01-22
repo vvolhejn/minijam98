@@ -4,7 +4,6 @@ import { HosePlayer } from "../hosePlayer";
 import { Fire } from "../fire";
 import { createElVictimoGroup, ElVictimo } from "../elVictimo";
 import { Player } from "../player";
-import { Door } from "../door";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -74,6 +73,7 @@ export class LevelScene extends Phaser.Scene {
 
         //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
         this.platforms.create(600, 716, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
+
 
         this.fires = this.physics.add.staticGroup();
         this.loadRoom('room1', 0);
@@ -194,7 +194,7 @@ export class LevelScene extends Phaser.Scene {
     private loadRoom(roomId: string, floorNum: number) {
         this.floor = this.make.tilemap({ key: roomId });
 
-        const tileset = this.floor.addTilesetImage('TilesetMapFinal2', 'tiles');
+        const tileset = this.floor.addTilesetImage('TilesetMap', 'tiles');
         const offsetX = (1200 - FLOOR_WIDTH) / 2;
         const offsetY = 700 - 32 - (FLOOR_HEIGHT * (floorNum + 1));
         this.walls = this.floor.createStaticLayer('walls', tileset, offsetX, offsetY);
