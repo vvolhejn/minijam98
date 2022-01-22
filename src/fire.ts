@@ -13,7 +13,7 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
     }
 
     public updateScale() {
-        const scale = 2 * (this.hp / this.baseHp);
+        const scale = 2 * ((this.hp + this.baseHp) / (2 * this.baseHp));
         this.setScale(scale);
 
         // TODO: center the scaling on the bottom edge

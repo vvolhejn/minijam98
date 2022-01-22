@@ -1,8 +1,10 @@
+import { ElVictimo } from './elVictimo';
 import { Player, MAX_VELOCITY_X } from './player'
 import { zeroAccelerationIfBlocked } from "./utils";
 
 export class GroundPlayer extends Player {
     cursors: any; // see how it's assigned in constructor
+    saving: ElVictimo;
 
     ACCELERATION_X = 3000;
     JUMP_VELOCITY_Y = -600;
@@ -70,5 +72,13 @@ export class GroundPlayer extends Player {
         }
 
         zeroAccelerationIfBlocked(this.sprite.body);
+    }
+
+    public pickUp(elVictimo) : boolean {
+        if (this.saving != null) {
+            return false;
+        }
+        this.saving = elVictimo;
+        return true;
     }
 }

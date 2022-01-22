@@ -49,6 +49,8 @@ export class HosePlayer extends Player {
 
         for (let i = 0; i < this.NUM_PARTICLES; i++) {
             this.particles.create(0, 0, 'flares', 0, false, false).setScale(0.1, 0.1);
+            // Otherwise they appear as invisible objects that players can collide with.
+            this.particles.getLast().body.enable = false;
         }
     }
 
@@ -80,7 +82,7 @@ export class HosePlayer extends Player {
         if (pointer.leftButtonDown()) {
             let diff = new Phaser.Math.Vector2(pointer.x - this.sprite.x, pointer.y - this.sprite.y);
 
-            const numToFire = 3;
+            const numToFire = 6;
             for (let i = 0; i < numToFire; i++) {
                 let speed = Phaser.Math.Between(300, 400);
                 let angle = diff.angle() + Phaser.Math.FloatBetween(-0.1, 0.1);
