@@ -42,7 +42,10 @@ export class LevelScene extends Phaser.Scene {
             this.load.tilemapTiledJSON(`room${i}`, `assets/room${i}.json`);
         }
 
-        this.load.image('fire', 'assets/star.png');
+        this.load.image('debugball', 'assets/debugball.png');
+        this.load.image('debugstar', 'assets/star.png');
+        this.load.image('door', 'assets/door.png');
+        this.load.image('key', 'assets/key.png');
         this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
 
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 65, frameHeight: 120 });

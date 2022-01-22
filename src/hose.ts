@@ -37,7 +37,8 @@ export class Hose extends Phaser.GameObjects.Container {
         super(scene, 0, 0);
 
         for (let i = 0; i < this.N_PARTS; i++) {
-            const part = scene.physics.add.sprite(x + i * 1, y - i * 1, "bomb");
+            const part = scene.physics.add.sprite(x + i * 1, y - i * 1, "debugball");
+
             if (!this.HOSE_DEBUG_VIEW) {
                 part.setVisible(false);
             }

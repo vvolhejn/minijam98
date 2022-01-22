@@ -13,13 +13,12 @@ export class Door {
     openDown: boolean = true;
 
     constructor(scene: Phaser.Scene, x: integer, y: integer) {
-        this.doorSprite = scene.physics.add.staticSprite(x, y, "fire");
-        // this.sprite.refreshBody();
+        this.doorSprite = scene.physics.add.staticSprite(x, y, "door");
         this.setOpenSides(true, true, true, true);
     }
 
     public addKey(scene: LevelScene, x, y) {
-        this.keySprite = scene.physics.add.staticSprite(x, y, "fire");
+        this.keySprite = scene.physics.add.staticSprite(x, y, "key");
         this.keySprite.setOrigin(0, 1);
         this.keySprite.refreshBody();
         this.keySprite.setTint(0xff00ff);
