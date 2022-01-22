@@ -31,8 +31,8 @@ export class LevelScene extends Phaser.Scene {
     public preload() {
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
-        this.load.image('tiles', 'assets/platformPack_tilesheet.png');
-        this.load.tilemapTiledJSON('testfloor', 'assets/testmap.json');
+        this.load.image('tiles', 'assets/TilesetMap.png');
+        this.load.tilemapTiledJSON('testfloor', 'assets/room1.json');
 
         this.load.image('fire', 'assets/star.png');
         this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
@@ -58,9 +58,9 @@ export class LevelScene extends Phaser.Scene {
         // this.platforms.create(50, 250, 'ground');
         // this.platforms.create(750, 220, 'ground');
         this.floor = this.make.tilemap({ key: 'testfloor' });
-        const tileset = this.floor.addTilesetImage('kenny', 'tiles');
-        const FLOOR_WIDTH = 24 * 32;
-        const FLOOR_HEIGHT = 32 * 8;
+        const tileset = this.floor.addTilesetImage('TilesetMapFinal2', 'tiles');
+        const FLOOR_WIDTH = 32 * 32;
+        const FLOOR_HEIGHT = 32 * 7;
         this.walls = this.floor.createStaticLayer('walls', tileset, (1200-FLOOR_WIDTH)/2, 742 - FLOOR_HEIGHT);
         this.walls.setCollisionByExclusion(-1, true);
         // Create player
