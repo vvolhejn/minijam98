@@ -166,10 +166,14 @@ export class Hose extends Phaser.GameObjects.Container {
                 this.endAttachedTo.position.y + this.endAttachedTo.height / 2,
             )
 
-            forces[0].scale(this.ATTACHED_PULL_COEF)
-            this.endAttachedTo.setAcceleration(
-                this.endAttachedTo.acceleration.x + forces[0].x,
-                this.endAttachedTo.acceleration.y + forces[0].y,
+            forces[0].scale(this.ATTACHED_PULL_COEF * delta / 1000)
+            // this.endAttachedTo.setAcceleration(
+            //     this.endAttachedTo.acceleration.x + forces[0].x,
+            //     this.endAttachedTo.acceleration.y + forces[0].y,
+            // )
+            this.endAttachedTo.setVelocity(
+                this.endAttachedTo.velocity.x + forces[0].x,
+                this.endAttachedTo.velocity.y + forces[0].y,
             )
         }
 
