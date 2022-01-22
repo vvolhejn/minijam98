@@ -16,7 +16,6 @@ const FLOOR_HEIGHT = 32 * 7;
 export class LevelScene extends Phaser.Scene {
     hosePlayer: HosePlayer;
     groundPlayer: GroundPlayer;
-    layer;
     walls: Array<Phaser.Tilemaps.TilemapLayer>;
     fires: Phaser.Physics.Arcade.StaticGroup;
     doors: Phaser.Physics.Arcade.StaticGroup;
@@ -83,12 +82,13 @@ export class LevelScene extends Phaser.Scene {
         this.loadRoom('room2', 2);
 
         // Create players.
-        this.hosePlayer = new HosePlayer(this, 400, 400, HOSE_PLAYER_SPRITE_KEY);
-        this.groundPlayer = new GroundPlayer(this, 200, 400, GROUND_PLAYER_SPRITE_KEY);
+        this.hosePlayer = new HosePlayer(this, 30, 700 - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
+        this.groundPlayer = new GroundPlayer(this, 60, 700 - 32 - 20, GROUND_PLAYER_SPRITE_KEY);
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
         this.hosePlayer.setPhysicsProperties();
         this.groundPlayer.setPhysicsProperties();
         this.hosePlayer.sprite.setDepth(1);
+        this.groundPlayer.sprite.setDepth(1);
 
 
         let door = new Door(this, 600, 400);
@@ -214,5 +214,7 @@ export class LevelScene extends Phaser.Scene {
             fire.body.setSize(30, 60, true);
             fire.updateScale();
         });
+
+
     }
 }
