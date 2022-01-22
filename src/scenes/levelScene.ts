@@ -40,9 +40,22 @@ export class LevelScene extends Phaser.Scene {
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', {frameWidth: 32, frameHeight: 48});
         this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', {frameWidth: 32, frameHeight: 48});
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
+
+        for (let i = 1; i <= 3; i++) {
+            this.load.spritesheet(`fire${i}`, `assets/fire${i}.png`, {frameWidth: 50, frameHeight: 60});
+        }        
     }
 
     public create() {
+        for (let i = 1; i <= 3; i++) {
+            this.anims.create({
+                key: `fire${i}anim`,
+                frames: this.anims.generateFrameNumbers(`fire${i}`, { start: 0, end: 60 }),
+                frameRate: 60,
+                repeat: -1
+            });
+        }
+
         //  A simple background for our game
         this.add.image(400, 300, 'sky').setScale(3);
 
@@ -58,10 +71,13 @@ export class LevelScene extends Phaser.Scene {
         // this.platforms.create(50, 250, 'ground');
         // this.platforms.create(750, 220, 'ground');
         this.floor = this.make.tilemap({ key: 'testfloor' });
+
         const tileset = this.floor.addTilesetImage('TilesetMapFinal2', 'tiles');
         const FLOOR_WIDTH = 32 * 32;
-        const FLOOR_HEIGHT = 32 * 7;
+        const FLOOR_HEIGHT = 32 * 8;
+
         this.walls = this.floor.createStaticLayer('walls', tileset, (1200-FLOOR_WIDTH)/2, 742 - FLOOR_HEIGHT);
+        this.floor.createStaticLayer('window', tileset, (1200-FLOOR_WIDTH)/2, 742 - FLOOR_HEIGHT);
         this.walls.setCollisionByExclusion(-1, true);
         // Create player
         this.hosePlayer = new HosePlayer(this, 100, 400, HOSE_PLAYER_SPRITE_KEY);
