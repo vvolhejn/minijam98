@@ -40,7 +40,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
 
         for (let i = 1; i <= 3; i++) {
-            this.load.spritesheet(`fire${i}`, `assets/fire${i}.png`, {frameWidth: 50, frameHeight: 60});
+            this.load.spritesheet(`fire${i}`, `assets/fire${i}.png`, { frameWidth: 50, frameHeight: 60 });
         }
     }
 
@@ -48,7 +48,7 @@ export class LevelScene extends Phaser.Scene {
         for (let i = 1; i <= 3; i++) {
             this.anims.create({
                 key: `fire${i}anim`,
-                frames: this.anims.generateFrameNumbers(`fire${i}`, {start: 0, end: 60}),
+                frames: this.anims.generateFrameNumbers(`fire${i}`, { start: 0, end: 60 }),
                 frameRate: 60,
                 repeat: -1
             });
@@ -68,7 +68,7 @@ export class LevelScene extends Phaser.Scene {
         // this.platforms.create(600, 400, 'ground');
         // this.platforms.create(50, 250, 'ground');
         // this.platforms.create(750, 220, 'ground');
-        this.floor = this.make.tilemap({key: 'testfloor'});
+        this.floor = this.make.tilemap({ key: 'testfloor' });
 
         const tileset = this.floor.addTilesetImage('TilesetMapFinal2', 'tiles');
         const FLOOR_WIDTH = 32 * 32;
@@ -108,6 +108,7 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.elVictimos, this.platforms);
 
         // Collide with floor map.
+        this.physics.add.collider(this.elVictimos, this.walls);
         this.physics.add.collider(this.hosePlayer.sprite, this.walls);
         this.physics.add.collider(this.groundPlayer.sprite, this.walls);
         this.physics.add.collider(this.hosePlayer.particles, this.walls);
@@ -157,8 +158,11 @@ export class LevelScene extends Phaser.Scene {
         }
     }
 
-    public pickUpElVictimo(groundPlayer, elVictimo) {
-        elVictimo.pickUpBy(groundPlayer);
+    public pickUpElVictimo(_groundPlayer, elVictimo) {
+        // Note: The first argument is unused because I couldn't get the GroundPlayer object out of it, just ArcadeSprite. 
+        if (this.groundPlayer.pickUp(elVictimo)) {
+            elVictimo.pickedUpBy(this.groundPlayer);
+        }
     }
 
     public hitBomb(player, bomb) {

@@ -1,5 +1,7 @@
+import { GroundPlayer } from "./groundPlayer";
+
 export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
-    savior: Phaser.Physics.Arcade.Sprite;
+    savior: GroundPlayer;
 
     constructor(scene: Phaser.Scene, x, y, textureKey: string) {
         super(scene, x, y, textureKey);
@@ -7,7 +9,7 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
         this.savior = null;
     }
 
-    public pickUpBy(groundPlayer) {
+    public pickedUpBy(groundPlayer) {
         this.savior = groundPlayer;
     }
 
@@ -15,8 +17,8 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
         if (this.savior == null) {
             return;
         }
-        this.x = this.savior.body.x;
-        this.y = this.savior.body.y;
+        this.x = this.savior.sprite.body.x;
+        this.y = this.savior.sprite.body.y;
         // So that the gravity doesn't drag him down.
         this.setVelocity(0, 0);
     }

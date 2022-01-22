@@ -49,6 +49,8 @@ export class HosePlayer extends Player {
 
         for (let i = 0; i < this.NUM_PARTICLES; i++) {
             this.particles.create(0, 0, 'flares', 0, false, false).setScale(0.1, 0.1);
+            // Otherwise they appear as invisible objects that players can collide with.
+            this.particles.getLast().body.enable = false;
         }
     }
 
