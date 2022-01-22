@@ -15,7 +15,6 @@ export class LevelScene extends Phaser.Scene {
     walls;
     fires: Phaser.Physics.Arcade.StaticGroup;
     elVictimos: Phaser.Physics.Arcade.Group;
-    bombs;
     platforms;
     score = 0;
     gameOver = false;
@@ -36,9 +35,8 @@ export class LevelScene extends Phaser.Scene {
 
         this.load.image('fire', 'assets/star.png');
         this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
-        this.load.image('bomb', 'assets/bomb.png');
-        this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
-        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
+        this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', {frameWidth: 32, frameHeight: 48});
+        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', {frameWidth: 32, frameHeight: 48});
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
 
         for (let i = 1; i <= 3; i++) {
@@ -98,8 +96,6 @@ export class LevelScene extends Phaser.Scene {
         ], EL_VICTIMO_SPRITE_KEY);
         this.elVictimos.runChildUpdate = true;
 
-        this.bombs = this.physics.add.group();
-
         //  The score
         this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px' });
 
@@ -110,7 +106,6 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.hosePlayer.particles, this.groundPlayer.sprite);
         this.physics.add.collider(this.fires, this.platforms);
         this.physics.add.collider(this.elVictimos, this.platforms);
-        this.physics.add.collider(this.bombs, this.platforms);
 
         // Collide with floor map.
         this.physics.add.collider(this.hosePlayer.sprite, this.walls);
@@ -121,8 +116,6 @@ export class LevelScene extends Phaser.Scene {
         // this.physics.add.overlap(this.hosePlayer.sprite, this.fires, this.collectStar, null, this);
         this.physics.add.overlap(this.groundPlayer.sprite, this.elVictimos, this.pickUpElVictimo, null, this);
         this.physics.add.collider(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
-
-        this.physics.add.collider(this.hosePlayer.sprite, this.bombs, this.hitBomb, null, this);
 
         this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
         this.hose.attachEndTo(this.hosePlayer.sprite.body);
@@ -161,14 +154,6 @@ export class LevelScene extends Phaser.Scene {
             this.fires.children.iterate(function (child: Fire) {
                 child.resetHp();
             });
-
-            const x = Phaser.Math.Between(0, 400);
-
-            let bomb = this.bombs.create(x, 16, 'bomb');
-            bomb.setBounce(1);
-            bomb.setCollideWorldBounds(true);
-            bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-            bomb.allowGravity = false;
         }
     }
 
