@@ -54,12 +54,3 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
         this.setVelocityY(this.THROW_VELOCITY_Y);
     }
 }
-
-export function createElVictimoGroup(scene: Phaser.Scene, coords: Array<Phaser.Math.Vector2>, textureKey: string): Phaser.Physics.Arcade.Group {
-    const group = scene.physics.add.group();
-    for (const vec of coords) {
-        group.add(new ElVictimo(scene, vec.x, vec.y, textureKey), true);
-    }
-
-    return group;
-}

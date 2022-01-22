@@ -2,7 +2,7 @@ import { GroundPlayer } from "../groundPlayer";
 import { Hose } from "../hose";
 import { hideParticle, HosePlayer } from "../hosePlayer";
 import { Fire } from "../fire";
-import { createElVictimoGroup, ElVictimo } from "../elVictimo";
+import { ElVictimo } from "../elVictimo";
 import { Player } from "../player";
 import { Door } from "../door";
 
@@ -89,6 +89,8 @@ export class LevelScene extends Phaser.Scene {
 
 
         this.fires = this.physics.add.staticGroup();
+        this.elVictimos = this.physics.add.group();
+        this.elVictimos.runChildUpdate = true;
         this.walls = [];
         this.loadRoom('room1', 0);
         this.loadRoom('room2', 1);
@@ -107,15 +109,6 @@ export class LevelScene extends Phaser.Scene {
         let door = new Door(this, 600, 400);
         this.doors = this.physics.add.staticGroup([door.doorSprite]);
         door.addKey(this, 800, 400);
-
-        // Victims.
-        this.elVictimos = createElVictimoGroup(this, [
-            new Phaser.Math.Vector2(200, 150),
-            new Phaser.Math.Vector2(300, 350),
-            new Phaser.Math.Vector2(400, 450),
-            new Phaser.Math.Vector2(500, 50),
-        ], EL_VICTIMO_SPRITE_KEY);
-        this.elVictimos.runChildUpdate = true;
 
         //  The score
         this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px' });
@@ -164,7 +157,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     public extinguishFire(particle, fire) {
-        hideParticle(particle, this)
+        hideParticle(particle, this);
         fire.lowerHp();
 
         //  Add and update the score
@@ -227,6 +220,14 @@ export class LevelScene extends Phaser.Scene {
             fire.updateScale();
         });
 
-
+        map.getObjectLayer('victims')?.objects.forEach((victimTile) => {
+            let victim = new ElVictimo(
+                this,
+                offsetX + victimTile.x - 8,
+                offsetY + victimTile.y - 48,
+                EL_VICTIMO_SPRITE_KEY,
+            );
+            this.elVictimos.add(victim, true);
+        }, this);
     }
 }
