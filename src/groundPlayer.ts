@@ -65,7 +65,7 @@ export class GroundPlayer extends Player {
             this.sprite.anims.play(this.TURN_ANIM_KEY);
         }
 
-        if (this.cursors.up.isDown && this.sprite.body.touching.down) {
+        if (this.cursors.up.isDown && this.sprite.body.blocked.down) {
             this.sprite.setAccelerationY(0);
             this.sprite.setVelocityY(this.JUMP_VELOCITY_Y);
         }
