@@ -14,24 +14,26 @@ export class HosePlayer extends Player {
         super(scene, x, y, spriteKey);
 
         // this.sprite.setFrictionX(100000)
+        this.sprite.setScale(0.5, 0.5);
+        this.sprite.refreshBody();
         this.sprite.setMaxVelocity(MAX_VELOCITY_X, 100000);
 
         scene.anims.create({
             key: 'left',
-            frames: scene.anims.generateFrameNumbers(spriteKey, { start: 0, end: 3 }),
+            frames: scene.anims.generateFrameNumbers(spriteKey, { start: 0, end: 5 }),
             frameRate: 10,
             repeat: -1
         });
 
         scene.anims.create({
             key: 'turn',
-            frames: [{ key: spriteKey, frame: 4 }],
+            frames: [{ key: spriteKey, frame: 6 }],
             frameRate: 20
         });
 
         scene.anims.create({
             key: 'right',
-            frames: scene.anims.generateFrameNumbers(spriteKey, { start: 5, end: 8 }),
+            frames: scene.anims.generateFrameNumbers(spriteKey, { start: 0, end: 5 }),
             frameRate: 10,
             repeat: -1
         });

@@ -40,7 +40,8 @@ export class LevelScene extends Phaser.Scene {
 
         this.load.image('fire', 'assets/star.png');
         this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
-        this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
+
+        this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 65, frameHeight: 120 });
         this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
 
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
@@ -85,11 +86,12 @@ export class LevelScene extends Phaser.Scene {
         this.walls.setCollisionByExclusion(-1, true);
         // Create player
         this.hosePlayer = new HosePlayer(this, 100, 400, HOSE_PLAYER_SPRITE_KEY);
-        this.groundPlayer = new GroundPlayer(this, 200, 400, HOSE_PLAYER_SPRITE_KEY);
+        this.groundPlayer = new GroundPlayer(this, 200, 400, GROUND_PLAYER_SPRITE_KEY);
 
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
-        this.hosePlayer.setPhysicsProperties()
-        this.groundPlayer.setPhysicsProperties()
+        this.hosePlayer.setPhysicsProperties();
+        this.groundPlayer.setPhysicsProperties();
+
 
         this.fires = this.physics.add.staticGroup();
         this.floor.getObjectLayer('fires')?.objects.forEach((fireTile) => {
