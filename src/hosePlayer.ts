@@ -50,7 +50,7 @@ export class HosePlayer extends Player {
         });
 
         for (let i = 0; i < this.NUM_PARTICLES; i++) {
-            this.particles.create(0, 0, 'flares', 0, false, false).setScale(0.1, 0.1);
+            this.particles.create(0, 0, 'droplet', 0, false, false).setScale(1, 1);
             // Otherwise they appear as invisible objects that players can collide with.
             this.particles.getLast().body.enable = false;
         }
@@ -92,12 +92,12 @@ export class HosePlayer extends Player {
                 if (p != null) {
                     p.collided = false;
                     p.body.enable = true;
+                    p.anims.play("droplet_alive", true);	
                     p.setVelocity(speed * Math.cos(angle), speed * Math.sin(angle));
                     p.setVisible(true);
                     p.setActive(true);
-                    this.scene.time.delayedCall(1000, this.hideParticle, [p], this);
+                    this.scene.time.delayedCall(1000, hideParticle, [p, this.scene], this);
                 }
-
             }
 
             this.sprite.setVelocity(
@@ -105,9 +105,11 @@ export class HosePlayer extends Player {
                 this.sprite.body.velocity.y - Math.sin(diff.angle()) * this.SPRINKLER_ACC);
         }
     }
+}
 
-    public hideParticle(particle) {
-        particle.body.enable = false;
-        this.particles.killAndHide(particle);
-    }
+export function hideParticle(particle, scene) {
+    particle.anims.play("droplet_death", true);	
+    particle.on('animationcomplete', () => {
+        scene.hosePlayer.particles.killAndHide(particle);
+    }, this);
 }

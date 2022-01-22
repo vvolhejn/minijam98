@@ -1,6 +1,6 @@
 import { GroundPlayer } from "../groundPlayer";
 import { Hose } from "../hose";
-import { HosePlayer } from "../hosePlayer";
+import { hideParticle, HosePlayer } from "../hosePlayer";
 import { Fire } from "../fire";
 import { createElVictimoGroup, ElVictimo } from "../elVictimo";
 import { Player } from "../player";
@@ -50,6 +50,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
 
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
+        this.load.spritesheet("droplet", 'assets/droplets.png', { frameWidth: 10, frameHeight: 10 });
 
         for (let i = 1; i <= 3; i++) {
             this.load.spritesheet(`fire${i}`, `assets/fire${i}.png`, { frameWidth: 50, frameHeight: 60 });
@@ -62,12 +63,24 @@ export class LevelScene extends Phaser.Scene {
                 key: `fire${i}anim`,
                 frames: this.anims.generateFrameNumbers(`fire${i}`, { start: 0, end: 60 }),
                 frameRate: 60,
-                repeat: -1
+                repeat: -1,
             });
         }
 
+        this.anims.create({
+            key: "droplet_death",
+            frames: this.anims.generateFrameNumbers("droplet", { start: 0, end: 5 }),
+            frameRate: 20,
+        });
+        this.anims.create({
+            key: "droplet_alive",
+            frames: this.anims.generateFrameNumbers("droplet", { start: 0, end: 1 }),
+            frameRate: 10,
+            repeat: -1,
+        });
+
         //  A simple background for our game
-        this.add.image(600, 350, 'sky').setScale(2);
+        this.add.image(600, 350, 'sky').setScale(2).setTint(0x666666);
 
         //  The platforms group contains the ground
         this.platforms = this.physics.add.staticGroup();
@@ -151,8 +164,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     public extinguishFire(particle, fire) {
-        particle.setActive(false);
-        particle.setVisible(false);
+        hideParticle(particle, this)
         fire.lowerHp();
 
         //  Add and update the score
