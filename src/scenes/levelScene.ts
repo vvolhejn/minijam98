@@ -4,6 +4,7 @@ import { HosePlayer } from "../hosePlayer";
 import { Fire } from "../fire";
 import { createElVictimoGroup, ElVictimo } from "../elVictimo";
 import { Player } from "../player";
+import { Door } from "../door";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
