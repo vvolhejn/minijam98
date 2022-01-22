@@ -1,6 +1,7 @@
 import { GroundPlayer } from "../groundPlayer";
 import { Hose } from "../hose";
 import { HosePlayer } from "../hosePlayer";
+import {Fire} from "../fire";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -8,7 +9,7 @@ const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
 export class LevelScene extends Phaser.Scene {
     hosePlayer: HosePlayer;
     groundPlayer: GroundPlayer;
-    stars;
+    fires;
     bombs;
     platforms;
     score = 0;
@@ -25,7 +26,7 @@ export class LevelScene extends Phaser.Scene {
     public preload() {
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
-        this.load.image('star', 'assets/star.png');
+        this.load.image('fire', 'assets/star.png');
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
         this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
@@ -53,17 +54,10 @@ export class LevelScene extends Phaser.Scene {
         this.groundPlayer = new GroundPlayer(this, 200, 400, HOSE_PLAYER_SPRITE_KEY);
 
         //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-        this.stars = this.physics.add.group({
-            key: 'star',
+        this.fires = this.physics.add.staticGroup({
+            key: 'fire',
             repeat: 11,
-            setXY: { x: 12, y: 0, stepX: 70 }
-        });
-
-        this.stars.children.iterate(function (child) {
-
-            //  Give each star a slightly different bounce
-            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-
+            setXY: {x: 12, y: 350, stepX: 70},
         });
 
         this.bombs = this.physics.add.group();
@@ -76,10 +70,12 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.groundPlayer.sprite, this.platforms);
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
         this.physics.add.collider(this.hosePlayer.particles, this.groundPlayer.sprite);
-        this.physics.add.collider(this.stars, this.platforms);
+        this.physics.add.collider(this.fires, this.platforms);
         this.physics.add.collider(this.bombs, this.platforms);
 
         //  Checks to see if the this.player overlaps with any of the this.stars, if he does call the collectStar function
+        // this.physics.add.overlap(this.hosePlayer.sprite, this.fires, this.collectStar, null, this);
+        this.physics.add.overlap(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
         this.physics.add.overlap(this.hosePlayer.sprite, this.stars, this.collectStar, null, this);
         this.physics.add.overlap(this.groundPlayer.sprite, this.stars, this.collectStar, null, this);
 
@@ -114,9 +110,9 @@ export class LevelScene extends Phaser.Scene {
         this.score += 10;
         this.scoreText.setText('Score: ' + this.score);
 
-        if (this.stars.countActive(true) === 0) {
-            //  A new batch of this.stars to collect
-            this.stars.children.iterate(function (child) {
+        if (this.fires.countActive(true) === 0) {
+            //  A new batch of fires to collect
+            this.fires.children.iterate(function (child) {
 
                 child.enableBody(true, child.x, 0, true, true);
 
@@ -141,6 +137,10 @@ export class LevelScene extends Phaser.Scene {
         player.anims.play('turn');
 
         this.gameOver = true;
+    }
+
+    public extinguishFire(particle, fire) {
+        fire.extinguish();
     }
 
 }
