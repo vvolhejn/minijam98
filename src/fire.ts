@@ -8,13 +8,13 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         this.baseHp = hp;
 
         // this.sprite = scene.physics.add.sprite(x, y, spriteKey);
-        let i = 1 + Math.floor((Math.random() * 3) % 3)
+        let i = 1 + Math.floor((Math.random() * 3) % 3);
         this.anims.play(`fire${i}anim`, true);
     }
 
     public updateScale() {
-        const scale = 2 * (this.hp / this.baseHp)
-        this.setScale(scale)
+        const scale = 2 * ((this.hp + this.baseHp) / (2 * this.baseHp));
+        this.setScale(scale);
 
         // TODO: center the scaling on the bottom edge
         // const offset = -(scale - 1) * this.height / 2
