@@ -13,8 +13,8 @@ export class LevelScene extends Phaser.Scene {
     groundPlayer: GroundPlayer;
     floor;
     walls;
-    fires : Phaser.Physics.Arcade.StaticGroup;
-    elVictimos : Phaser.Physics.Arcade.StaticGroup;
+    fires: Phaser.Physics.Arcade.StaticGroup;
+    elVictimos: Phaser.Physics.Arcade.StaticGroup;
     bombs;
     platforms;
     score = 0;
@@ -43,14 +43,14 @@ export class LevelScene extends Phaser.Scene {
 
         for (let i = 1; i <= 3; i++) {
             this.load.spritesheet(`fire${i}`, `assets/fire${i}.png`, {frameWidth: 50, frameHeight: 60});
-        }        
+        }
     }
 
     public create() {
         for (let i = 1; i <= 3; i++) {
             this.anims.create({
                 key: `fire${i}anim`,
-                frames: this.anims.generateFrameNumbers(`fire${i}`, { start: 0, end: 60 }),
+                frames: this.anims.generateFrameNumbers(`fire${i}`, {start: 0, end: 60}),
                 frameRate: 60,
                 repeat: -1
             });
@@ -70,14 +70,14 @@ export class LevelScene extends Phaser.Scene {
         // this.platforms.create(600, 400, 'ground');
         // this.platforms.create(50, 250, 'ground');
         // this.platforms.create(750, 220, 'ground');
-        this.floor = this.make.tilemap({ key: 'testfloor' });
+        this.floor = this.make.tilemap({key: 'testfloor'});
 
         const tileset = this.floor.addTilesetImage('TilesetMapFinal2', 'tiles');
         const FLOOR_WIDTH = 32 * 32;
         const FLOOR_HEIGHT = 32 * 8;
 
-        this.walls = this.floor.createStaticLayer('walls', tileset, (1200-FLOOR_WIDTH)/2, 716 - FLOOR_HEIGHT);
-        this.floor.createStaticLayer('window', tileset, (1200-FLOOR_WIDTH)/2, 716 - FLOOR_HEIGHT);
+        this.walls = this.floor.createStaticLayer('walls', tileset, (1200 - FLOOR_WIDTH) / 2, 700 - FLOOR_HEIGHT);
+        this.floor.createStaticLayer('window', tileset, (1200 - FLOOR_WIDTH) / 2, 700 - FLOOR_HEIGHT);
         this.walls.setCollisionByExclusion(-1, true);
         // Create player
         this.hosePlayer = new HosePlayer(this, 100, 400, HOSE_PLAYER_SPRITE_KEY);
@@ -154,7 +154,7 @@ export class LevelScene extends Phaser.Scene {
 
         if (this.fires.countActive(true) === 0) {
             //  A new batch of fires to collect
-            this.fires.children.iterate(function (child : Fire) {
+            this.fires.children.iterate(function (child: Fire) {
                 child.resetHp();
             });
 
