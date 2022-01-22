@@ -96,7 +96,7 @@ export class LevelScene extends Phaser.Scene {
 
         this.fires = this.physics.add.staticGroup();
         this.floor.getObjectLayer('fires')?.objects.forEach((fireTile) => {
-            let fire = new Fire(this, offsetX + fireTile.x + 15, offsetY + fireTile.y - 30, 'fire');
+            let fire = new Fire(this, offsetX + fireTile.x + 15, offsetY + fireTile.y - 40, 'fire');
             // fire.setDisplaySize(30, 60);
             // fire.setOrigin(0.5, 0.5.);
             this.fires.add(fire, true);

@@ -1,6 +1,7 @@
 export class Fire extends Phaser.Physics.Arcade.Sprite {
     hp: number;
     baseHp: number;
+    fireNum: number;
     scene;
 
     constructor(scene: Phaser.Scene, x, y, textureKey, hp = 50) {
@@ -9,9 +10,10 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         this.baseHp = hp;
 
         // this.sprite = scene.physics.add.sprite(x, y, spriteKey);
-        let i = 1 + Math.floor((Math.random() * 3) % 3);
-        this.anims.play(`fire${i}anim`, true);
-
+        this.fireNum = 1 + Math.floor((Math.random() * 3) % 3);
+        if (this.fireNum == 2)
+            this.y = this.y - 10;
+        this.anims.play(`fire${this.fireNum}anim`, true);
         this.scene = scene;
     }
 
@@ -22,7 +24,11 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         // TODO: center the scaling on the bottom edge
         // const offset = -(scale - 1) * this.height / 2
         // this.setOffset(0, offset)
-        this.body.setOffset(10, 10);  // does not work
+        if (this.fireNum == 2)
+            this.body.setOffset(10, 20);  // does not work
+        else
+            this.body.setOffset(10, 10);  // does not work
+
     }
 
     public lowerHp() {
