@@ -31,7 +31,7 @@ export function createFireGroup(scene : Phaser.Scene, coords: Array<Phaser.Math.
     for (let vec of coords) {
         console.log(vec);
         group.add(new Fire(scene, vec.x, vec.y, 'fire'), true);
-    }
+    }   
 
     return group;
 }
