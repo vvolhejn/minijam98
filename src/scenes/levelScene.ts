@@ -64,7 +64,7 @@ export class LevelScene extends Phaser.Scene {
 
         //  Here we create the ground.
         //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-        this.platforms.create(600, 790, 'ground').setScale(3).refreshBody();
+        this.platforms.create(600, 716, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
 
         //  Now let's create some ledges
         // this.platforms.create(600, 400, 'ground');
@@ -76,8 +76,8 @@ export class LevelScene extends Phaser.Scene {
         const FLOOR_WIDTH = 32 * 32;
         const FLOOR_HEIGHT = 32 * 8;
 
-        this.walls = this.floor.createStaticLayer('walls', tileset, (1200-FLOOR_WIDTH)/2, 742 - FLOOR_HEIGHT);
-        this.floor.createStaticLayer('window', tileset, (1200-FLOOR_WIDTH)/2, 742 - FLOOR_HEIGHT);
+        this.walls = this.floor.createStaticLayer('walls', tileset, (1200-FLOOR_WIDTH)/2, 716 - FLOOR_HEIGHT);
+        this.floor.createStaticLayer('window', tileset, (1200-FLOOR_WIDTH)/2, 716 - FLOOR_HEIGHT);
         this.walls.setCollisionByExclusion(-1, true);
         // Create player
         this.hosePlayer = new HosePlayer(this, 100, 400, HOSE_PLAYER_SPRITE_KEY);
