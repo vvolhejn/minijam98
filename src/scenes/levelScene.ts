@@ -56,7 +56,7 @@ export class LevelScene extends Phaser.Scene {
                 repeat: -1
             });
         }
-
+    
         //  A simple background for our game
         this.add.image(400, 300, 'sky').setScale(3);
 
@@ -166,7 +166,7 @@ export class LevelScene extends Phaser.Scene {
 
     public pickUpElVictimo(_groundPlayer, elVictimo) {
         // Note: The first argument is unused because I couldn't get the GroundPlayer object out of it, just ArcadeSprite. 
-        if (this.groundPlayer.pickUp(elVictimo)) {
+        if (this.groundPlayer.pickUp(this.time.now, elVictimo)) {
             elVictimo.pickedUpBy(this.groundPlayer);
         }
     }

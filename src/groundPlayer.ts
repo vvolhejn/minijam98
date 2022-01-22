@@ -1,18 +1,22 @@
-import { ElVictimo } from './elVictimo';
+import { ElVictimo, VictimDirection } from './elVictimo';
 import { Player, MAX_VELOCITY_X } from './player'
 import { zeroAccelerationIfBlocked } from "./utils";
 
 export class GroundPlayer extends Player {
     cursors: any; // see how it's assigned in constructor
     saving: ElVictimo;
+    lastSavingTimestamp_MS: number;
+    lastDirection: VictimDirection;
+
+    SAVING_COOLDOWN_MS = 200;
 
     ACCELERATION_X = 3000;
     JUMP_VELOCITY_Y = -600;
 
-    LEFT_ANIM_KEY : string;
-    RIGHT_ANIM_KEY : string;
-    DOWN_ANIM_KEY : string;
-    UP_ANIM_KEY : string;
+    LEFT_ANIM_KEY: string;
+    RIGHT_ANIM_KEY: string;
+    DOWN_ANIM_KEY: string;
+    UP_ANIM_KEY: string;
 
     constructor(scene: Phaser.Scene, x: integer, y: integer, spriteKey: string) {
         super(scene, x, y, spriteKey);
@@ -45,7 +49,8 @@ export class GroundPlayer extends Player {
                 up: Phaser.Input.Keyboard.KeyCodes.W,
                 down: Phaser.Input.Keyboard.KeyCodes.S,
                 left: Phaser.Input.Keyboard.KeyCodes.A,
-                right: Phaser.Input.Keyboard.KeyCodes.D
+                right: Phaser.Input.Keyboard.KeyCodes.D,
+                throw: Phaser.Input.Keyboard.KeyCodes.SPACE
             });
     }
 
@@ -71,11 +76,23 @@ export class GroundPlayer extends Player {
             this.sprite.setVelocityY(this.JUMP_VELOCITY_Y);
         }
 
+        if (this.cursors.throw.isDown && this.saving != null) {
+            this.saving.getThrown(this.lastDirection);
+            this.saving = null;
+            this.lastSavingTimestamp_MS = time;
+        }
+
+        if (this.sprite.body.velocity.x < 0) {
+            this.lastDirection = VictimDirection.LEFT;
+        } else if (this.sprite.body.velocity.x > 0) {
+            this.lastDirection = VictimDirection.RIGHT;
+        }
+
         zeroAccelerationIfBlocked(this.sprite.body);
     }
 
-    public pickUp(elVictimo) : boolean {
-        if (this.saving != null) {
+    public pickUp(time_ms: number, elVictimo): boolean {
+        if (this.saving != null || time_ms < this.lastSavingTimestamp_MS + this.SAVING_COOLDOWN_MS) {
             return false;
         }
         this.saving = elVictimo;
