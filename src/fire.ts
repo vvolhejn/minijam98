@@ -1,6 +1,7 @@
 export class Fire extends Phaser.Physics.Arcade.Sprite {
     hp: number;
     baseHp: number;
+    scene;
 
     constructor(scene: Phaser.Scene, x, y, textureKey, hp = 50) {
         super(scene, x, y, textureKey);
@@ -10,6 +11,8 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         // this.sprite = scene.physics.add.sprite(x, y, spriteKey);
         let i = 1 + Math.floor((Math.random() * 3) % 3);
         this.anims.play(`fire${i}anim`, true);
+
+        this.scene = scene;
     }
 
     public updateScale() {
@@ -25,10 +28,19 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
     public lowerHp() {
         this.hp--;
 
-        if (this.hp <= 0) {
+        if (this.hp <= 0 && this.active) {
             this.setActive(false);
-            this.setVisible(false);
+            // this.setVisible(false);
             this.body.enable = false;
+
+            this.scene.tweens.add({
+                targets: this,
+                alpha: 0,
+                scale: 0.5,
+                duration: 200,
+                ease: 'Power2'
+                // ease: 'Linear'
+            });
         }
         this.updateScale();
     }
@@ -39,6 +51,7 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         this.setVisible(true);
         this.body.enable = true;
         this.updateScale();
+        this.setAlpha(1);
     }
 }
 
