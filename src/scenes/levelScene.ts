@@ -91,6 +91,7 @@ export class LevelScene extends Phaser.Scene {
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
         this.hosePlayer.setPhysicsProperties();
         this.groundPlayer.setPhysicsProperties();
+        this.hosePlayer.sprite.setDepth(1);
 
 
         this.fires = this.physics.add.staticGroup();
@@ -121,7 +122,6 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.players, this.platforms);
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
         this.physics.add.collider(this.hosePlayer.particles, this.groundPlayer.sprite);
-        this.physics.add.collider(this.fires, this.platforms);
         this.physics.add.collider(this.elVictimos, this.platforms);
 
         // Collide with floor map.
@@ -137,6 +137,9 @@ export class LevelScene extends Phaser.Scene {
 
         this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
         this.hose.attachEndTo(this.hosePlayer.sprite.body);
+        for (let p of this.hose.parts) {
+            p.setDepth(0).refreshBody();
+        }
 
         this.physics.disableUpdate();
     }
