@@ -69,7 +69,7 @@ export class HosePlayer extends Player {
             this.sprite.anims.play('turn');
         }
 
-        if (this.cursors.up.isDown && this.sprite.body.touching.down) {
+        if (this.cursors.up.isDown && this.sprite.body.blocked.down) {
             this.sprite.setAccelerationY(0);
             this.sprite.setVelocityY(this.JUMP_VELOCITY_Y);
         }

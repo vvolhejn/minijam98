@@ -1,15 +1,20 @@
 import {GroundPlayer} from "../groundPlayer";
 import {Hose} from "../hose";
 import {HosePlayer} from "../hosePlayer";
-import {createFireGroup} from "../fire";
+import {Fire, createFireGroup} from "../fire";
+import {createElVictimoGroup} from "../elVictimo";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
+const EL_VICTIMO_SPRITE_KEY = 'elVictimo';
 
 export class LevelScene extends Phaser.Scene {
     hosePlayer: HosePlayer;
     groundPlayer: GroundPlayer;
-    fires;
+    floor;
+    walls;
+    fires : Phaser.Physics.Arcade.StaticGroup;
+    elVictimos : Phaser.Physics.Arcade.StaticGroup;
     bombs;
     platforms;
     score = 0;
@@ -26,14 +31,31 @@ export class LevelScene extends Phaser.Scene {
     public preload() {
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
+        this.load.image('tiles', 'assets/TilesetMap.png');
+        this.load.tilemapTiledJSON('testfloor', 'assets/room1.json');
+
         this.load.image('fire', 'assets/star.png');
+        this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', {frameWidth: 32, frameHeight: 48});
         this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', {frameWidth: 32, frameHeight: 48});
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
+
+        for (let i = 1; i <= 3; i++) {
+            this.load.spritesheet(`fire${i}`, `assets/fire${i}.png`, {frameWidth: 50, frameHeight: 60});
+        }        
     }
 
     public create() {
+        for (let i = 1; i <= 3; i++) {
+            this.anims.create({
+                key: `fire${i}anim`,
+                frames: this.anims.generateFrameNumbers(`fire${i}`, { start: 0, end: 60 }),
+                frameRate: 60,
+                repeat: -1
+            });
+        }
+
         //  A simple background for our game
         this.add.image(400, 300, 'sky').setScale(3);
 
@@ -42,13 +64,21 @@ export class LevelScene extends Phaser.Scene {
 
         //  Here we create the ground.
         //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-        this.platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+        this.platforms.create(600, 716, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
 
         //  Now let's create some ledges
-        this.platforms.create(600, 400, 'ground');
-        this.platforms.create(50, 250, 'ground');
-        this.platforms.create(750, 220, 'ground');
+        // this.platforms.create(600, 400, 'ground');
+        // this.platforms.create(50, 250, 'ground');
+        // this.platforms.create(750, 220, 'ground');
+        this.floor = this.make.tilemap({ key: 'testfloor' });
 
+        const tileset = this.floor.addTilesetImage('TilesetMapFinal2', 'tiles');
+        const FLOOR_WIDTH = 32 * 32;
+        const FLOOR_HEIGHT = 32 * 8;
+
+        this.walls = this.floor.createStaticLayer('walls', tileset, (1200-FLOOR_WIDTH)/2, 716 - FLOOR_HEIGHT);
+        this.floor.createStaticLayer('window', tileset, (1200-FLOOR_WIDTH)/2, 716 - FLOOR_HEIGHT);
+        this.walls.setCollisionByExclusion(-1, true);
         // Create player
         this.hosePlayer = new HosePlayer(this, 100, 400, HOSE_PLAYER_SPRITE_KEY);
         this.groundPlayer = new GroundPlayer(this, 200, 400, HOSE_PLAYER_SPRITE_KEY);
@@ -59,6 +89,13 @@ export class LevelScene extends Phaser.Scene {
             new Phaser.Math.Vector2(400, 250),
             new Phaser.Math.Vector2(500, 150),
         ]);
+
+        this.elVictimos = createElVictimoGroup(this, [
+            new Phaser.Math.Vector2(200, 150),
+            new Phaser.Math.Vector2(300, 350),
+            new Phaser.Math.Vector2(400, 450),
+            new Phaser.Math.Vector2(500, 50),
+        ], EL_VICTIMO_SPRITE_KEY);
 
         this.bombs = this.physics.add.group();
 
@@ -72,6 +109,11 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.hosePlayer.particles, this.groundPlayer.sprite);
         this.physics.add.collider(this.fires, this.platforms);
         this.physics.add.collider(this.bombs, this.platforms);
+
+        // Collide with floor map.
+        this.physics.add.collider(this.hosePlayer.sprite, this.walls);
+        this.physics.add.collider(this.groundPlayer.sprite, this.walls);
+        this.physics.add.collider(this.hosePlayer.particles, this.walls);
 
         //  Checks to see if the this.player overlaps with any of the this.stars, if he does call the collectStar function
         // this.physics.add.overlap(this.hosePlayer.sprite, this.fires, this.collectStar, null, this);
@@ -112,7 +154,7 @@ export class LevelScene extends Phaser.Scene {
 
         if (this.fires.countActive(true) === 0) {
             //  A new batch of fires to collect
-            this.fires.children.iterate(function (child) {
+            this.fires.children.iterate(function (child : Fire) {
                 child.resetHp();
             });
 
