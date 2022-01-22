@@ -90,6 +90,7 @@ export class HosePlayer extends Player {
                 let angle = diff.angle() + Phaser.Math.FloatBetween(-0.1, 0.1);
                 let p = this.particles.getFirstDead(false, this.sprite.x, this.sprite.y);
                 if (p != null) {
+                    p.collided = false;
                     p.body.enable = true;
                     p.setVelocity(speed * Math.cos(angle), speed * Math.sin(angle));
                     p.setVisible(true);

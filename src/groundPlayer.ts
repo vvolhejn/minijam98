@@ -6,9 +6,11 @@ export class GroundPlayer extends Player {
     cursors: any; // see how it's assigned in constructor
     saving: ElVictimo;
     lastSavingTimestamp_MS: number;
-    lastDirection: VictimDirection;
+    lastDirection: VictimDirection = VictimDirection.LEFT; // Just default.
 
     SAVING_COOLDOWN_MS = 200;
+    WATER_STRENGTH_FACTOR = 10;
+    PLAYER_STRENGTH_ON_WATER_FACTOR = 7;
 
     ACCELERATION_X = 3000;
     JUMP_VELOCITY_Y = -600;
@@ -59,10 +61,12 @@ export class GroundPlayer extends Player {
 
         if (this.cursors.left.isDown) {
             this.sprite.setAccelerationX(-this.ACCELERATION_X);
+            this.lastDirection = VictimDirection.LEFT;
 
             this.sprite.anims.play(this.LEFT_ANIM_KEY, true);
         } else if (this.cursors.right.isDown) {
             this.sprite.setAccelerationX(this.ACCELERATION_X);
+            this.lastDirection = VictimDirection.RIGHT;
 
             this.sprite.anims.play(this.RIGHT_ANIM_KEY, true);
         } else {
@@ -80,12 +84,6 @@ export class GroundPlayer extends Player {
             this.saving.getThrown(this.lastDirection);
             this.saving = null;
             this.lastSavingTimestamp_MS = time;
-        }
-
-        if (this.sprite.body.velocity.x < 0) {
-            this.lastDirection = VictimDirection.LEFT;
-        } else if (this.sprite.body.velocity.x > 0) {
-            this.lastDirection = VictimDirection.RIGHT;
         }
 
         zeroAccelerationIfBlocked(this.sprite.body);

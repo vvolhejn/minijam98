@@ -120,7 +120,7 @@ export class LevelScene extends Phaser.Scene {
         // Collisions.
         this.physics.add.collider(this.players, this.platforms);
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
-        this.physics.add.collider(this.hosePlayer.particles, this.groundPlayer.sprite);
+        this.physics.add.overlap(this.hosePlayer.particles, this.groundPlayer.sprite, this.onGrandWaterCollision, null, this);
         this.physics.add.collider(this.elVictimos, this.platforms);
 
         // Collide with floor map.
@@ -176,18 +176,31 @@ export class LevelScene extends Phaser.Scene {
         }
     }
 
-    public pickUpElVictimo(_groundPlayer, elVictimo) {
+    private pickUpElVictimo(_groundPlayer, elVictimo) {
         // Note: The first argument is unused because I couldn't get the GroundPlayer object out of it, just ArcadeSprite. 
         if (this.groundPlayer.pickUp(this.time.now, elVictimo)) {
             elVictimo.pickedUpBy(this.groundPlayer);
         }
     }
 
-    public onPlayerFireCollision(
+    private onPlayerFireCollision(
         playerSprite: Phaser.Physics.Arcade.Sprite,
         fire: Fire,
     ) {
         let player: Player = (playerSprite === this.hosePlayer.sprite) ? this.hosePlayer : this.groundPlayer;
         player.onFireCollision(fire, this);
     }
+
+    private onGrandWaterCollision(groundPlayerSprite, water) {
+        // water.collided is a semihack
+        if (water.collided) return;
+        groundPlayerSprite.body.setVelocity(
+            water.body.velocity.x / this.groundPlayer.WATER_STRENGTH_FACTOR,
+            water.body.velocity.y / this.groundPlayer.WATER_STRENGTH_FACTOR);
+
+        const f = this.groundPlayer.PLAYER_STRENGTH_ON_WATER_FACTOR;
+        water.body.setVelocity(-water.body.velocity.x / Phaser.Math.Between(f - 2, f + 2), -water.body.velocity.y / Phaser.Math.Between(f - 2, f + 2));
+        water.collided = true;
+    }
+
 }
