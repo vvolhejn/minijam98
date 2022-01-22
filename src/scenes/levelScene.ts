@@ -72,7 +72,7 @@ export class LevelScene extends Phaser.Scene {
 
         this.floor = this.make.tilemap({ key: 'testfloor' });
 
-        const tileset = this.floor.addTilesetImage('TilesetMapFinal2', 'tiles');
+        const tileset = this.floor.addTilesetImage('TilesetMap', 'tiles');
         const FLOOR_WIDTH = 32 * 32;
         const FLOOR_HEIGHT = 32 * 8;
 
