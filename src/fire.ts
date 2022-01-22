@@ -8,18 +8,18 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         this.baseHp = hp;
 
         // this.sprite = scene.physics.add.sprite(x, y, spriteKey);
-        let i = 1 + Math.floor((Math.random() * 3) % 3)
+        let i = 1 + Math.floor((Math.random() * 3) % 3);
         this.anims.play(`fire${i}anim`, true);
     }
 
     public updateScale() {
-        const scale = 2 * (this.hp / this.baseHp)
-        this.setScale(scale)
+        const scale = 2 * (this.hp / this.baseHp);
+        this.setScale(scale);
 
         // TODO: center the scaling on the bottom edge
         // const offset = -(scale - 1) * this.height / 2
         // this.setOffset(0, offset)
-        this.body.setOffset(10, 10)  // does not work
+        this.body.setOffset(10, 10);  // does not work
     }
 
     public lowerHp() {
@@ -30,7 +30,7 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
             this.setVisible(false);
             this.body.enable = false;
         }
-        this.updateScale()
+        this.updateScale();
     }
 
     public resetHp() {
@@ -38,20 +38,20 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         this.setActive(true);
         this.setVisible(true);
         this.body.enable = true;
-        this.updateScale()
+        this.updateScale();
     }
 }
 
-export function createFireGroup(scene : Phaser.Scene, coords: Array<Phaser.Math.Vector2>): Phaser.Physics.Arcade.StaticGroup {
+export function createFireGroup(scene: Phaser.Scene, coords: Array<Phaser.Math.Vector2>): Phaser.Physics.Arcade.StaticGroup {
     let group = scene.physics.add.staticGroup();
     for (let vec of coords) {
-        let fire = new Fire(scene, vec.x, vec.y, 'fire')
+        let fire = new Fire(scene, vec.x, vec.y, 'fire');
 
         group.add(fire, true);
 
         // needs to be done after the fire is in the group
         fire.body.setSize(30, 60, true);
-        fire.updateScale()
+        fire.updateScale();
     }
 
     return group;

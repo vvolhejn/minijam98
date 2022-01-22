@@ -17,7 +17,6 @@ export class GroundPlayer extends Player {
 
         this.sprite.setMaxVelocity(MAX_VELOCITY_X, 100000);
 
-
         scene.anims.create({
             key: this.LEFT_ANIM_KEY,
             frames: scene.anims.generateFrameNumbers(spriteKey, { start: 0, end: 3 }),
