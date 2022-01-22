@@ -90,15 +90,12 @@ export class LevelScene extends Phaser.Scene {
             return;
         }
 
-        // Increasing iterations could lead to a more stable hose, but more testing needed        
-        const iterations = 1
-        for (let i = 0; i < iterations; i++) {
-            this.physics.world.update(time, delta / iterations)
-            this.hose.update(time, delta / iterations);
-        }
-
         this.hosePlayer.update(time, delta);
         this.groundPlayer.update(time, delta);
+
+        this.hose.update(time, delta);
+
+        this.physics.world.update(time, delta)
     }
 
     public extinguishFire(particle, fire) {

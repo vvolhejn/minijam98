@@ -6,9 +6,9 @@ export class HosePlayer extends Player {
     particles: Phaser.Physics.Arcade.Group;
 
     NUM_PARTICLES = 200;
-    ACCELERATION_X = 3000;
+    ACCELERATION_X = 500;
     SPRINKLER_ACC = 25;
-    JUMP_VELOCITY_Y = -600;
+    JUMP_VELOCITY_Y = -800;
 
     constructor(scene: Phaser.Scene, x : integer, y: integer, spriteKey: string) {
         super(scene, x, y, spriteKey);

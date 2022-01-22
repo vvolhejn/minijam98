@@ -6,13 +6,22 @@ export class Hose extends Phaser.GameObjects.Container {
 
     parts: Array<Phaser.Physics.Arcade.Sprite> = new Array();
 
-    DISTANCE_BETWEEN_PARTS: number = 1  // what *should* the distance be?
+    DISTANCE_BETWEEN_PARTS: number = 10  // what *should* the distance be?
     SPRING_COEF: number = 100  // how strong the force is that is proportional to the distance
     DAMPING_COEF: number = 200  // how quickly velocity decays to 0
-    ATTACHED_PULL_COEF = 0.001 // how strongly the attached object is pulled
+    ATTACHED_PULL_COEF = 0.003 // how strongly the attached object is pulled
     N_PHYSICS_ITERATIONS = 10 // more = less bouncy, but more CPU
-    N_PARTS = 50  // how many parts of the rope
+    N_PARTS = 25  // how many parts of the rope
     MAX_ACCELERATION = 1000000000
+
+    // temporary fix
+    HOSE_START_POINT = new Phaser.Math.Vector2(100, 500)
+
+    HOSE_DEBUG_VIEW = false  // Disable the line, switch to particles
+    HOSE_COLOR_1 = 0x333333
+    HOSE_COLOR_2 = 0x666666
+    HOSE_THICKNESS = 15
+
 
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
     // so values between 0 and 1 are reasonable
@@ -21,26 +30,27 @@ export class Hose extends Phaser.GameObjects.Container {
 
     endAttachedTo: Phaser.Physics.Arcade.Body = null
     startPoint: Phaser.Math.Vector2
+    curve: Phaser.Curves.Spline
+    graphics;
 
     constructor(scene: LevelScene, x, y) {
         super(scene, 0, 0);
 
         for (let i = 0; i < this.N_PARTS; i++) {
             const part = scene.physics.add.sprite(x + i * 1, y - i * 1, "bomb");
+            if (!this.HOSE_DEBUG_VIEW) {
+                part.setVisible(false)
+            }
             this.parts.push(part);
             part.setCollideWorldBounds(true);
             scene.physics.add.collider(part, scene.platforms)
         }
 
-        // this.parts[0].setPosition
+        // this.startPoint = this.parts[this.parts.length - 1].body.position.clone()
+        this.startPoint = this.HOSE_START_POINT.clone()
 
-        // scene.input.on('pointermove', function (pointer) {
-        //     this.parts[0].setPosition(pointer.x, pointer.y);
-        //     this.parts[0].setVelocity(0, 0);
-        //     this.parts[0].setAccelerationY(-300);
-        // }, this);
-
-        this.startPoint = this.parts[this.parts.length - 1].body.position
+        this.curve = new Phaser.Curves.Spline(this.parts.map(p => p.getCenter()))
+        this.graphics = scene.add.graphics();
     }
 
     attachEndTo(body: Phaser.Physics.Arcade.Body) {
@@ -74,6 +84,27 @@ export class Hose extends Phaser.GameObjects.Container {
         }
 
         return forces
+    }
+
+    draw() {
+        for (const part of this.parts) {
+            part.setVisible(this.HOSE_DEBUG_VIEW);
+        }
+
+        if (!this.HOSE_DEBUG_VIEW) {
+            this.curve = new Phaser.Curves.Spline(this.parts.map(p => p.getCenter()))
+            this.graphics.clear();
+
+            this.graphics.lineStyle(2, 0xffffff, 1);
+            this.graphics.lineGradientStyle(
+                this.HOSE_THICKNESS,
+                this.HOSE_COLOR_1, this.HOSE_COLOR_1,
+                this.HOSE_COLOR_2, this.HOSE_COLOR_2,
+                1
+            );
+
+            this.curve.draw(this.graphics, 64);
+        }
     }
 
     update(_, delta) {
@@ -130,7 +161,10 @@ export class Hose extends Phaser.GameObjects.Container {
         }
 
         if (this.endAttachedTo !== null) {
-            this.parts[0].setPosition(this.endAttachedTo.position.x, this.endAttachedTo.position.y)
+            this.parts[0].setPosition(
+                this.endAttachedTo.position.x + this.endAttachedTo.width / 2,
+                this.endAttachedTo.position.y + this.endAttachedTo.height / 2,
+            )
 
             forces[0].scale(this.ATTACHED_PULL_COEF)
             this.endAttachedTo.setAcceleration(
@@ -138,5 +172,15 @@ export class Hose extends Phaser.GameObjects.Container {
                 this.endAttachedTo.acceleration.y + forces[0].y,
             )
         }
+
+        if (this.startPoint !== null) {
+            this.parts[this.parts.length - 1].setPosition(
+                this.startPoint.x,
+                this.startPoint.y,
+            )
+            this.parts[this.parts.length - 1].setVelocity(0, 0)
+        }
+
+        this.draw()
     }
 }
