@@ -230,16 +230,15 @@ export class LevelScene extends Phaser.Scene {
 
 
         // Doors.
+        // TODO: Fix the keys.
         let keys = map.getObjectLayer('doors')?.objects;
         map.getObjectLayer('doors')?.objects.forEach((doorTile) => {
             let door = new Door(this, offsetX + doorTile.x, offsetY + doorTile.y);
             door.doorSprite.setOrigin(0, 1);
             door.doorSprite.setDisplaySize(doorTile.width, doorTile.height);
             door.doorSprite.refreshBody();
-            console.log(doorTile);
-            // door.doorSprite.body.setOffset(doorTile.width/2, 0);
             this.doors.add(door.doorSprite, true);
-            door.addKey(this, keys[0].x, keys[1].y);
+            door.addKey(this, offsetX + keys[1].x, offsetY + keys[1].y);
         });
 
     }
