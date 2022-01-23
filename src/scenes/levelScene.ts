@@ -138,7 +138,6 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.players, this.platforms);
         this.physics.add.collider(this.players, this.doors);
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
-        this.physics.add.overlap(this.hosePlayer.particles, this.groundPlayer.sprite, this.onGrandWaterCollision, null, this);
         this.physics.add.collider(this.elVictimos, this.platforms);
         this.physics.add.overlap(this.elVictimos, this.thanksWalls, this.onVictimInThanksWall, null, this);
 
@@ -209,18 +208,6 @@ export class LevelScene extends Phaser.Scene {
     ) {
         let player: Player = (playerSprite === this.hosePlayer.sprite) ? this.hosePlayer : this.groundPlayer;
         player.onFireCollision(fire, this);
-    }
-
-    private onGrandWaterCollision(groundPlayerSprite, water) {
-        // water.collided is a semihack
-        if (water.collided) return;
-        groundPlayerSprite.body.setVelocity(
-            water.body.velocity.x / this.groundPlayer.WATER_STRENGTH_FACTOR,
-            water.body.velocity.y / this.groundPlayer.WATER_STRENGTH_FACTOR);
-
-        const f = this.groundPlayer.PLAYER_STRENGTH_ON_WATER_FACTOR;
-        water.body.setVelocity(-water.body.velocity.x / Phaser.Math.Between(f - 2, f + 2), -water.body.velocity.y / Phaser.Math.Between(f - 2, f + 2));
-        water.collided = true;
     }
 
     private onVictimInThanksWall(victim: ElVictimo, thanksWall: ThanksWall) {

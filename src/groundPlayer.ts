@@ -9,8 +9,6 @@ export class GroundPlayer extends Player {
     lastDirection: VictimDirection = VictimDirection.LEFT; // Just default.
 
     SAVING_COOLDOWN_MS = 500;
-    WATER_STRENGTH_FACTOR = 10;
-    PLAYER_STRENGTH_ON_WATER_FACTOR = 7;
 
     ACCELERATION_X = 3000;
     JUMP_VELOCITY_Y = -600;
