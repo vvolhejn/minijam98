@@ -1,4 +1,4 @@
-import { Scene } from "phaser";
+import { HosePlayer } from "./hosePlayer";
 import { LevelScene } from "./scenes/levelScene";
 import { clampIfBlocked, zeroAccelerationIfBlocked } from "./utils";
 
@@ -33,7 +33,7 @@ export class Hose extends Phaser.GameObjects.Container {
     // Note: this happens for the parts in the air as well
     FRICTION_COEF = 0.5;
 
-    endAttachedTo: Phaser.Physics.Arcade.Body = null;
+    endAttachedTo: HosePlayer = null;
     startPoint: Phaser.Math.Vector2;
     curve: Phaser.Curves.Spline;
     graphics;
@@ -73,8 +73,8 @@ export class Hose extends Phaser.GameObjects.Container {
         this.graphics = scene.add.graphics();
     }
 
-    attachEndTo(body: Phaser.Physics.Arcade.Body) {
-        this.endAttachedTo = body;
+    attachEndTo(hosePlayer: HosePlayer) {
+        this.endAttachedTo = hosePlayer;
     }
 
     setStartTo(p: Phaser.Math.Vector2) {
@@ -193,17 +193,19 @@ export class Hose extends Phaser.GameObjects.Container {
             );
         }
 
-        if (this.endAttachedTo !== null) {
+        if (this.endAttachedTo !== null && !this.endAttachedTo.isAnchored) {
             // Apply force to the player
+            let playerBody = this.endAttachedTo.sprite.body;
             this.parts[0].setPosition(
-                this.endAttachedTo.position.x + this.endAttachedTo.width / 2,
-                this.endAttachedTo.position.y + this.endAttachedTo.height / 2,
+                playerBody.position.x + playerBody.width / 2,
+                playerBody.position.y + playerBody.height / 2,
             );
 
             forces[0].scale(this.ATTACHED_PULL_COEF * delta / 1000);
-            this.endAttachedTo.setVelocity(
-                this.endAttachedTo.velocity.x + forces[0].x,
-                this.endAttachedTo.velocity.y + forces[0].y,
+
+            playerBody.setVelocity(
+                playerBody.velocity.x + forces[0].x,
+                playerBody.velocity.y + forces[0].y,
             );
         }
 

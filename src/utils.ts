@@ -28,14 +28,21 @@ export function zeroAccelerationIfBlocked(body) {
 export function parseProperties(propertiesArray) {
     let ret = {};
     for (let p of propertiesArray) {
-        ret[p['name']] = p['value'];
+        let val = p['value'];
+        if (p['name'] == 'entry' || p['name'] == 'exit') {
+            val = val.split(',');
+            val = val.map((s) => {
+                return s.trim()
+            });
+        }
+        ret[p['name']] = val;
     }
     return ret;
 }
 
 
 export function parseAllProperties(objectsArray) {
-    console.log(objectsArray);
+    // console.log(objectsArray);
     for (let o of objectsArray) {
         o['properties'] = parseProperties(o['properties'])
     }

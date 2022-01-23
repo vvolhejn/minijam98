@@ -7,6 +7,7 @@ import { Player } from "../player";
 import { Door } from "../door";
 import { parseAllProperties } from "../utils";
 import { ThanksWall } from "../thanksWall";
+import { LevelGenerator } from "../levelGeneration";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -21,6 +22,8 @@ const FLOOR_WIDTH = 32 * TILE_SIZE;
 const FLOOR_HEIGHT = 7 * TILE_SIZE;
 
 export class LevelScene extends Phaser.Scene {
+    levelGenerator: LevelGenerator;
+
     hosePlayer: HosePlayer;
     groundPlayer: GroundPlayer;
     walls: Array<Phaser.Tilemaps.TilemapLayer>;
@@ -43,14 +46,11 @@ export class LevelScene extends Phaser.Scene {
     }
 
     public preload() {
+        this.levelGenerator = new LevelGenerator(this);
+
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
-
         this.load.image('tiles', 'assets/TilesetMap.png');
-        for (let i = 1; i <= 2; i++) {
-            this.load.tilemapTiledJSON(`room${i}`, `assets/room${i}.json`);
-        }
-
         this.load.image('debugball', 'assets/debugball.png');
         this.load.image('debugstar', 'assets/star.png');
         this.load.image('door', 'assets/door.png');
@@ -73,6 +73,8 @@ export class LevelScene extends Phaser.Scene {
     }
 
     public create() {
+        this.levelGenerator.create();
+
         for (let i = 1; i <= 3; i++) {
             this.anims.create({
                 key: `fire${i}anim`,
@@ -104,8 +106,7 @@ export class LevelScene extends Phaser.Scene {
         this.platforms.create(600, 716, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
 
         // Create players.
-        // this.hosePlayer = new HosePlayer(this, 30, 700 - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
-        this.hosePlayer = new HosePlayer(this, 350, 350, HOSE_PLAYER_SPRITE_KEY);
+        this.hosePlayer = new HosePlayer(this, 30, 700 - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
         this.groundPlayer = new GroundPlayer(this, 60, 700 - 32 - 20, GROUND_PLAYER_SPRITE_KEY);
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
         this.hosePlayer.setPhysicsProperties();
@@ -120,10 +121,11 @@ export class LevelScene extends Phaser.Scene {
         this.walls = [];
         this.elVictimos = this.physics.add.group({ collideWorldBounds: true });
         this.elVictimos.runChildUpdate = true;
-        this.loadRoom('room1', 0);
-        this.loadRoom('room2', 1);
-        this.loadRoom('room2', 2);
 
+        let rooms = this.levelGenerator.generateLevel();
+        rooms.forEach( (room, idx) => {
+            this.loadRoom(room, idx);
+        });
 
         // let door = new Door(this, 600, 400);
         // this.doors = this.physics.add.staticGroup([door.doorSprite]);
@@ -136,7 +138,6 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.players, this.platforms);
         this.physics.add.collider(this.players, this.doors);
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
-        this.physics.add.overlap(this.hosePlayer.particles, this.groundPlayer.sprite, this.onGrandWaterCollision, null, this);
         this.physics.add.collider(this.elVictimos, this.platforms);
         this.physics.add.overlap(this.elVictimos, this.thanksWalls, this.onVictimInThanksWall, null, this);
 
@@ -154,7 +155,7 @@ export class LevelScene extends Phaser.Scene {
 
         // Create hose.
         this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
-        this.hose.attachEndTo(this.hosePlayer.sprite.body);
+        this.hose.attachEndTo(this.hosePlayer);
 
         this.physics.disableUpdate();
     }
@@ -209,24 +210,13 @@ export class LevelScene extends Phaser.Scene {
         player.onFireCollision(fire, this);
     }
 
-    private onGrandWaterCollision(groundPlayerSprite, water) {
-        // water.collided is a semihack
-        if (water.collided) return;
-        groundPlayerSprite.body.setVelocity(
-            water.body.velocity.x / this.groundPlayer.WATER_STRENGTH_FACTOR,
-            water.body.velocity.y / this.groundPlayer.WATER_STRENGTH_FACTOR);
-
-        const f = this.groundPlayer.PLAYER_STRENGTH_ON_WATER_FACTOR;
-        water.body.setVelocity(-water.body.velocity.x / Phaser.Math.Between(f - 2, f + 2), -water.body.velocity.y / Phaser.Math.Between(f - 2, f + 2));
-        water.collided = true;
-    }
-
     private onVictimInThanksWall(victim: ElVictimo, thanksWall: ThanksWall) {
         thanksWall.handleVictim(victim);
     }
 
-    private loadRoom(roomId: string, floorNum: number) {
+    private loadRoom(roomId, floorNum: number) {
         let map = this.make.tilemap({ key: roomId });
+        // let map = roomMap.copy();
 
         const tileset = map.addTilesetImage('TilesetMap', 'tiles');
         const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
@@ -263,7 +253,7 @@ export class LevelScene extends Phaser.Scene {
         if (doors)
             parseAllProperties(doors);
         doors?.forEach((doorTile) => {
-            let door = new Door(this, offsetX + doorTile.x, offsetY + doorTile.y);
+            let door = new Door(this, offsetX + doorTile.x, offsetY + doorTile.y, doorTile.properties.color);
             door.doorSprite.setOrigin(0, 1);
             door.doorSprite.setDisplaySize(doorTile.width, doorTile.height);
             door.doorSprite.refreshBody();

@@ -12,16 +12,22 @@ export class Door {
     openUp: boolean = true;
     openDown: boolean = true;
 
-    constructor(scene: Phaser.Scene, x: integer, y: integer) {
+    color: number;
+
+    constructor(scene: Phaser.Scene, x: integer, y: integer, color: string) {
         this.doorSprite = scene.physics.add.staticSprite(x, y, "door");
         this.setOpenSides(true, true, true, true);
+
+        const colorDict = { 'blue': 0x0492C2, 'red': 0x900b03, 'green': 0x03ac13, 'yellow': 0xfce205};
+        this.color = colorDict[color];
+        this.doorSprite.setTint(this.color);
     }
 
     public addKey(scene: LevelScene, x, y) {
         this.keySprite = scene.physics.add.staticSprite(x, y, "key");
         this.keySprite.setOrigin(0, 1);
         this.keySprite.refreshBody();
-        this.keySprite.setTint(0xff00ff);
+        this.keySprite.setTint(this.color);
         this.locked = true;
 
         scene.physics.add.overlap(scene.players, this.keySprite, this.onKeyPickup, null, this);
