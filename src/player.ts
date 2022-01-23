@@ -39,11 +39,7 @@ export abstract class Player extends Phaser.GameObjects.Container {
         this.sprite.setMaxVelocity(MAX_VELOCITY_X, 100000);
     }
 
-    public update(_time, delta): void {
-        this.sprite.setVelocityX(
-            this.sprite.body.velocity.x
-            * Math.pow(1 - FRICTION_COEF, delta / 1000)
-        );
+    public update(_time, _delta): void {
     }
 
     public onFireCollision(fire: Fire, scene : LevelScene) {
