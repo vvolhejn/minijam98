@@ -236,6 +236,7 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.players, this.platforms, this.onPlayerHitGround, null, this);
         this.physics.add.collider(this.players, this.doors);
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
+        this.physics.add.collider(this.hosePlayer.particles, this.doors);
         this.physics.add.collider(this.elVictimos, this.platforms, this.onVictimHitGround);
         this.physics.add.overlap(this.elVictimos, this.thanksWalls, this.onVictimInThanksWall, null, this);
         this.physics.add.overlap(this.hydrants, this.hosePlayer.sprite, this.onTouchHydrant, null, this);
