@@ -3,7 +3,7 @@ import { parseAllProperties, parseProperties } from "./utils";
 export class LevelGenerator {
     scene;
     rooms;
-    NUM_ROOMS = 16;
+    NUM_ROOMS = 17;
 
     constructor(scene) {
         this.scene = scene;
