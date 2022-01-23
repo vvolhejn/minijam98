@@ -8,6 +8,7 @@ import { Door } from "../door";
 import { parseAllProperties } from "../utils";
 import { ThanksWall } from "../thanksWall";
 import { LevelGenerator } from "../levelGeneration";
+import assert = require("assert");
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -123,9 +124,11 @@ export class LevelScene extends Phaser.Scene {
         this.elVictimos.runChildUpdate = true;
 
         let rooms = this.levelGenerator.generateLevel();
-        rooms.forEach( (room, idx) => {
-            this.loadRoom(room, idx);
-        });
+        let h = 0;
+        for (let room of rooms) {
+            this.loadRoom(room, h);
+            h += room.properties.height;
+        }
 
         // let door = new Door(this, 600, 400);
         // this.doors = this.physics.add.staticGroup([door.doorSprite]);
@@ -214,13 +217,13 @@ export class LevelScene extends Phaser.Scene {
         thanksWall.handleVictim(victim);
     }
 
-    private loadRoom(roomId, floorNum: number) {
-        let map = this.make.tilemap({ key: roomId });
+    private loadRoom(room, floorNum: number) {
+        let map = this.make.tilemap({ key: room.mapKey });
         // let map = roomMap.copy();
 
         const tileset = map.addTilesetImage('TilesetMap', 'tiles');
         const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
-        const offsetY = SCREEN_HEIGHT - 32 - (FLOOR_HEIGHT * (floorNum + 1));
+        const offsetY = SCREEN_HEIGHT - 32 - (FLOOR_HEIGHT * (floorNum + room.properties.height));
         let layer = map.createLayer('walls', tileset, offsetX, offsetY);
         map.createLayer('background', tileset, offsetX, offsetY);
         layer.setCollisionByExclusion([-1], true);
@@ -247,11 +250,17 @@ export class LevelScene extends Phaser.Scene {
 
         // Doors.
         const keys = map.getObjectLayer('keys')?.objects;
-        if (keys)
+        if (keys) {
+            for (let k of keys)
+                assert(k.hasOwnProperty('properties'), room.mapKey + " Keys don't have colors specified!");
             parseAllProperties(keys);
+        }
         const doors = map.getObjectLayer('doors')?.objects;
-        if (doors)
+        if (doors) {
+            for (let d of doors)
+                assert(d.hasOwnProperty('properties'), room.mapKey + " Doors don't have colors specified!");
             parseAllProperties(doors);
+        }
         doors?.forEach((doorTile) => {
             let door = new Door(this, offsetX + doorTile.x, offsetY + doorTile.y, doorTile.properties.color);
             door.doorSprite.setOrigin(0, 1);
