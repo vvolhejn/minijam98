@@ -87,6 +87,7 @@ export class Hose extends Phaser.GameObjects.Container {
         for (let i = 0; i < this.N_PARTS; i++) {
             this.parts[i].setVelocity(0, 0);
             let coef = i / (this.N_PARTS - 1);
+            this.smoothedVelocities[i].scale(0);
             let pos = p.clone().scale(1 - coef).add(this.endAttachedTo.sprite.getCenter().scale(coef));
             this.parts[i].setPosition(pos.x, pos.y);
         }
@@ -256,5 +257,11 @@ export class Hose extends Phaser.GameObjects.Container {
         // }
 
         return wantedVelocity;
+    }
+
+    public setCollideWorldBounds(value) {
+        for (let p of this.parts) {
+            p.setCollideWorldBounds(value);
+        }
     }
 }
