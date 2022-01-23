@@ -23,25 +23,13 @@ export class HosePlayer extends Player {
         this.sprite.setDepth(10) // why is the hose still in front?
         this.isAnchored = false;
 
-        scene.anims.create({
-            key: 'left',
-            frames: scene.anims.generateFrameNumbers(spriteKey, { start: 0, end: 5 }),
-            frameRate: 10,
-            repeat: -1
-        });
-
-        scene.anims.create({
-            key: 'turn',
-            frames: [{ key: spriteKey, frame: 6 }],
-            frameRate: 20
-        });
-
-        scene.anims.create({
-            key: 'right',
-            frames: scene.anims.generateFrameNumbers(spriteKey, { start: 0, end: 5 }),
-            frameRate: 10,
-            repeat: -1
-        });
+        ['joseUp', 'joseUpRight', 'joseUpAnchored', 'joseUpRightAnchored', 'joseRightAchnored'].forEach((str, idx) => {
+            this.scene.anims.create({
+                key: str,
+                frames: [{ key: spriteKey, frame: idx }],
+                frameRate: 10,
+            });
+        })
 
         //  Input Events
         this.cursors = scene.input.keyboard.createCursorKeys();
@@ -80,28 +68,74 @@ export class HosePlayer extends Player {
         let diff = new Phaser.Math.Vector2(0, 0);
         this.isAnchored = false;
 
+        this.sprite.flipY = false;
+        this.sprite.flipX = false;
+        this.sprite.angle = 0;
+
+        let angleY = null;
+        let angleX = null;
         if (this.cursors.up.isDown) {
             diff.y += -50;
-            this.sprite.anims.play('turn');
+            angleY = 0;
         }
         if (this.cursors.down.isDown) {
             diff.y += 50;
-            this.sprite.anims.play('turn');
+            angleY = 180
         }
         if (this.cursors.left.isDown) {
             diff.x += -50;
-            this.sprite.flipX = true;
-            this.sprite.anims.play('right', true);
+            angleX = 270
         }
         if (this.cursors.right.isDown) {
             diff.x += 50;
-            this.sprite.flipX = false;
-            this.sprite.anims.play('left', true);
+            angleX = 90;
+        }
+
+        angleX = (angleX == null) ? angleY : angleX;
+        angleY = (angleY == null) ? angleX : angleY;
+        if (angleX != null) {
+            if (angleX == 270 && angleY == 0) {
+                this.sprite.angle = 270 + 45;
+            } else {
+                this.sprite.angle = (angleX + angleY) / 2;
+            }
         }
 
         if (this.cursors.shift.isDown && this.sprite.body.blocked.down) {
             this.sprite.setVelocity(0, 0);
             this.isAnchored = true;
+        } else {
+            this.isAnchored = false;
+        }
+
+        if (this.isAnchored) {
+            this.sprite.flipX = false;
+            this.sprite.flipY = false;
+            if (this.cursors.up.isDown) {
+                if (this.cursors.left.isDown) {
+                    this.sprite.anims.play('joseUpRightAnchored');
+                    this.sprite.flipX = true;
+                } else if (this.cursors.right.isDown) {
+                    this.sprite.anims.play('joseUpRightAnchored');
+                } else {
+                    this.sprite.anims.play('joseUpAnchored');
+                }
+            } else if (this.cursors.down.isDown) {
+                this.sprite.anims.play('joseRightAchnored');
+                if (this.cursors.left.isDown) {
+                    this.sprite.flipX = true;
+                }
+            } else if (this.cursors.left.isDown) {
+                this.sprite.anims.play('joseRightAchnored');
+                this.sprite.flipX = true;
+            } else if (this.cursors.right.isDown) {
+                this.sprite.anims.play('joseRightAchnored');
+            } else {
+                this.sprite.anims.play('joseRightAchnored');
+            }
+
+        } else {
+            this.sprite.anims.play('joseUp');
         }
 
         zeroAccelerationIfBlocked(this.sprite.body);

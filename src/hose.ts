@@ -11,7 +11,7 @@ export class Hose extends Phaser.GameObjects.Container {
     DAMPING_COEF: number = 200;  // how quickly velocity decays to 0
     ATTACHED_PULL_COEF = 0.002; // how strongly the attached object is pulled
     N_PHYSICS_ITERATIONS = 1; // more = less bouncy, but more CPU - 1 should be ok
-    N_PARTS = 30;  // how many parts of the rope
+    N_PARTS = 32;  // how many parts of the rope
     MAX_ACCELERATION = 100000;
 
     // Smooths the force applied to the hose parts over time. In [0, 1].

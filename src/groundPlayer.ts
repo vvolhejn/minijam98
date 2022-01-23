@@ -11,7 +11,7 @@ export class GroundPlayer extends Player {
     SAVING_COOLDOWN_MS = 500;
 
     ACCELERATION_X = 3000;
-    JUMP_VELOCITY_Y = -400;
+    JUMP_VELOCITY_Y = -430;
 
     LEFT_ANIM_KEY: string;
     RIGHT_ANIM_KEY: string;
