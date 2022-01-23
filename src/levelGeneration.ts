@@ -27,17 +27,24 @@ export class LevelGenerator {
         }
     }
 
-    public generateLevel() {
+    public generateLevel(groundFloor: boolean) {
         let levelFromUrl = this.levelFromUrl();
         let level;
         if (levelFromUrl != null) {
             level = levelFromUrl;
         } else {
             let heightLeft = 2;
+            let entryConstraints;
             while (heightLeft > 0) {
-                level = [this.rooms[0]];
-                let entryConstraints = this.rooms[0].properties.exit;
-                heightLeft = 2;
+                if (groundFloor) {
+                    level = [this.rooms[0]];
+                    entryConstraints = this.rooms[0].properties.exit;
+                    heightLeft = 2;
+                } else {
+                    level = [];
+                    entryConstraints = ['teleport'];
+                    heightLeft = 3;
+                }
                 while (heightLeft > 0) {
                     // console.log(heightLeft);
 
