@@ -116,7 +116,7 @@ export class LevelScene extends Phaser.Scene {
         });
 
         //  A simple background for our game
-        this.sky = this.add.image(SCREEN_WIDTH / 2, 0, 'sky').setScale(6).setTint(0x666666);
+        this.sky = this.add.image(SCREEN_WIDTH / 2, 0, 'sky').setScale(6).setTint(0xcccccc);
 
         //  The platforms group contains the ground
         this.platforms = this.physics.add.staticGroup();

@@ -152,7 +152,9 @@ export class HosePlayer extends Player {
             for (let i = 0; i < numToFire; i++) {
                 let speed = Phaser.Math.Between(this.WATER_VELOCITY_MIN, this.WATER_VELOCITY_MAX);
                 let angle = diff.angle() + Phaser.Math.FloatBetween(-0.1, 0.1);
-                let p = this.particles.getFirstDead(false, this.sprite.x, this.sprite.y);
+                let x = this.sprite.x + Math.cos(angle) * 15
+                let y = this.sprite.y + Math.sin(angle) * 15
+                let p = this.particles.getFirstDead(false, x, y);
                 if (p != null) {
                     p.collided = false;
                     p.body.enable = true;
