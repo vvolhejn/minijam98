@@ -10,6 +10,7 @@ import { ThanksWall } from "../thanksWall";
 import { LevelGenerator } from "../levelGeneration";
 import assert = require("assert");
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../main";
+import { Box } from "../box";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -31,6 +32,7 @@ export class LevelScene extends Phaser.Scene {
     doors: Phaser.Physics.Arcade.StaticGroup;
     thanksWalls: Phaser.Physics.Arcade.StaticGroup;
     hydrants: Phaser.Physics.Arcade.StaticGroup;
+    boxes: Phaser.Physics.Arcade.Group;
 
     elVictimos: Phaser.Physics.Arcade.Group;
     platforms;
@@ -55,6 +57,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('debugball', 'assets/debugball.png');
         this.load.image('debugstar', 'assets/debugstar.png');
         this.load.image('door', 'assets/door.png');
+        this.load.image('box', 'assets/box.png');
         this.load.image('key', 'assets/key.png');
         this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
 
@@ -115,17 +118,15 @@ export class LevelScene extends Phaser.Scene {
         this.hosePlayer.sprite.setDepth(1);
         this.groundPlayer.sprite.setDepth(1);
 
-        let hydrant1 = this.physics.add.staticSprite(300, 600, "debugstar").setState(0);
-        let hydrant2 = this.physics.add.staticSprite(600, 600, "debugstar").setState(0);
-        this.hydrants = this.physics.add.staticGroup([hydrant1, hydrant2]);
+        this.hydrants = this.physics.add.staticGroup();
 
         // Load rooms.
         this.fires = this.physics.add.staticGroup();
         this.thanksWalls = this.physics.add.staticGroup();
         this.doors = this.physics.add.staticGroup();
+        this.boxes = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
         this.walls = [];
-        this.elVictimos = this.physics.add.group({ collideWorldBounds: true });
-        this.elVictimos.runChildUpdate = true;
+        this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
 
 
         let rooms = this.levelGenerator.generateLevel();
@@ -135,6 +136,23 @@ export class LevelScene extends Phaser.Scene {
             h += room.properties.height;
         }
 
+        // Sounds
+        const thanksSounds = [];
+        for (let i = 0; i < THANKS_COUNT; ++i) {
+            thanksSounds.push(this.sound.add(`thanks${i}`, { loop: false }));
+        }
+
+        // Walls of Thanks.
+        [
+            [0, 0, 2 * TILE_SIZE, SCREEN_HEIGHT], // Left long
+            [0, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE], // Left bottom
+            [SCREEN_WIDTH - 2 * TILE_SIZE, 0, 2 * TILE_SIZE, SCREEN_HEIGHT],    // Right long
+            [SCREEN_WIDTH - 3 * TILE_SIZE, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE] // Right bottom
+        ].forEach((rect) => {
+            const wall = new ThanksWall(this, rect[0], rect[1], rect[2], rect[3], 'ground', thanksSounds);
+            this.thanksWalls.add(wall, true);
+        });
+        
         //  The score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
 
@@ -145,6 +163,16 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.elVictimos, this.platforms);
         this.physics.add.overlap(this.elVictimos, this.thanksWalls, this.onVictimInThanksWall, null, this);
         this.physics.add.overlap(this.hydrants, this.hosePlayer.sprite, this.onTouchHydrant, null, this);
+        
+        // Boxes collisions
+        this.physics.add.collider(this.boxes, this.boxes);
+        this.physics.add.collider(this.boxes, this.elVictimos);
+        this.physics.add.collider(this.boxes, this.platforms);
+        this.physics.add.collider(this.boxes, this.hydrants);
+        this.physics.add.collider(this.boxes, this.fires);
+        this.physics.add.collider(this.boxes, this.doors);
+        this.physics.add.collider(this.boxes, this.walls);
+        this.physics.add.collider(this.boxes, this.players);
 
         // Collide with floor map.
         for (let wall of this.walls) {
@@ -180,6 +208,7 @@ export class LevelScene extends Phaser.Scene {
         this.elVictimos.preUpdate(time, delta);
 
         this.physics.world.update(time, delta);
+        this.boxes.preUpdate(time, delta);
     }
 
     public extinguishFire(particle, fire) {
@@ -249,7 +278,7 @@ export class LevelScene extends Phaser.Scene {
 
         // Fires.
         map.getObjectLayer('fires')?.objects.forEach((fireTile) => {
-            let fire = new Fire(this, offsetX + fireTile.x + 15, offsetY + fireTile.y - 40, 'fire');
+            let fire = new Fire(this, offsetX + fireTile.x + 15, offsetY + fireTile.y - 38, 'fire');
             this.fires.add(fire, true);
             fire.body.setSize(30, 60, true);
             fire.updateScale();
@@ -293,23 +322,23 @@ export class LevelScene extends Phaser.Scene {
             }
         });
 
-        // Sounds
-        const thanksSounds = [];
-        for (let i = 0; i < THANKS_COUNT; ++i) {
-            thanksSounds.push(this.sound.add(`thanks${i}`, { loop: false }));
-        }
+        // Boxes
+        map.getObjectLayer('boxes')?.objects.forEach((boxTile) => {
+            if (boxTile.polygon) {
+                console.log("Polygon boxes are not supported..");
+                return
+            }
 
-        // Walls of Thanks.
-        [
-            [0, 0, 2 * TILE_SIZE, SCREEN_HEIGHT], // Left long
-            [0, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE], // Left bottom
-            [SCREEN_WIDTH - 2 * TILE_SIZE, 0, 2 * TILE_SIZE, SCREEN_HEIGHT],    // Right long
-            [SCREEN_WIDTH - 3 * TILE_SIZE, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE] // Right bottom
-        ].forEach((rect) => {
-            const wall = new ThanksWall(this, rect[0], rect[1], rect[2], rect[3], 'ground', thanksSounds);
-            this.thanksWalls.add(wall, true);
-        });
-
+            const box = new Box(
+                this,
+                boxTile.x,
+                boxTile.y,
+                boxTile.width,
+                boxTile.height,
+                'box'
+            );
+            this.boxes.add(box, true);
+        }, this);
 
     }
 

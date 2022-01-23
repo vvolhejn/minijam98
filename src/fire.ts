@@ -13,6 +13,8 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         this.fireNum = 1 + Math.floor((Math.random() * 3) % 3);
         if (this.fireNum == 2)
             this.y = this.y - 10;
+        if (this.fireNum == 3)
+            this.y = this.y + 5;
         this.anims.play(`fire${this.fireNum}anim`, true);
         this.scene = scene;
     }
@@ -26,6 +28,8 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         // this.setOffset(0, offset)
         if (this.fireNum == 2)
             this.body.setOffset(10, 25);
+        else if (this.fireNum == 3)
+            this.body.setOffset(10, 10);
         else
             this.body.setOffset(10, 15);
 
