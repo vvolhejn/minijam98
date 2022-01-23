@@ -90,7 +90,7 @@ export class GroundPlayer extends Player {
     }
 
     public pickUp(time_ms: number, elVictimo): boolean {
-        if (this.saving != null || time_ms < this.lastSavingTimestamp_MS + this.SAVING_COOLDOWN_MS) {
+        if (this.saving != null || elVictimo.saved || time_ms < this.lastSavingTimestamp_MS + this.SAVING_COOLDOWN_MS) {
             return false;
         }
         this.saving = elVictimo;

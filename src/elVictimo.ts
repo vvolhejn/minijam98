@@ -6,6 +6,7 @@ export enum VictimDirection {
 
 export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
     savior: GroundPlayer;
+    saved: boolean;
 
     FRICTION_COEF = 0.7;
     THROW_VELOCITY_X = 500;
@@ -15,6 +16,7 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, textureKey);
         scene.physics.add.existing(this, false);
         this.savior = null;
+        this.saved = false;
     }
 
     public pickedUpBy(groundPlayer) {
@@ -46,11 +48,13 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
 
     public getThrown(direction: VictimDirection) {
         this.savior = null;
-        if (direction == VictimDirection.LEFT) {
-            this.setVelocityX(-this.THROW_VELOCITY_X);
-        } else {
-            this.setVelocityX(this.THROW_VELOCITY_X);
+        switch (direction) {
+            case VictimDirection.LEFT:
+                this.setVelocity(-this.THROW_VELOCITY_X, this.THROW_VELOCITY_Y);
+                break;
+            case VictimDirection.RIGHT:
+                this.setVelocity(this.THROW_VELOCITY_X, this.THROW_VELOCITY_Y);
+                break;
         }
-        this.setVelocityY(this.THROW_VELOCITY_Y);
     }
 }

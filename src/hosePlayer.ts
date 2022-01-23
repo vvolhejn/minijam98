@@ -14,7 +14,6 @@ export class HosePlayer extends Player {
         super(scene, x, y, spriteKey);
 
         // this.sprite.setFrictionX(100000)
-        this.sprite.setScale(0.5, 0.5);
         this.sprite.refreshBody();
         this.sprite.setMaxVelocity(MAX_VELOCITY_X, 100000);
 
