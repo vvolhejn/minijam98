@@ -94,8 +94,8 @@ export class LevelScene extends Phaser.Scene {
     }
 
     public create() {
-        this.physics.world.setBoundsCollision(true, true, false, true);
-        this.physics.world.setBounds(0, -100000 * TILE_SIZE, SCREEN_WIDTH, 100000 * TILE_SIZE + SCREEN_HEIGHT);
+        this.physics.world.setBoundsCollision(true, true, true, true);
+        this.physics.world.setBounds(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         this.levelGenerator.create();
 
@@ -493,6 +493,8 @@ export class LevelScene extends Phaser.Scene {
         let x = this.cameras.main.centerX;
         let y = this.cameras.main.scrollY + this.cameras.main.centerY;
         this.cameraOffsetY -= 21 * TILE_SIZE;
+        this.physics.world.setBounds(0, this.cameraOffsetY, SCREEN_WIDTH, SCREEN_HEIGHT - this.cameraOffsetY);
+
         this.cameras.main.pan(x, y - 21 * TILE_SIZE, 2000, "Quad.easeInOut");
 
         this.levelEntrance = rooms[0].getObjectLayer('entryteleport').objects[0];
@@ -507,8 +509,8 @@ export class LevelScene extends Phaser.Scene {
         this.hosePlayer.sprite.x = dx - 10;
         this.hosePlayer.sprite.y = dy;
         this.groundPlayer.sprite.x = dx + 10;
-
         this.groundPlayer.sprite.y = dy;
+
         this.hosePlayer.sprite.body.setVelocity(0, 0);
         this.groundPlayer.sprite.body.setVelocity(0, 0);
 
@@ -516,7 +518,6 @@ export class LevelScene extends Phaser.Scene {
 
         this.level++;
         this.levelText.setText('Level: ' + this.level);
-
     }
 
     public setGameOver(enable: boolean) {
