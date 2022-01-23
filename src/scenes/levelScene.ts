@@ -261,13 +261,6 @@ export class LevelScene extends Phaser.Scene {
             this.score += 1;
             this.redrawScore();
         }
-
-        if (this.fires.countActive(true) === 0) {
-            //  A new batch of fires to collect
-            this.fires.children.iterate(function (child: Fire) {
-                child.resetHp();
-            });
-        }
     }
 
     private pickUpElVictimo(_groundPlayer, elVictimo) {
