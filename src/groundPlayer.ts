@@ -13,6 +13,8 @@ export class GroundPlayer extends Player {
     ACCELERATION_X = 3000;
     JUMP_VELOCITY_Y = -430;
 
+    GRAND_FRICTION_COEF = 0.99;
+
     LEFT_ANIM_KEY: string;
     RIGHT_ANIM_KEY: string;
     DOWN_ANIM_KEY: string;
@@ -48,7 +50,11 @@ export class GroundPlayer extends Player {
     }
 
     public update(time, delta) {
-        super.update(time, delta);
+        this.sprite.setVelocityX(
+            this.sprite.body.velocity.x
+            * Math.pow(1 - this.GRAND_FRICTION_COEF, delta / 1000)
+        );
+
         this.sprite.flipX = false;
 
         if (this.cursors.left.isDown) {
