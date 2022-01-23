@@ -89,6 +89,9 @@ export class LevelScene extends Phaser.Scene {
     }
 
     public create() {
+        this.physics.world.setBoundsCollision(true, true, false, true);
+        this.physics.world.setBounds(0, -100000 * TILE_SIZE, SCREEN_WIDTH, 100000 * TILE_SIZE + SCREEN_HEIGHT);
+
         this.levelGenerator.create();
 
         for (let i = 1; i <= 3; i++) {
@@ -187,7 +190,7 @@ export class LevelScene extends Phaser.Scene {
         this.hose.attachEndTo(this.hosePlayer);
 
         this.timer = new Timer(this, SCREEN_WIDTH - TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE, TILE_SIZE / 2, SCREEN_HEIGHT - 2 * TILE_SIZE, 'timeBar');
-        this.timer.start(5 * 1000);
+        this.timer.start(5 * 1000 * 10);
 
         this.physics.disableUpdate();
     }
@@ -397,17 +400,19 @@ export class LevelScene extends Phaser.Scene {
 
     private checkVictory() {
         const allSaved = this.elVictimos.getChildren().every((victim) => { return (victim as ElVictimo).saved; })
-        if (!allSaved)
+        if (!allSaved) {
+            // console.log("not everyone is saved)");
+            // console.log(this.elVictimos);
             return;
+        }
+        console.log("VICTORY");
 
         this.hydrants = this.physics.add.staticGroup();
         this.fires = this.physics.add.staticGroup();
-        this.thanksWalls = this.physics.add.staticGroup();
         this.doors = this.physics.add.staticGroup();
         this.boxes = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
         this.walls = [];
         this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
-
 
         let rooms = this.levelGenerator.generateLevel(false);
         for (let room of rooms) {
@@ -418,7 +423,7 @@ export class LevelScene extends Phaser.Scene {
 
         this.sky.y = this.sky.y - SCREEN_HEIGHT;
         let x = this.cameras.main.centerX;
-        let y = this.cameras.main.centerY;
+        let y = this.cameras.main.scrollY + this.cameras.main.centerY;
         this.cameraOffsetY -= 21 * TILE_SIZE;
         this.cameras.main.pan(x, y - 21 * TILE_SIZE, 3 * 1000);
 
@@ -428,10 +433,6 @@ export class LevelScene extends Phaser.Scene {
         entrance.y += (this.cameraOffsetY - 48);
         entrance.x += offsetX;
         console.log(entrance, this.cameraOffsetY);
-
-        this.hose.setCollideWorldBounds(false);
-        this.hosePlayer.sprite.setCollideWorldBounds(false);
-        this.groundPlayer.sprite.setCollideWorldBounds(false);
 
         this.hosePlayer.sprite.x = entrance.x - 10;
         this.hosePlayer.sprite.y = entrance.y;
@@ -446,10 +447,6 @@ export class LevelScene extends Phaser.Scene {
         this.level++;
         this.levelText.setText('Level: ' + this.level);
 
-        // TODO: this needs to be set back after an update
-        // this.hose.setCollideWorldBounds(true);
-        // this.hosePlayer.sprite.setCollideWorldBounds(true);
-        // this.groundPlayer.sprite.setCollideWorldBounds(true);
     }
 
     public setGameOver(enable: boolean) {

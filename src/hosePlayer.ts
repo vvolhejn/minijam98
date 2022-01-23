@@ -49,7 +49,7 @@ export class HosePlayer extends Player {
         this.particles = scene.physics.add.group({
             bounceX: 0.3,
             bounceY: 0.3,
-            collideWorldBounds: true,
+            collideWorldBounds: false,
         });
 
         for (let i = 0; i < this.NUM_PARTICLES; i++) {
