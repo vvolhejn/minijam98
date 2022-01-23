@@ -112,14 +112,10 @@ export class Hose extends Phaser.GameObjects.Container {
             this.curve = new Phaser.Curves.Spline(this.parts.map(p => p.getCenter()));
             this.graphics.clear();
 
-            this.graphics.lineStyle(2, 0xffffff, 1);
-            this.graphics.lineGradientStyle(
-                this.HOSE_THICKNESS,
-                this.HOSE_COLOR_1, this.HOSE_COLOR_1,
-                this.HOSE_COLOR_2, this.HOSE_COLOR_2,
-                1
-            );
+            this.graphics.lineStyle(this.HOSE_THICKNESS, this.HOSE_COLOR_1, 1);
+            this.curve.draw(this.graphics, 64);
 
+            this.graphics.lineStyle(this.HOSE_THICKNESS / 2, this.HOSE_COLOR_2, 1);
             this.curve.draw(this.graphics, 64);
         }
     }
