@@ -11,6 +11,7 @@ import { ThanksWall } from "../thanksWall";
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
 const EL_VICTIMO_SPRITE_KEY = 'elVictimo';
+const THANKS_COUNT = 10;
 
 const SCREEN_WIDTH = 1200;
 const SCREEN_HEIGHT = 700;
@@ -64,6 +65,10 @@ export class LevelScene extends Phaser.Scene {
 
         for (let i = 1; i <= 3; i++) {
             this.load.spritesheet(`fire${i}`, `assets/fire${i}.png`, { frameWidth: 50, frameHeight: 60 });
+        }
+
+        for (let i = 0; i < THANKS_COUNT; i++) {
+            this.load.audio(`thanks${i}`, `assets/sounds/thanks${i}.mp3`);
         }
     }
 
@@ -271,14 +276,20 @@ export class LevelScene extends Phaser.Scene {
             }
         });
 
+        // Sounds
+        const thanksSounds = []
+        for (let i = 0; i < THANKS_COUNT; ++i) {
+            thanksSounds.push(this.sound.add(`thanks${i}`, { loop: false }));
+        }
+
         // Walls of Thanks.
         [
-            // [0, 0, 2 * TILE_SIZE, SCREEN_HEIGHT], // Left long
+            [0, 0, 2 * TILE_SIZE, SCREEN_HEIGHT], // Left long
             [0, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE], // Left bottom
-            // [SCREEN_WIDTH - 2 * TILE_SIZE, 0, 2 * TILE_SIZE, SCREEN_HEIGHT],    // Right long
+            [SCREEN_WIDTH - 2 * TILE_SIZE, 0, 2 * TILE_SIZE, SCREEN_HEIGHT],    // Right long
             [SCREEN_WIDTH - 3 * TILE_SIZE, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE] // Right bottom
         ].forEach((rect) => {
-            const wall = new ThanksWall(this, rect[0], rect[1], rect[2], rect[3], 'ground');
+            const wall = new ThanksWall(this, rect[0], rect[1], rect[2], rect[3], 'ground', thanksSounds);
             this.thanksWalls.add(wall, true)
         })
 

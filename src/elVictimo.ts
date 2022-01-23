@@ -48,11 +48,13 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
 
     public getThrown(direction: VictimDirection) {
         this.savior = null;
-        if (direction == VictimDirection.LEFT) {
-            this.setVelocityX(-this.THROW_VELOCITY_X);
-        } else {
-            this.setVelocityX(this.THROW_VELOCITY_X);
+        switch (direction) {
+            case VictimDirection.LEFT:
+                this.setVelocity(-this.THROW_VELOCITY_X, this.THROW_VELOCITY_Y);
+                break;
+            case VictimDirection.RIGHT:
+                this.setVelocity(this.THROW_VELOCITY_X, this.THROW_VELOCITY_Y);
+                break;
         }
-        this.setVelocityY(this.THROW_VELOCITY_Y);
     }
 }
