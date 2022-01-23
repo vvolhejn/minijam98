@@ -57,6 +57,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('debugball', 'assets/debugball.png');
         this.load.image('debugstar', 'assets/debugstar.png');
         this.load.image('door', 'assets/door.png');
+        this.load.image('box', 'assets/box.png');
         this.load.image('key', 'assets/key.png');
         this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
 
@@ -138,6 +139,23 @@ export class LevelScene extends Phaser.Scene {
             h += room.properties.height;
         }
 
+        // Sounds
+        const thanksSounds = [];
+        for (let i = 0; i < THANKS_COUNT; ++i) {
+            thanksSounds.push(this.sound.add(`thanks${i}`, { loop: false }));
+        }
+
+        // Walls of Thanks.
+        [
+            [0, 0, 2 * TILE_SIZE, SCREEN_HEIGHT], // Left long
+            [0, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE], // Left bottom
+            [SCREEN_WIDTH - 2 * TILE_SIZE, 0, 2 * TILE_SIZE, SCREEN_HEIGHT],    // Right long
+            [SCREEN_WIDTH - 3 * TILE_SIZE, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE] // Right bottom
+        ].forEach((rect) => {
+            const wall = new ThanksWall(this, rect[0], rect[1], rect[2], rect[3], 'ground', thanksSounds);
+            this.thanksWalls.add(wall, true);
+        });
+        
         //  The score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
 
@@ -148,6 +166,9 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.elVictimos, this.platforms);
         this.physics.add.overlap(this.elVictimos, this.thanksWalls, this.onVictimInThanksWall, null, this);
         this.physics.add.overlap(this.hydrants, this.hosePlayer.sprite, this.onTouchHydrant, null, this);
+        this.physics.add.collider(this.boxes, this.platforms);
+        this.physics.add.collider(this.boxes, this.walls);
+        this.physics.add.collider(this.boxes, this.players);
 
         // Collide with floor map.
         for (let wall of this.walls) {
@@ -291,25 +312,23 @@ export class LevelScene extends Phaser.Scene {
             }
         });
 
-        // Sounds
-        const thanksSounds = [];
-        for (let i = 0; i < THANKS_COUNT; ++i) {
-            thanksSounds.push(this.sound.add(`thanks${i}`, { loop: false }));
-        }
-
-        // Walls of Thanks.
-        [
-            [0, 0, 2 * TILE_SIZE, SCREEN_HEIGHT], // Left long
-            [0, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE], // Left bottom
-            [SCREEN_WIDTH - 2 * TILE_SIZE, 0, 2 * TILE_SIZE, SCREEN_HEIGHT],    // Right long
-            [SCREEN_WIDTH - 3 * TILE_SIZE, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE] // Right bottom
-        ].forEach((rect) => {
-            const wall = new ThanksWall(this, rect[0], rect[1], rect[2], rect[3], 'ground', thanksSounds);
-            this.thanksWalls.add(wall, true);
-        });
-
         // Boxes
-        this.boxes.add(new Box(this, 0, 0, 100, 100, 'box'), true);
+        map.getObjectLayer('boxes')?.objects.forEach((boxTile) => {
+            if (boxTile.polygon) {
+                console.log("Polygon boxes are not supported..");
+                return
+            }
+
+            const box = new Box(
+                this,
+                boxTile.x,
+                boxTile.y,
+                boxTile.width,
+                boxTile.height,
+                'box'
+            );
+            this.boxes.add(box, true);
+        }, this);
 
     }
 
