@@ -178,12 +178,10 @@ export class LevelScene extends Phaser.Scene {
         [this.scoreText, this.gameOverBackground, this.gameOverText].forEach( (obj)=> {
             obj.setDepth(1000);
             obj.setScrollFactor(0, 0);
-        })
+        });
 
         this.gameOverBackground.setVisible(false);
         this.gameOverText.setVisible(false);
-
-        this.setCollisions();
 
         // Create hose.
         this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
@@ -191,6 +189,8 @@ export class LevelScene extends Phaser.Scene {
 
         this.timer = new Timer(this, SCREEN_WIDTH - TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE, TILE_SIZE / 2, SCREEN_HEIGHT - 2 * TILE_SIZE, 'timeBar');
         this.timer.start(5 * 1000 * 10);
+
+        this.setCollisions();
 
         this.physics.disableUpdate();
     }
@@ -216,15 +216,20 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.boxes, this.players);
 
         // Collide with floor map.
-        for (let wall of this.walls) {
-            this.physics.add.collider(this.players, wall);
-            this.physics.add.collider(this.elVictimos, wall);
-            this.physics.add.collider(this.hosePlayer.particles, wall);
-        }
+        this.physics.add.collider(this.players, this.walls);
+        this.physics.add.collider(this.elVictimos, this.walls);
+        this.physics.add.collider(this.hosePlayer.particles, this.walls);
+
 
         this.physics.add.overlap(this.groundPlayer.sprite, this.elVictimos, this.pickUpElVictimo, null, this);
         this.physics.add.collider(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
         this.physics.add.overlap(this.players, this.fires, this.onPlayerFireCollision, null, this);
+
+        // Hose collisions.
+        this.hose.parts.forEach((part) => {
+            this.physics.add.collider(part, this.platforms);
+            this.physics.add.collider(part, this.walls);
+        })
     }
 
     public update(time, delta) {  // delta is in ms
