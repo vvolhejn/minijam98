@@ -3,7 +3,7 @@ import { parseAllProperties, parseProperties } from "./utils";
 export class LevelGenerator {
     scene;
     rooms;
-    NUM_ROOMS = 5; // 5 for now because room6 is broken.
+    NUM_ROOMS = 9;
 
     constructor(scene) {
         this.scene = scene;
@@ -26,33 +26,38 @@ export class LevelGenerator {
     }
 
     public generateLevel() {
-        let level = [];
         let heightLeft = 3;
-        let entryConstraints = [];
+        let level;
         while (heightLeft > 0) {
-            // console.log(heightLeft);
+            level = [];
+            let entryConstraints = [];
+            heightLeft = 3;
+            while (heightLeft > 0) {
+                // console.log(heightLeft);
 
-            let availableRooms = this.rooms.filter( (map) => {
-                let h = map.properties.height;
-                let ok = h <= heightLeft;
-                if (entryConstraints.length > 0) {
-                    let options = entryConstraints.map( (entryOption) => {
-                        return map.properties.entry.includes(entryOption);
-                    });
-                    // console.log(map.mapKey, map);
-                    // console.log("enrtryu Constraing", entryConstraints);
-                    // console.log(options);
-                    ok = ok && options.includes(true);
-                }
-                return ok;
-            });
-            // let availableRooms = this.rooms;
-            // console.log("Available rooms", availableRooms);
-            let room = this.randomChoice(availableRooms);
-            level.push(room);
-            entryConstraints = room.properties.exit;
-            let h = room.properties.height;
-            heightLeft -= h;
+                let availableRooms = this.rooms.filter( (map) => {
+                    let h = map.properties.height;
+                    let ok = h <= heightLeft;
+                    if (entryConstraints.length > 0) {
+                        let options = entryConstraints.map( (entryOption) => {
+                            return map.properties.entry.includes(entryOption);
+                        });
+                        // console.log(map.mapKey, map);
+                        // console.log("enrtryu Constraing", entryConstraints);
+                        // console.log(options);
+                        ok = ok && options.includes(true);
+                    }
+                    return ok;
+                });
+                // console.log("Available rooms", availableRooms);
+                if (availableRooms.length == 0)
+                    break;
+                let room = this.randomChoice(availableRooms);
+                level.push(room);
+                entryConstraints = room.properties.exit;
+                let h = room.properties.height;
+                heightLeft -= h;
+            }
         }
         // console.log("Final levels:", level);
         return level;
