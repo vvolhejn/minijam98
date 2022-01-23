@@ -17,6 +17,7 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this, false);
         this.savior = null;
         this.saved = false;
+        this.setDepth(5);
     }
 
     public pickedUpBy(groundPlayer) {

@@ -152,7 +152,7 @@ export class LevelScene extends Phaser.Scene {
             const wall = new ThanksWall(this, rect[0], rect[1], rect[2], rect[3], 'ground', thanksSounds);
             this.thanksWalls.add(wall, true);
         });
-        
+
         //  The score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
 
@@ -331,7 +331,7 @@ export class LevelScene extends Phaser.Scene {
         map.getObjectLayer('boxes')?.objects.forEach((boxTile) => {
             if (boxTile.polygon) {
                 console.log("Polygon boxes are not supported..");
-                return
+                return;
             }
 
             const box = new Box(
@@ -345,6 +345,20 @@ export class LevelScene extends Phaser.Scene {
             this.boxes.add(box, true);
         }, this);
 
+        // Hydrants
+        map.getObjectLayer('hydrant')?.objects.forEach((hydrantTile) => {
+            let hydrant = this.physics.add.staticSprite(
+                offsetX + hydrantTile.x,
+                offsetY + hydrantTile.y,
+                'debugstar',
+            );
+            hydrant.setOrigin(0, 1);
+            hydrant.setDisplaySize(hydrantTile.width, hydrantTile.height);
+            hydrant.refreshBody();
+
+            hydrant.setState(0);
+            this.hydrants.add(hydrant);
+        });
     }
 
     public redrawScore() {
