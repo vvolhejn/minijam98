@@ -118,18 +118,15 @@ export class LevelScene extends Phaser.Scene {
         this.hosePlayer.sprite.setDepth(1);
         this.groundPlayer.sprite.setDepth(1);
 
-        let hydrant1 = this.physics.add.staticSprite(300, 600, "debugstar").setState(0);
-        let hydrant2 = this.physics.add.staticSprite(600, 600, "debugstar").setState(0);
-        this.hydrants = this.physics.add.staticGroup([hydrant1, hydrant2]);
+        this.hydrants = this.physics.add.staticGroup();
 
         // Load rooms.
         this.fires = this.physics.add.staticGroup();
         this.thanksWalls = this.physics.add.staticGroup();
         this.doors = this.physics.add.staticGroup();
-        this.boxes = this.physics.add.group({ collideWorldBounds: true });
+        this.boxes = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
         this.walls = [];
-        this.elVictimos = this.physics.add.group({ collideWorldBounds: true });
-        this.elVictimos.runChildUpdate = true;
+        this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
 
 
         let rooms = this.levelGenerator.generateLevel();
@@ -166,7 +163,14 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.elVictimos, this.platforms);
         this.physics.add.overlap(this.elVictimos, this.thanksWalls, this.onVictimInThanksWall, null, this);
         this.physics.add.overlap(this.hydrants, this.hosePlayer.sprite, this.onTouchHydrant, null, this);
+        
+        // Boxes collisions
+        this.physics.add.collider(this.boxes, this.boxes);
+        this.physics.add.collider(this.boxes, this.elVictimos);
         this.physics.add.collider(this.boxes, this.platforms);
+        this.physics.add.collider(this.boxes, this.hydrants);
+        this.physics.add.collider(this.boxes, this.fires);
+        this.physics.add.collider(this.boxes, this.doors);
         this.physics.add.collider(this.boxes, this.walls);
         this.physics.add.collider(this.boxes, this.players);
 
@@ -204,6 +208,7 @@ export class LevelScene extends Phaser.Scene {
         this.elVictimos.preUpdate(time, delta);
 
         this.physics.world.update(time, delta);
+        this.boxes.preUpdate(time, delta);
     }
 
     public extinguishFire(particle, fire) {
