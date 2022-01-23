@@ -68,7 +68,7 @@ export class LevelScene extends Phaser.Scene {
     public preload() {
         this.levelGenerator = new LevelGenerator(this);
 
-        this.load.image('sky', 'assets/sky.png');
+        this.load.image('sky', 'assets/background.png');
         this.load.image('ground', 'assets/platform.png');
         this.load.image('tiles', 'assets/TilesetMap.png');
         this.load.image('debugball', 'assets/debugball.png');
@@ -80,6 +80,8 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('box', 'assets/box.png');
         this.load.image('timeBar', 'assets/timeBar.png');
         this.load.image('key', 'assets/key.png');
+        this.load.image('stairsdown', 'assets/stairsdown.png');
+        this.load.image('stairsup', 'assets/stairsup.png');
 
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 38, frameHeight: 39 });
         this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/grand_sprites.png', {
