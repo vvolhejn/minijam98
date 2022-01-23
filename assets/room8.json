@@ -102,7 +102,7 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":480,
+                 "x":448,
                  "y":192
                 }, 
                 {
@@ -152,18 +152,6 @@
          "id":3,
          "name":"victims",
          "objects":[
-                {
-                 "gid":13,
-                 "height":32,
-                 "id":3,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":704,
-                 "y":64
-                }, 
                 {
                  "gid":13,
                  "height":32,

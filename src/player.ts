@@ -13,12 +13,12 @@ export abstract class Player extends Phaser.GameObjects.Container {
     RIGHT_ANIM_KEY: string;
     TURN_ANIM_KEY: string;
 
-    ON_DAMAGE_VELOCITY_X = 300;
-    ON_DAMAGE_VELOCITY_Y = 100;
-    INVINCIBILITY_TIME_MS = 500;
+    TELEPORT_COOLDOWN_MS = 3000;
 
     // CURRENTLY UNUSED!
     invincible = false;  // briefly true after damage
+
+    canTeleport = true;
 
     constructor(scene: Phaser.Scene, x: integer, y: integer, spriteKey: string) {
         super(scene);
@@ -39,24 +39,11 @@ export abstract class Player extends Phaser.GameObjects.Container {
     public update(_time, _delta): void {
     }
 
-    public onFireCollision(fire: Fire, scene : LevelScene) {
-        if (this.invincible) return;
-
-        const positionDiff = this.sprite.getCenter().clone().subtract(fire.getCenter());
-        this.sprite.setVelocityX(this.ON_DAMAGE_VELOCITY_X * (positionDiff.x > 0 ? 1 : (-1)));
-        this.sprite.setVelocityY(-this.ON_DAMAGE_VELOCITY_Y);
-
-        scene.timer.total_ms = Math.max(scene.timer.total_ms - FIRE_PLAYER_COLLISION_PENALTY_MS, 0);
-        this.sprite.setTint(0xFF0000);
-        // this.invincible = true;
-        // serol.alpha = 0.5;
-        scene.time.addEvent({
-            delay: this.INVINCIBILITY_TIME_MS,
-            callback: () => {
-                this.sprite.clearTint();
-                this.invincible = false;
-            },
-            loop: false
-        });
+    public onTeleport() {
+        this.canTeleport = false;
+        this.scene.time.delayedCall(
+            this.TELEPORT_COOLDOWN_MS,
+            () => { this.canTeleport = true; }, [], this
+        );
     }
 }

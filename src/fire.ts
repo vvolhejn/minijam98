@@ -1,9 +1,18 @@
+import { ElVictimo } from "./elVictimo";
+import { Player } from "./player";
+import { LevelScene } from "./scenes/levelScene";
+
 export class Fire extends Phaser.Physics.Arcade.Sprite {
     hp: number;
     baseHp: number;
     fireNum: number;
     baseScale: number;
     scene;
+
+    ON_DAMAGE_VELOCITY_X = 300;
+    ON_DAMAGE_VELOCITY_Y = 100;
+    INVINCIBILITY_TIME_MS = 500;
+    FIRE_PLAYER_COLLISION_PENALTY_MS = 2000;
 
     constructor(scene: Phaser.Scene, x, y, textureKey, hp = 50) {
         super(scene, x, y, textureKey);
@@ -69,5 +78,33 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         this.body.enable = true;
         this.updateScale();
         this.setAlpha(1);
+    }
+
+    public onFireCollision(damagedGuy: Player | ElVictimo, scene: LevelScene) {
+        if (damagedGuy.invincible) return;
+
+        let damagedSprite: Phaser.GameObjects.Sprite | any;
+        if (damagedGuy instanceof ElVictimo) {
+            damagedSprite = damagedGuy
+        } else {
+            damagedSprite = damagedGuy.sprite;
+        }
+    
+        const positionDiff = damagedSprite.getCenter().clone().subtract(this.getCenter());
+        damagedSprite.setVelocityX(this.ON_DAMAGE_VELOCITY_X * (positionDiff.x > 0 ? 1 : (-1)));
+        damagedSprite.setVelocityY(-this.ON_DAMAGE_VELOCITY_Y);
+
+        scene.timer.total_ms = Math.max(scene.timer.total_ms - this.FIRE_PLAYER_COLLISION_PENALTY_MS, 0);
+        damagedSprite.setTint(0xFF0000);
+        // this.invincible = true;
+        // serol.alpha = 0.5;
+        scene.time.addEvent({
+            delay: this.INVINCIBILITY_TIME_MS,
+            callback: () => {
+                damagedSprite.clearTint();
+                damagedGuy.invincible = false;
+            },
+            loop: false
+        });
     }
 }
