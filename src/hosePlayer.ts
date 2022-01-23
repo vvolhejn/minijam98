@@ -20,6 +20,7 @@ export class HosePlayer extends Player {
         // this.sprite.setFrictionX(100000)
         this.sprite.refreshBody();
         this.sprite.setMaxVelocity(MAX_VELOCITY_X, 100000);
+        this.sprite.setDepth(10) // why is the hose still in front?
         this.isAnchored = false;
 
         scene.anims.create({
