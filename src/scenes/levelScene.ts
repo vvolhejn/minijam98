@@ -71,10 +71,10 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('box', 'assets/box.png');
         this.load.image('timeBar', 'assets/timeBar.png');
         this.load.image('key', 'assets/key.png');
-        this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
 
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 38, frameHeight: 39 });
         this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
+        this.load.spritesheet(EL_VICTIMO_SPRITE_KEY, 'assets/citizen_sprites.png', { frameWidth: 15, frameHeight: 18 });
 
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
         this.load.spritesheet("droplet", 'assets/droplets.png', { frameWidth: 10, frameHeight: 10 });
@@ -112,6 +112,19 @@ export class LevelScene extends Phaser.Scene {
             key: "droplet_alive",
             frames: this.anims.generateFrameNumbers("droplet", { start: 0, end: 1 }),
             frameRate: 10,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: "victimanim",
+            frames: this.anims.generateFrameNumbers(EL_VICTIMO_SPRITE_KEY, { start: 0, end: 1 }),
+            frameRate: 3,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: "victimcarried",
+            frames: this.anims.generateFrameNumbers(EL_VICTIMO_SPRITE_KEY, { start: 2, end: 2 }),
+            frameRate: 3,
             repeat: -1,
         });
 
@@ -217,7 +230,7 @@ export class LevelScene extends Phaser.Scene {
 
         // Collide with floor map.
         this.physics.add.collider(this.players, this.walls);
-        this.physics.add.collider(this.elVictimos, this.walls);
+        this.physics.add.collider(this.elVictimos, this.walls, this.onVictimHitGround, null, this);
         this.physics.add.collider(this.hosePlayer.particles, this.walls);
 
 
@@ -288,6 +301,10 @@ export class LevelScene extends Phaser.Scene {
     private onVictimInThanksWall(victim: ElVictimo, thanksWall: ThanksWall) {
         thanksWall.handleVictim(victim);
         this.checkVictory();
+    }
+
+    private onVictimHitGround(victim: ElVictimo, _) {
+        victim.onHitGround(this)
     }
 
     private onTouchHydrant(_player, hydrant: Phaser.Physics.Arcade.Sprite) {

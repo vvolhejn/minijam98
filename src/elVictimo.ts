@@ -18,6 +18,9 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
         this.savior = null;
         this.saved = false;
         this.setDepth(5);
+        this.setScale(2);
+        this.anims.play('victimanim');
+        this.anims.setProgress(Math.random());
     }
 
     public pickedUpBy(groundPlayer) {
@@ -52,10 +55,22 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
         switch (direction) {
             case VictimDirection.LEFT:
                 this.setVelocity(-this.THROW_VELOCITY_X, this.THROW_VELOCITY_Y);
+                this.setAngularVelocity(-100)
                 break;
             case VictimDirection.RIGHT:
                 this.setVelocity(this.THROW_VELOCITY_X, this.THROW_VELOCITY_Y);
+                this.setAngularVelocity(100)
                 break;
         }
+    }
+
+    public onHitGround(scene) {
+        this.setAngularVelocity(0);
+        scene.tweens.add({
+            targets: this,
+            rotation: 0,
+            ease: 'Power2',
+            duration: 200,
+        });
     }
 }
