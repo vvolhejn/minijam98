@@ -46,10 +46,8 @@ export class LevelScene extends Phaser.Scene {
     elVictimos: Phaser.Physics.Arcade.Group;
     platforms;
     players: Phaser.Physics.Arcade.Group;
-    score = 0;
     level = 1;
     isGameOver = false;
-    scoreText: Phaser.GameObjects.Text;
     levelText: Phaser.GameObjects.Text;
     gameOverText: Phaser.GameObjects.Text;
     gameOverBackground: Phaser.GameObjects.Rectangle;
@@ -216,14 +214,12 @@ export class LevelScene extends Phaser.Scene {
         });
 
         //  The score
-        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
-        configureText(this.scoreText);
-        this.levelText = this.add.text(16, 64, 'Level: 1', { fontSize: '32px' });
+        this.levelText = this.add.text(16, 26, 'Level: 1', { fontSize: '32px' });
         configureText(this.levelText);
 
         this.gameOverBackground = this.add.rectangle(600, 250, 800, 200, 0x320032);
         this.gameOverText = this.add.text(300, 200, 'Game over!', { fontSize: '100px', color: '#f00' });
-        [this.scoreText, this.gameOverBackground, this.gameOverText].forEach((obj) => {
+        [this.gameOverBackground, this.gameOverText].forEach((obj) => {
             obj.setDepth(1000);
             obj.setScrollFactor(0, 0);
         });
@@ -298,22 +294,10 @@ export class LevelScene extends Phaser.Scene {
     public extinguishFire(particle, fire) {
         hideParticle(particle, this);
         fire.lowerHp();
-
-        //  Add and update the score
-        if (fire.hp <= 0) {
-            this.score += 1;
-            this.redrawScore();
-        }
     }
 
     public extinguishFireWithBox(box, fire) {
         fire.lowerHp();
-
-        //  Add and update the score
-        if (fire.hp <= 0) {
-            this.score += 1;
-            this.redrawScore();
-        }
     }
 
     private pickUpElVictimo(_groundPlayer, elVictimo) {
@@ -476,10 +460,6 @@ export class LevelScene extends Phaser.Scene {
             hydrant.setState(0);
             this.hydrants.add(hydrant);
         });
-    }
-
-    public redrawScore() {
-        this.scoreText.setText('Score: ' + this.score);
     }
 
     private checkVictory() {
