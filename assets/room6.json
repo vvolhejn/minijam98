@@ -120,8 +120,14 @@
                  "height":32,
                  "id":8,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"color",
+                         "type":"string",
+                         "value":"yellow"
+                        }],
                  "rotation":0,
-                 "type":"",
+                 "type":"key",
                  "visible":true,
                  "width":32,
                  "x":704,
@@ -132,8 +138,14 @@
                  "height":32,
                  "id":9,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"color",
+                         "type":"string",
+                         "value":"red"
+                        }],
                  "rotation":0,
-                 "type":"",
+                 "type":"key",
                  "visible":true,
                  "width":32,
                  "x":576,
@@ -144,8 +156,14 @@
                  "height":32,
                  "id":10,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"color",
+                         "type":"string",
+                         "value":"blue"
+                        }],
                  "rotation":0,
-                 "type":"",
+                 "type":"key",
                  "visible":true,
                  "width":32,
                  "x":32,
@@ -167,8 +185,14 @@
                  "height":160,
                  "id":15,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"color",
+                         "type":"string",
+                         "value":"yellow"
+                        }],
                  "rotation":0,
-                 "type":"",
+                 "type":"door",
                  "visible":true,
                  "width":32,
                  "x":672,
@@ -179,8 +203,14 @@
                  "height":160,
                  "id":16,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"color",
+                         "type":"string",
+                         "value":"red"
+                        }],
                  "rotation":0,
-                 "type":"",
+                 "type":"door",
                  "visible":true,
                  "width":32,
                  "x":384,
@@ -191,8 +221,14 @@
                  "height":160,
                  "id":17,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"color",
+                         "type":"string",
+                         "value":"blue"
+                        }],
                  "rotation":0,
-                 "type":"",
+                 "type":"door",
                  "visible":true,
                  "width":32,
                  "x":96,

@@ -3,7 +3,7 @@ import { parseAllProperties, parseProperties } from "./utils";
 export class LevelGenerator {
     scene;
     rooms;
-    NUM_ROOMS = 5;
+    NUM_ROOMS = 9;
 
     constructor(scene) {
         this.scene = scene;
@@ -19,18 +19,48 @@ export class LevelGenerator {
             const key = `room${i}`;
             let map = this.scene.make.tilemap({ key: key });
             map['properties'] = parseProperties(map['properties']);
-            console.log("map after is", map);
-            this.rooms.push([key, map]);
+            map.mapKey = key;
+            map.properties.height = map.properties.height || 1;
+            this.rooms.push(map);
         }
     }
 
     public generateLevel() {
-        // let level = [this.randomChoice(this.rooms)];
-        // let totalHeight = 0;
-        // while (totalHeight < 3) {
-        //
-        // }
-        return [this.rooms[0][0], this.rooms[1][0], this.rooms[1][0]];
+        let heightLeft = 3;
+        let level;
+        while (heightLeft > 0) {
+            level = [];
+            let entryConstraints = [];
+            heightLeft = 3;
+            while (heightLeft > 0) {
+                // console.log(heightLeft);
+
+                let availableRooms = this.rooms.filter( (map) => {
+                    let h = map.properties.height;
+                    let ok = h <= heightLeft;
+                    if (entryConstraints.length > 0) {
+                        let options = entryConstraints.map( (entryOption) => {
+                            return map.properties.entry.includes(entryOption);
+                        });
+                        // console.log(map.mapKey, map);
+                        // console.log("enrtryu Constraing", entryConstraints);
+                        // console.log(options);
+                        ok = ok && options.includes(true);
+                    }
+                    return ok;
+                });
+                // console.log("Available rooms", availableRooms);
+                if (availableRooms.length == 0)
+                    break;
+                let room = this.randomChoice(availableRooms);
+                level.push(room);
+                entryConstraints = room.properties.exit;
+                let h = room.properties.height;
+                heightLeft -= h;
+            }
+        }
+        // console.log("Final levels:", level);
+        return level;
     }
 
     private randomChoice(array) {
