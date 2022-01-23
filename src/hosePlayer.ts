@@ -1,4 +1,4 @@
-import { Player, MAX_VELOCITY_X } from './player'
+import { Player, MAX_VELOCITY_X } from './player';
 import { zeroAccelerationIfBlocked } from "./utils";
 
 export class HosePlayer extends Player {
@@ -10,6 +10,9 @@ export class HosePlayer extends Player {
     ACCELERATION_X = 500;
     SPRINKLER_ACC = 25;
     JUMP_VELOCITY_Y = -800;
+
+    WATER_VELOCITY_MIN = 400;
+    WATER_VELOCITY_MAX = 500;
 
     constructor(scene: Phaser.Scene, x: integer, y: integer, spriteKey: string) {
         super(scene, x, y, spriteKey);
@@ -44,16 +47,29 @@ export class HosePlayer extends Player {
 
         // Water sprinkler
         this.particles = scene.physics.add.group({
-            bounceX: 0.4,
-            bounceY: 0.4,
+            bounceX: 0.3,
+            bounceY: 0.3,
             collideWorldBounds: true,
         });
 
         for (let i = 0; i < this.NUM_PARTICLES; i++) {
-            this.particles.create(0, 0, 'droplet', 0, false, false).setScale(1, 1);
+            this.particles.create(0, 0, 'droplet', 0, false, false);
+            let particle: Phaser.Physics.Arcade.Sprite = this.particles.getLast();
+
+            const scale = 1 + Math.random();
+            particle.setScale(scale);
+            if (Math.random() < 0.5) {
+                particle.setFlipX(true);
+            }
+            if (Math.random() < 0.5) {
+                particle.setFlipY(true);
+            }
+            particle.setAlpha(0.3 + Math.random() * 0.7)
+            particle.setFrictionX(0.5)
+
             // Otherwise they appear as invisible objects that players can collide with.
-            this.particles.getLast().body.enable = false;
-            this.particles.getLast().setDepth(10)
+            particle.body.enable = false;
+            particle.setDepth(10);
         }
     }
 
@@ -99,7 +115,7 @@ export class HosePlayer extends Player {
 
             const numToFire = 6;
             for (let i = 0; i < numToFire; i++) {
-                let speed = Phaser.Math.Between(300, 400);
+                let speed = Phaser.Math.Between(this.WATER_VELOCITY_MIN, this.WATER_VELOCITY_MAX);
                 let angle = diff.angle() + Phaser.Math.FloatBetween(-0.1, 0.1);
                 let p = this.particles.getFirstDead(false, this.sprite.x, this.sprite.y);
                 if (p != null) {
@@ -109,7 +125,7 @@ export class HosePlayer extends Player {
                     p.setVelocity(speed * Math.cos(angle), speed * Math.sin(angle));
                     p.setVisible(true);
                     p.setActive(true);
-                    this.scene.time.delayedCall(1000, hideParticle, [p, this.scene], this);
+                    this.scene.time.delayedCall(300, hideParticle, [p, this.scene], this);
                 }
             }
 
@@ -125,6 +141,7 @@ export class HosePlayer extends Player {
 export function hideParticle(particle, scene) {
     particle.anims.play("droplet_death", true);
     particle.on('animationcomplete', () => {
+        particle.body.setEnable(false);
         scene.hosePlayer.particles.killAndHide(particle);
     }, this);
 }
