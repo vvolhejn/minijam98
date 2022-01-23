@@ -277,7 +277,7 @@ export class LevelScene extends Phaser.Scene {
         this.walls.push(layer);
 
         // Fires.
-        map.getObjectLayer('fires')?.objects.forEach((fireTile) => {
+        map.getObjectLayer('fires')?.objects.sort((a, b) => a.y - b.y).forEach((fireTile) => {
             let fire = new Fire(this, offsetX + fireTile.x + 15, offsetY + fireTile.y - 38, 'fire');
             this.fires.add(fire, true);
             fire.body.setSize(30, 60, true);

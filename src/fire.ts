@@ -2,6 +2,7 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
     hp: number;
     baseHp: number;
     fireNum: number;
+    baseScale: number;
     scene;
 
     constructor(scene: Phaser.Scene, x, y, textureKey, hp = 50) {
@@ -16,11 +17,17 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         if (this.fireNum == 3)
             this.y = this.y + 5;
         this.anims.play(`fire${this.fireNum}anim`, true);
+        this.anims.setProgress(Math.random());
+        if (Math.random() < 0.5) {
+            this.setFlipX(true);
+        }
+        this.setRotation(Phaser.Math.RND.rotation() * 0.05)
         this.scene = scene;
+        this.baseScale = Phaser.Math.RND.realInRange(0.9, 1.1)
     }
 
     public updateScale() {
-        const scale = 2 * ((this.hp + this.baseHp) / (2 * this.baseHp));
+        const scale = 2 * this.baseScale * ((this.hp + this.baseHp) / (2 * this.baseHp));
         this.setScale(scale);
 
         // TODO: center the scaling on the bottom edge
