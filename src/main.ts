@@ -7,11 +7,14 @@ let levels = [
     levelScene,
 ];
 
+export const SCREEN_HEIGHT = 700;
+export const SCREEN_WIDTH = 1200;
+
 const gameConfig = {
     type: Phaser.AUTO,
     parent: 'content',
-    width: 1200,
-    height: 700,
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
     physics: {
         default: 'arcade',
         arcade: {
