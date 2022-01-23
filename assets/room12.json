@@ -18,6 +18,29 @@
         }, 
         {
          "draworder":"topdown",
+         "id":6,
+         "name":"hydrants",
+         "objects":[
+                {
+                 "gid":45,
+                 "height":32,
+                 "id":12,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":512,
+                 "y":192
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":2,
          "name":"entryteleport",
          "objects":[
@@ -192,9 +215,25 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":6,
- "nextobjectid":12,
+ "nextlayerid":7,
+ "nextobjectid":13,
  "orientation":"orthogonal",
+ "properties":[
+        {
+         "name":"entry",
+         "type":"string",
+         "value":"teleport"
+        }, 
+        {
+         "name":"exit",
+         "type":"string",
+         "value":"left, right"
+        }, 
+        {
+         "name":"height",
+         "type":"int",
+         "value":1
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
  "tileheight":32,

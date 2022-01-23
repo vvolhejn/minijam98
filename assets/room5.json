@@ -18,6 +18,29 @@
         }, 
         {
          "draworder":"topdown",
+         "id":6,
+         "name":"hydrants",
+         "objects":[
+                {
+                 "gid":45,
+                 "height":32,
+                 "id":16,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":768,
+                 "y":192
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":5,
          "name":"windows",
          "objects":[
@@ -240,8 +263,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":6,
- "nextobjectid":16,
+ "nextlayerid":7,
+ "nextobjectid":17,
  "orientation":"orthogonal",
  "properties":[
         {
