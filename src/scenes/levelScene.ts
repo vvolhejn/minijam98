@@ -265,6 +265,7 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
         this.physics.add.collider(this.boxes, this.fires, this.extinguishFireWithBox, null, this);
         this.physics.add.overlap(this.players, this.fires, this.onPlayerFireCollision, null, this);
+        this.physics.add.overlap(this.elVictimos, this.fires, this.onVictimFireCollision, null, this);
 
         // Hose collisions.
         this.hose.parts.forEach((part) => {
@@ -314,8 +315,16 @@ export class LevelScene extends Phaser.Scene {
         fire: Fire,
     ) {
         let player: Player = (playerSprite === this.hosePlayer.sprite) ? this.hosePlayer : this.groundPlayer;
-        player.onFireCollision(fire, this);
+        fire.onFireCollision(player, this);
     }
+
+    private onVictimFireCollision(
+        victim: ElVictimo,
+        fire: Fire,
+    ) {
+        fire.onFireCollision(victim, this);
+    }
+
 
     private onVictimInThanksWall(victim: ElVictimo, thanksWall: ThanksWall) {
         thanksWall.handleVictim(victim);
