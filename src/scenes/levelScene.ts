@@ -7,6 +7,7 @@ import { Player } from "../player";
 import { Door } from "../door";
 import { parseAllProperties } from "../utils";
 import { ThanksWall } from "../thanksWall";
+import { LevelGenerator } from "../levelGeneration";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -21,6 +22,8 @@ const FLOOR_WIDTH = 32 * TILE_SIZE;
 const FLOOR_HEIGHT = 7 * TILE_SIZE;
 
 export class LevelScene extends Phaser.Scene {
+    levelGenerator: LevelGenerator;
+
     hosePlayer: HosePlayer;
     groundPlayer: GroundPlayer;
     walls: Array<Phaser.Tilemaps.TilemapLayer>;
@@ -43,14 +46,11 @@ export class LevelScene extends Phaser.Scene {
     }
 
     public preload() {
+        this.levelGenerator = new LevelGenerator(this);
+
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
-
         this.load.image('tiles', 'assets/TilesetMap.png');
-        for (let i = 1; i <= 2; i++) {
-            this.load.tilemapTiledJSON(`room${i}`, `assets/room${i}.json`);
-        }
-
         this.load.image('debugball', 'assets/debugball.png');
         this.load.image('debugstar', 'assets/star.png');
         this.load.image('door', 'assets/door.png');
@@ -73,6 +73,8 @@ export class LevelScene extends Phaser.Scene {
     }
 
     public create() {
+        this.levelGenerator.create();
+
         for (let i = 1; i <= 3; i++) {
             this.anims.create({
                 key: `fire${i}anim`,
@@ -119,10 +121,11 @@ export class LevelScene extends Phaser.Scene {
         this.walls = [];
         this.elVictimos = this.physics.add.group({ collideWorldBounds: true });
         this.elVictimos.runChildUpdate = true;
-        this.loadRoom('room1', 0);
-        this.loadRoom('room2', 1);
-        this.loadRoom('room2', 2);
 
+        let rooms = this.levelGenerator.generateLevel();
+        rooms.forEach( (room, idx) => {
+            this.loadRoom(room, idx);
+        });
 
         // let door = new Door(this, 600, 400);
         // this.doors = this.physics.add.staticGroup([door.doorSprite]);
@@ -224,8 +227,9 @@ export class LevelScene extends Phaser.Scene {
         thanksWall.handleVictim(victim);
     }
 
-    private loadRoom(roomId: string, floorNum: number) {
+    private loadRoom(roomId, floorNum: number) {
         let map = this.make.tilemap({ key: roomId });
+        // let map = roomMap.copy();
 
         const tileset = map.addTilesetImage('TilesetMap', 'tiles');
         const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
