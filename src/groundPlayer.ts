@@ -24,23 +24,16 @@ export class GroundPlayer extends Player {
         this.sprite.setMaxVelocity(MAX_VELOCITY_X, 100000);
 
         scene.anims.create({
-            key: this.LEFT_ANIM_KEY,
-            frames: scene.anims.generateFrameNumbers(spriteKey, { start: 0, end: 3 }),
+            key: 'grandLeft',
+            frames: scene.anims.generateFrameNumbers(spriteKey, { start: 0, end: 5 }),
             frameRate: 10,
             repeat: -1
         });
 
         scene.anims.create({
-            key: this.TURN_ANIM_KEY,
-            frames: [{ key: spriteKey, frame: 4 }],
+            key: 'grandTurn',
+            frames: [{ key: spriteKey, frame: 6 }],
             frameRate: 20
-        });
-
-        scene.anims.create({
-            key: this.RIGHT_ANIM_KEY,
-            frames: scene.anims.generateFrameNumbers(spriteKey, { start: 5, end: 8 }),
-            frameRate: 10,
-            repeat: -1
         });
 
         //  Input Events
@@ -56,21 +49,23 @@ export class GroundPlayer extends Player {
 
     public update(time, delta) {
         super.update(time, delta);
+        this.sprite.flipX = false;
 
         if (this.cursors.left.isDown) {
             this.sprite.setAccelerationX(-this.ACCELERATION_X);
             this.lastDirection = VictimDirection.LEFT;
 
-            this.sprite.anims.play(this.LEFT_ANIM_KEY, true);
+            this.sprite.anims.play('grandLeft', true);
         } else if (this.cursors.right.isDown) {
             this.sprite.setAccelerationX(this.ACCELERATION_X);
             this.lastDirection = VictimDirection.RIGHT;
 
-            this.sprite.anims.play(this.RIGHT_ANIM_KEY, true);
+            this.sprite.anims.play('grandLeft', true);
+            this.sprite.flipX = true;
         } else {
             this.sprite.setAccelerationX(0);
 
-            this.sprite.anims.play(this.TURN_ANIM_KEY);
+            this.sprite.anims.play('grandTurn');
         }
 
         if (this.cursors.up.isDown && this.sprite.body.blocked.down) {

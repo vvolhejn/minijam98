@@ -73,7 +73,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('key', 'assets/key.png');
 
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 38, frameHeight: 39 });
-        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
+        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/grand_sprites.png', { frameWidth: 32, frameHeight: 60 });
         this.load.spritesheet(EL_VICTIMO_SPRITE_KEY, 'assets/citizen_sprites.png', { frameWidth: 15, frameHeight: 18 });
 
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
@@ -137,9 +137,13 @@ export class LevelScene extends Phaser.Scene {
         //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
         this.platforms.create(SCREEN_WIDTH / 2, SCREEN_HEIGHT + 16, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
 
+        // Create hose.
+        this.hose = new Hose(this, 30, SCREEN_HEIGHT - 32 - 40);
+
         // Create players.
-        this.hosePlayer = new HosePlayer(this, 30, SCREEN_HEIGHT - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
-        this.groundPlayer = new GroundPlayer(this, 60, SCREEN_HEIGHT - 32 - 20, GROUND_PLAYER_SPRITE_KEY);
+        this.hosePlayer = new HosePlayer(this, this.hose.initialX, this.hose.initialY, HOSE_PLAYER_SPRITE_KEY);
+        this.hose.attachEndTo(this.hosePlayer);
+        this.groundPlayer = new GroundPlayer(this, 60, SCREEN_HEIGHT - 60 - 20, GROUND_PLAYER_SPRITE_KEY);
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
         this.hosePlayer.setPhysicsProperties();
         this.groundPlayer.setPhysicsProperties();
@@ -188,17 +192,13 @@ export class LevelScene extends Phaser.Scene {
 
         this.gameOverBackground = this.add.rectangle(600, 250, 800, 200, 0x320032);
         this.gameOverText = this.add.text(300, 200, 'Game over!', { fontSize: '100px', color: '#f00' });
-        [this.scoreText, this.gameOverBackground, this.gameOverText].forEach( (obj)=> {
+        [this.scoreText, this.gameOverBackground, this.gameOverText].forEach((obj) => {
             obj.setDepth(1000);
             obj.setScrollFactor(0, 0);
         });
 
         this.gameOverBackground.setVisible(false);
         this.gameOverText.setVisible(false);
-
-        // Create hose.
-        this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
-        this.hose.attachEndTo(this.hosePlayer);
 
         this.timer = new Timer(this, SCREEN_WIDTH - TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE, TILE_SIZE / 2, SCREEN_HEIGHT - 2 * TILE_SIZE, 'timeBar');
         this.timer.start(5 * 1000 * 10);
@@ -227,12 +227,12 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.boxes, this.doors);
         this.physics.add.collider(this.boxes, this.walls);
         this.physics.add.collider(this.boxes, this.players);
+        this.physics.add.overlap(this.boxes, this.hosePlayer.particles, this.onBoxWaterCollision, null, this);
 
         // Collide with floor map.
         this.physics.add.collider(this.players, this.walls);
         this.physics.add.collider(this.elVictimos, this.walls, this.onVictimHitGround, null, this);
         this.physics.add.collider(this.hosePlayer.particles, this.walls);
-
 
         this.physics.add.overlap(this.groundPlayer.sprite, this.elVictimos, this.pickUpElVictimo, null, this);
         this.physics.add.collider(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
@@ -274,13 +274,6 @@ export class LevelScene extends Phaser.Scene {
             this.score += 1;
             this.redrawScore();
         }
-
-        if (this.fires.countActive(true) === 0) {
-            //  A new batch of fires to collect
-            this.fires.children.iterate(function (child: Fire) {
-                child.resetHp();
-            });
-        }
     }
 
     private pickUpElVictimo(_groundPlayer, elVictimo) {
@@ -317,6 +310,20 @@ export class LevelScene extends Phaser.Scene {
         this.hose.setStartTo(hydrant.getCenter());
         hydrant.setTint(0xff0000);
     }
+
+    private onBoxWaterCollision(box, water) {
+        // water.collided is a semihack
+        if (water.collided) return;
+        box.body.setVelocity(
+            water.body.velocity.x / Box.WATER_STRENGTH_FACTOR,
+            water.body.velocity.y / Box.WATER_STRENGTH_FACTOR);
+
+        const f = Box.BOX_STRENGTH_ON_WATER_FACTOR;
+        water.body.setVelocity(-water.body.velocity.x / Phaser.Math.Between(f - 2, f + 2), -water.body.velocity.y / Phaser.Math.Between(f - 2, f + 2));
+        water.collided = true;
+    }
+
+
 
     private loadRoom(room) {
         let map = this.make.tilemap({ key: room.mapKey });
@@ -398,6 +405,7 @@ export class LevelScene extends Phaser.Scene {
                 'box'
             );
             this.boxes.add(box, true);
+            box.setMass(1.5);
         }, this);
 
         // Hydrants
@@ -421,7 +429,9 @@ export class LevelScene extends Phaser.Scene {
     }
 
     private checkVictory() {
-        const allSaved = this.elVictimos.getChildren().every((victim) => { return (victim as ElVictimo).saved; })
+        const allSaved = this.elVictimos.getChildren().every((victim) => {
+            return (victim as ElVictimo).saved;
+        })
         if (!allSaved) {
             // console.log("not everyone is saved)");
             // console.log(this.elVictimos);
