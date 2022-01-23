@@ -19,7 +19,9 @@ const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
 const EL_VICTIMO_SPRITE_KEY = 'elVictimo';
 const THANKS_COUNT = 10;
-const AU_COUNT = 11;
+const TSS_COUNT = 5;
+const ATTACH_COUNT = 5;
+const AU_COUNT = 12;
 
 
 const TILE_SIZE = 32;
@@ -56,6 +58,8 @@ export class LevelScene extends Phaser.Scene {
     gameOverBackground: Phaser.GameObjects.Rectangle;
     levelEntrance = new Vector2(60, SCREEN_HEIGHT - 60 - 20);
     auSounds;
+    tssSounds;
+    attachSounds;
 
     hose: Hose;
 
@@ -102,6 +106,12 @@ export class LevelScene extends Phaser.Scene {
         }
         for (let i = 0; i < AU_COUNT; i++) {
             this.load.audio(`au${i}`, `assets/sounds/au${i}.mp3`);
+        }
+        for (let i = 0; i < TSS_COUNT; i++) {
+            this.load.audio(`tss${i}`, `assets/sounds/tss${i}.mp3`);
+        }
+        for (let i = 0; i < ATTACH_COUNT; i++) {
+            this.load.audio(`attach${i}`, `assets/sounds/attach${i}.mp3`);
         }
     }
 
@@ -215,6 +225,14 @@ export class LevelScene extends Phaser.Scene {
         this.auSounds = [];
         for (let i = 0; i < AU_COUNT; ++i) {
             this.auSounds.push(this.sound.add(`au${i}`, { loop: false }));
+        }
+        this.tssSounds = [];
+        for (let i = 0; i < TSS_COUNT; ++i) {
+            this.tssSounds.push(this.sound.add(`tss${i}`, { loop: false }));
+        }
+        this.attachSounds = [];
+        for (let i = 0; i < ATTACH_COUNT; ++i) {
+            this.attachSounds.push(this.sound.add(`attach${i}`, { loop: false }));
         }
 
         // Walls of Thanks.
@@ -375,6 +393,8 @@ export class LevelScene extends Phaser.Scene {
         hydrant.setState(1);
         this.hose.setStartTo(hydrant.getCenter());
         hydrant.setTint(0xff0000);
+        this.attachSounds[Math.floor(Math.random() * this.attachSounds.length)].play();
+
     }
 
     private onBoxWaterCollision(box, water) {
