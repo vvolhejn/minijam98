@@ -70,7 +70,9 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('debugball', 'assets/debugball.png');
         this.load.image('debugstar', 'assets/debugstar.png');
         this.load.image('hydrant', 'assets/hydrant.png');
-        this.load.image('door', 'assets/door.png');
+        this.load.image('door12', 'assets/door12.png');
+        this.load.image('door13', 'assets/door13.png');
+        this.load.image('trapdoor', 'assets/trapdoor.png');
         this.load.image('box', 'assets/box.png');
         this.load.image('timeBar', 'assets/timeBar.png');
         this.load.image('key', 'assets/key.png');
@@ -414,10 +416,7 @@ export class LevelScene extends Phaser.Scene {
             parseAllProperties(doors);
         }
         doors?.forEach((doorTile) => {
-            let door = new Door(this, offsetX + doorTile.x, offsetY + doorTile.y, doorTile.properties.color);
-            door.doorSprite.setOrigin(0, 1);
-            door.doorSprite.setDisplaySize(doorTile.width, doorTile.height);
-            door.doorSprite.refreshBody();
+            let door = new Door(this, offsetX + doorTile.x, offsetY + doorTile.y, doorTile.width, doorTile.height, doorTile.properties.color);
             this.doors.add(door.doorSprite, true);
             const fittingKeys = keys.filter((key) => {
                 return key.properties.color == doorTile.properties.color;
