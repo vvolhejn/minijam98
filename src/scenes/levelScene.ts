@@ -24,6 +24,7 @@ const FLOOR_HEIGHT = 7 * TILE_SIZE;
 
 export class LevelScene extends Phaser.Scene {
     levelGenerator: LevelGenerator;
+    buildingHeight: number;
 
     hosePlayer: HosePlayer;
     groundPlayer: GroundPlayer;
@@ -118,9 +119,9 @@ export class LevelScene extends Phaser.Scene {
         this.hosePlayer.sprite.setDepth(1);
         this.groundPlayer.sprite.setDepth(1);
 
-        this.hydrants = this.physics.add.staticGroup();
 
         // Load rooms.
+        this.hydrants = this.physics.add.staticGroup();
         this.fires = this.physics.add.staticGroup();
         this.thanksWalls = this.physics.add.staticGroup();
         this.doors = this.physics.add.staticGroup();
@@ -130,10 +131,9 @@ export class LevelScene extends Phaser.Scene {
 
 
         let rooms = this.levelGenerator.generateLevel(true);
-        let h = 0;
+        this.buildingHeight = 0;
         for (let room of rooms) {
-            this.loadRoom(room, h);
-            h += room.properties.height;
+            this.loadRoom(room);
         }
 
         // Sounds
@@ -156,6 +156,17 @@ export class LevelScene extends Phaser.Scene {
         //  The score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
 
+        this.setCollisions();
+
+
+        // Create hose.
+        this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
+        this.hose.attachEndTo(this.hosePlayer);
+
+        this.physics.disableUpdate();
+    }
+
+    private setCollisions() {
         // Collisions.
         this.physics.add.collider(this.players, this.platforms);
         this.physics.add.collider(this.players, this.doors);
@@ -163,7 +174,7 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.elVictimos, this.platforms);
         this.physics.add.overlap(this.elVictimos, this.thanksWalls, this.onVictimInThanksWall, null, this);
         this.physics.add.overlap(this.hydrants, this.hosePlayer.sprite, this.onTouchHydrant, null, this);
-        
+
         // Boxes collisions
         this.physics.add.collider(this.boxes, this.boxes);
         this.physics.add.collider(this.boxes, this.elVictimos);
@@ -184,13 +195,6 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.overlap(this.groundPlayer.sprite, this.elVictimos, this.pickUpElVictimo, null, this);
         this.physics.add.collider(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
         this.physics.add.overlap(this.players, this.fires, this.onPlayerFireCollision, null, this);
-
-
-        // Create hose.
-        this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
-        this.hose.attachEndTo(this.hosePlayer);
-
-        this.physics.disableUpdate();
     }
 
     public update(time, delta) {  // delta is in ms
@@ -259,12 +263,12 @@ export class LevelScene extends Phaser.Scene {
         hydrant.setTint(0xff0000);
     }
 
-    private loadRoom(room, floorNum: number) {
+    private loadRoom(room) {
         let map = this.make.tilemap({ key: room.mapKey });
 
         const tileset = map.addTilesetImage('TilesetMap', 'tiles');
         const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
-        const offsetY = SCREEN_HEIGHT - 32 - (FLOOR_HEIGHT * (floorNum + room.properties.height));
+        const offsetY = SCREEN_HEIGHT - 32 - (FLOOR_HEIGHT * (this.buildingHeight + room.properties.height));
 
         for (let i = 0; i < room.properties.height; i++) {
             let bgMap = this.make.tilemap({ key: "background1" });
@@ -275,6 +279,7 @@ export class LevelScene extends Phaser.Scene {
         map.createLayer('windows', tileset, offsetX, offsetY);
         layer.setCollisionByExclusion([-1], true);
         this.walls.push(layer);
+        this.buildingHeight += room.properties.height;
 
         // Fires.
         map.getObjectLayer('fires')?.objects.forEach((fireTile) => {
