@@ -38,13 +38,14 @@ export class Hose extends Phaser.GameObjects.Container {
     // how much the hose likes to slide along walls, non-negative
     SLIDING_COEF = 0.7;
     SLIDING_MAX = 50;
-
+    
     endAttachedTo: HosePlayer = null;
     startPoint: Phaser.Math.Vector2;
     curve: Phaser.Curves.Spline;
     graphics;
     debugText: Phaser.GameObjects.Text;
     smoothedVelocities: Array<Phaser.Math.Vector2>;
+    pullPlayer = true;
 
     constructor(scene: LevelScene, x, y) {
         super(scene, 0, 0);
@@ -94,6 +95,8 @@ export class Hose extends Phaser.GameObjects.Container {
             let pos = p.clone().scale(1 - coef).add(this.endAttachedTo.sprite.getCenter().scale(coef));
             this.parts[i].setPosition(pos.x, pos.y);
         }
+        this.pullPlayer = false
+        this.scene.time.delayedCall(300, () => {this.pullPlayer = true;}, [], this);
     }
 
     getSpringForces(velocities): Array<Phaser.Math.Vector2> {
@@ -214,7 +217,7 @@ export class Hose extends Phaser.GameObjects.Container {
             );
             this.parts[0].setVelocity(0, 0);
 
-            if (!this.endAttachedTo.isAnchored) {
+            if (!this.endAttachedTo.isAnchored && this.pullPlayer) {
                 forces[0].scale(this.ATTACHED_PULL_COEF * delta / 1000);
 
                 playerBody.setVelocity(
