@@ -353,7 +353,7 @@ export class LevelScene extends Phaser.Scene {
         }, this);
 
         // Hydrants
-        map.getObjectLayer('hydrant')?.objects.forEach((hydrantTile) => {
+        map.getObjectLayer('hydrants')?.objects.forEach((hydrantTile) => {
             let hydrant = this.physics.add.staticSprite(
                 offsetX + hydrantTile.x,
                 offsetY + hydrantTile.y,

@@ -4,7 +4,7 @@
  "layers":[
         {
          "compression":"",
-         "data":"CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAkAAAAAgAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAAQAAAAIAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAGAAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAA=",
+         "data":"JAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAA=",
          "encoding":"base64",
          "height":7,
          "id":1,
@@ -18,13 +18,131 @@
         }, 
         {
          "draworder":"topdown",
-         "id":11,
+         "id":8,
+         "name":"hydrants",
+         "objects":[
+                {
+                 "gid":45,
+                 "height":32,
+                 "id":16,
+                 "name":"",
+                 "rotation":-90,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":224,
+                 "y":128
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":3,
+         "name":"fires",
+         "objects":[
+                {
+                 "gid":27,
+                 "height":32,
+                 "id":8,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":352,
+                 "y":192
+                }, 
+                {
+                 "gid":27,
+                 "height":32,
+                 "id":9,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":256,
+                 "y":96
+                }, 
+                {
+                 "gid":27,
+                 "height":32,
+                 "id":10,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":256,
+                 "y":64
+                }, 
+                {
+                 "gid":27,
+                 "height":32,
+                 "id":11,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":512,
+                 "y":192
+                }, 
+                {
+                 "gid":27,
+                 "height":32,
+                 "id":12,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":576,
+                 "y":128
+                }, 
+                {
+                 "gid":27,
+                 "height":32,
+                 "id":13,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":736,
+                 "y":192
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":7,
          "name":"windows",
          "objects":[
                 {
                  "gid":29,
-                 "height":128,
-                 "id":45,
+                 "height":96,
+                 "id":14,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":0,
+                 "y":160
+                }, 
+                {
+                 "gid":29,
+                 "height":96,
+                 "id":15,
                  "name":"",
                  "rotation":0,
                  "type":"",
@@ -42,272 +160,36 @@
         {
          "draworder":"topdown",
          "id":4,
-         "name":"fires",
-         "objects":[
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":28,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":96,
-                 "y":192
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":29,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":128,
-                 "y":192
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":30,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":128,
-                 "y":160
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":31,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":96,
-                 "y":160
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":32,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":672,
-                 "y":160
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":33,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":704,
-                 "y":160
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":34,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":672,
-                 "y":192
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":35,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":736,
-                 "y":192
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":36,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":768,
-                 "y":192
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":37,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":640,
-                 "y":192
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":38,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":736,
-                 "y":160
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":7,
          "name":"victims",
          "objects":[
                 {
                  "gid":13,
                  "height":32,
-                 "id":44,
+                 "id":5,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":32,
-                 "y":192
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":5,
-         "name":"doors",
-         "objects":[
+                 "x":416,
+                 "y":96
+                }, 
                 {
-                 "gid":28,
-                 "height":64,
-                 "id":10,
+                 "gid":13,
+                 "height":32,
+                 "id":6,
                  "name":"",
-                 "properties":[
-                        {
-                         "name":"color",
-                         "type":"string",
-                         "value":"blue"
-                        }],
                  "rotation":0,
-                 "type":"door",
+                 "type":"",
                  "visible":true,
                  "width":32,
                  "x":160,
                  "y":192
                 }, 
                 {
-                 "gid":44,
-                 "height":96,
-                 "id":12,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"color",
-                         "type":"string",
-                         "value":"yellow"
-                        }],
-                 "rotation":0,
-                 "type":"door",
-                 "visible":true,
-                 "width":32,
-                 "x":96,
-                 "y":96
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":10,
-         "name":"keys",
-         "objects":[
-                {
-                 "gid":59,
+                 "gid":13,
                  "height":32,
-                 "id":40,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"color",
-                         "type":"string",
-                         "value":"blue"
-                        }],
-                 "rotation":0,
-                 "type":"key",
-                 "visible":true,
-                 "width":32,
-                 "x":512,
-                 "y":192
-                }, 
-                {
-                 "gid":60,
-                 "height":32,
-                 "id":42,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"color",
-                         "type":"string",
-                         "value":"yellow"
-                        }],
-                 "rotation":0,
-                 "type":"key",
-                 "visible":true,
-                 "width":32,
-                 "x":704,
-                 "y":192
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":13,
-         "name":"hydrants",
-         "objects":[
-                {
-                 "gid":45,
-                 "height":32,
-                 "id":46,
+                 "id":7,
                  "name":"",
                  "rotation":0,
                  "type":"",
@@ -321,25 +203,106 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":5,
+         "name":"entryteleport",
+         "objects":[
+                {
+                 "gid":14,
+                 "height":32,
+                 "id":3,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":96,
+                 "y":192
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":6,
+         "name":"exitteleport",
+         "objects":[
+                {
+                 "gid":14,
+                 "height":32,
+                 "id":4,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":896,
+                 "y":192
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":2,
+         "name":"boxes",
+         "objects":[
+                {
+                 "gid":12,
+                 "height":64,
+                 "id":1,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":64,
+                 "x":224,
+                 "y":192
+                }, 
+                {
+                 "gid":12,
+                 "height":64,
+                 "id":2,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":64,
+                 "x":608,
+                 "y":192
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":14,
- "nextobjectid":47,
+ "nextlayerid":9,
+ "nextobjectid":17,
  "orientation":"orthogonal",
  "properties":[
         {
          "name":"entry",
          "type":"string",
-         "value":"right"
+         "value":"teleport"
         }, 
         {
          "name":"exit",
          "type":"string",
-         "value":"left"
+         "value":"teleport"
         }, 
         {
          "name":"height",
-         "type":"int",
-         "value":1
+         "type":"string",
+         "value":"1"
         }],
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
@@ -348,7 +311,7 @@
         {
          "columns":16,
          "firstgid":1,
-         "image":"..\/..\/..\/..\/TilesetMapFinal3.png",
+         "image":"TilesetMap.png",
          "imageheight":128,
          "imagewidth":512,
          "margin":0,

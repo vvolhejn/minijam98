@@ -177,6 +177,29 @@
         }, 
         {
          "draworder":"topdown",
+         "id":8,
+         "name":"hydrants",
+         "objects":[
+                {
+                 "gid":45,
+                 "height":32,
+                 "id":26,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":800,
+                 "y":416
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":3,
          "name":"doors",
          "objects":[
@@ -334,8 +357,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":8,
- "nextobjectid":26,
+ "nextlayerid":9,
+ "nextobjectid":27,
  "orientation":"orthogonal",
  "properties":[
         {

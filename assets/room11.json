@@ -18,6 +18,52 @@
         }, 
         {
          "draworder":"topdown",
+         "id":6,
+         "name":"hydrants",
+         "objects":[
+                {
+                 "gid":45,
+                 "height":32,
+                 "id":10,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":800,
+                 "y":192
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":7,
+         "name":"windows",
+         "objects":[
+                {
+                 "gid":29,
+                 "height":128,
+                 "id":11,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":992,
+                 "y":160
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":3,
          "name":"victims",
          "objects":[
@@ -168,9 +214,25 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":6,
- "nextobjectid":10,
+ "nextlayerid":8,
+ "nextobjectid":12,
  "orientation":"orthogonal",
+ "properties":[
+        {
+         "name":"entry",
+         "type":"string",
+         "value":"teleport"
+        }, 
+        {
+         "name":"exit",
+         "type":"string",
+         "value":"left"
+        }, 
+        {
+         "name":"height",
+         "type":"int",
+         "value":1
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
  "tileheight":32,
