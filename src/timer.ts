@@ -12,7 +12,8 @@ export class Timer {
     constructor(scene: LevelScene, x, y, width, height, textureKey: string) {
         this.scene = scene;
         this.sprite = this.scene.add.sprite(x, y, textureKey);
-        this.sprite.setOrigin(0, 0);
+        this.sprite.setScrollFactor(0, 0);
+        this.sprite.setOrigin(0, 1);
         this.sprite.setDisplaySize(width, height);
         this.width = width;
         this.height = height;
@@ -31,7 +32,7 @@ export class Timer {
         if (!this.isRunning) return;
 
         const elapsedFraction = Math.min(1, (time - this.startTime_ms) / this.total_ms);
-        this.sprite.setDisplaySize(this.width - this.width * elapsedFraction, this.height);
+        this.sprite.setDisplaySize(this.width, this.height - this.height * elapsedFraction);
         if (elapsedFraction == 1) {
             this.isRunning = false;
             this.scene.setGameOver(true);

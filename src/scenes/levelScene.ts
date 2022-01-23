@@ -162,9 +162,13 @@ export class LevelScene extends Phaser.Scene {
 
         //  The score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
-
         this.gameOverBackground = this.add.rectangle(600, 250, 800, 200, 0x320032);
         this.gameOverText = this.add.text(300, 200, 'Game over!', { fontSize: '100px', color: '#f00' });
+        [this.scoreText, this.gameOverBackground, this.gameOverText].forEach( (obj)=> {
+            obj.setDepth(1000);
+            obj.setScrollFactor(0, 0);
+        })
+
         this.gameOverBackground.setVisible(false);
         this.gameOverText.setVisible(false);
 
@@ -174,7 +178,7 @@ export class LevelScene extends Phaser.Scene {
         this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
         this.hose.attachEndTo(this.hosePlayer);
 
-        this.timer = new Timer(this, TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE * 3 / 4, SCREEN_WIDTH - 2 * TILE_SIZE, TILE_SIZE / 2, 'timeBar');
+        this.timer = new Timer(this, SCREEN_WIDTH - TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE, TILE_SIZE / 2, SCREEN_HEIGHT - 2 * TILE_SIZE, 'timeBar');
         this.timer.start(5 * 1000);
 
         this.physics.disableUpdate();
@@ -409,7 +413,7 @@ export class LevelScene extends Phaser.Scene {
         let y = this.cameras.main.centerY;
         this.cameras.main.pan(x, y - SCREEN_HEIGHT, 5 * 1000);
     }
-    
+
     public setGameOver(enable: boolean) {
         this.isGameOver = enable;
         this.gameOverText.setVisible(enable);
