@@ -14,8 +14,20 @@ export class Door {
 
     color: number;
 
-    constructor(scene: Phaser.Scene, x: integer, y: integer, color: string) {
-        this.doorSprite = scene.physics.add.staticSprite(x, y, "door");
+    constructor(scene: Phaser.Scene, x: integer, y: integer, width: integer, height: integer, color: string) {
+        let textureKey;
+        if (width == 32 && height == 96) {
+            textureKey = 'door13';
+        } else if (width == 32 && height == 64) {
+            textureKey = 'door12';
+        } else if (width == 64 && height == 32) {
+            textureKey = 'trapdoor';
+        }
+
+        this.doorSprite = scene.physics.add.staticSprite(x, y, textureKey);
+        this.doorSprite.setOrigin(0, 1);
+        this.doorSprite.setDisplaySize(width, height);
+        this.doorSprite.refreshBody();
         this.setOpenSides(true, true, true, true);
 
         const colorDict = { 'blue': 0x0492C2, 'red': 0x900b03, 'green': 0x03ac13, 'yellow': 0xfce205};
@@ -39,7 +51,7 @@ export class Door {
         this.keySprite.setActive(false);
         this.keySprite.setVisible(false);
         this.keySprite.body.enable = false;
-        this.doorSprite.setTint(0x00ffff);
+        this.doorSprite.setVisible(false);
     }
 
     public setOpenSides(openLeft: boolean, openRight: boolean, openUp = false, openDown = false) {

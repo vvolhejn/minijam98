@@ -10,6 +10,8 @@ export class HosePlayer extends Player {
     ACCELERATION_X = 500;
     SPRINKLER_ACC = 25;
     JUMP_VELOCITY_Y = -800;
+    
+    JOSE_FRICTION_COEF = 0.85;
 
     WATER_VELOCITY_MIN = 400;
     WATER_VELOCITY_MAX = 500;
@@ -64,6 +66,11 @@ export class HosePlayer extends Player {
 
     public update(time, delta) {
         super.update(time, delta);
+
+        this.sprite.setVelocityX(
+            this.sprite.body.velocity.x
+            * Math.pow(1 - this.JOSE_FRICTION_COEF, delta / 1000)
+        );
 
         let diff = new Phaser.Math.Vector2(0, 0);
         this.isAnchored = false;
@@ -139,12 +146,6 @@ export class HosePlayer extends Player {
         }
 
         zeroAccelerationIfBlocked(this.sprite.body);
-
-        // Mouse overrides the arrow controls.
-        const pointer = this.scene.input.activePointer;
-        if (pointer.leftButtonDown()) {
-            diff = new Phaser.Math.Vector2(pointer.x - this.sprite.x, pointer.y - this.sprite.y);
-        }
 
         if (diff.length() != 0) {
 

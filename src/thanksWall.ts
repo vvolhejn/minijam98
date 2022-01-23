@@ -19,7 +19,5 @@ export class ThanksWall extends Phaser.Physics.Arcade.Sprite {
 
         this.thanksSounds[Math.floor(Math.random() * this.thanksSounds.length)].play();
         victim.saved = true;
-        this.scene.score += 1;
-        this.scene.redrawScore();
     }
 }

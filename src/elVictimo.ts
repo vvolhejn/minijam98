@@ -7,7 +7,8 @@ export enum VictimDirection {
 export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
     savior: GroundPlayer;
     saved: boolean;
-
+    invincible: boolean;
+    
     FRICTION_COEF = 0.7;
     THROW_VELOCITY_X = 500;
     THROW_VELOCITY_Y = -300;
@@ -42,11 +43,7 @@ export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
 
         // Whenever the savior turns, clip the bounding box to the savior from each side.
         this.y = this.savior.sprite.y - this.savior.sprite.height / 2;
-        if (this.savior.lastDirection == VictimDirection.LEFT) {
-            this.x = this.savior.sprite.x - this.savior.sprite.width / 2;
-        } else {
-            this.x = this.savior.sprite.x - (this.width - this.savior.sprite.width / 2);
-        }
+        this.x = this.savior.sprite.x - this.savior.sprite.width / 2;
 
         // So that the gravity doesn't drag him down.
         this.setVelocity(0, 0);
