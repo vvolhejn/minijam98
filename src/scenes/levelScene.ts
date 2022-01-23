@@ -9,14 +9,13 @@ import { parseAllProperties } from "../utils";
 import { ThanksWall } from "../thanksWall";
 import { LevelGenerator } from "../levelGeneration";
 import assert = require("assert");
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../main";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
 const EL_VICTIMO_SPRITE_KEY = 'elVictimo';
 const THANKS_COUNT = 10;
 
-const SCREEN_WIDTH = 1200;
-const SCREEN_HEIGHT = 700;
 
 const TILE_SIZE = 32;
 const FLOOR_WIDTH = 32 * TILE_SIZE;
@@ -99,17 +98,17 @@ export class LevelScene extends Phaser.Scene {
         });
 
         //  A simple background for our game
-        this.add.image(600, 350, 'sky').setScale(2).setTint(0x666666);
+        this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 'sky').setScale(2).setTint(0x666666);
 
         //  The platforms group contains the ground
         this.platforms = this.physics.add.staticGroup();
 
         //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-        this.platforms.create(600, 716, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
+        this.platforms.create(SCREEN_WIDTH / 2, SCREEN_HEIGHT + 16, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
 
         // Create players.
-        this.hosePlayer = new HosePlayer(this, 30, 700 - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
-        this.groundPlayer = new GroundPlayer(this, 60, 700 - 32 - 20, GROUND_PLAYER_SPRITE_KEY);
+        this.hosePlayer = new HosePlayer(this, 30, SCREEN_HEIGHT - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
+        this.groundPlayer = new GroundPlayer(this, 60, SCREEN_HEIGHT - 32 - 20, GROUND_PLAYER_SPRITE_KEY);
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
         this.hosePlayer.setPhysicsProperties();
         this.groundPlayer.setPhysicsProperties();
