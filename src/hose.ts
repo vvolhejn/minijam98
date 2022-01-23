@@ -125,6 +125,7 @@ export class Hose extends Phaser.GameObjects.Container {
             this.graphics.clear();
 
             this.graphics.lineStyle(this.HOSE_THICKNESS, this.HOSE_COLOR_1, 1);
+            this.graphics.setDepth(10)
             this.curve.draw(this.graphics, 64);
 
             this.graphics.lineStyle(this.HOSE_THICKNESS / 2, this.HOSE_COLOR_2, 1);
