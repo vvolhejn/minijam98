@@ -9,6 +9,7 @@ export class Box extends Phaser.Physics.Arcade.Sprite {
         this.scene = scene;
         this.setOrigin(0, 1);
         this.setDisplaySize(width, height);
+        this.setDepth(5);
     }
 
     public update(_time, delta): void {
