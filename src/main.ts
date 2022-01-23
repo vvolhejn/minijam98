@@ -19,7 +19,7 @@ const gameConfig = {
         default: 'arcade',
         arcade: {
             gravity: {y: 800},
-            debug: true,
+            debug: false,
             fps: 60, // FPS of the physics simulation - maybe higher could increase stability
             timeScale: 1, // higher to slow down - for debugging
         }
