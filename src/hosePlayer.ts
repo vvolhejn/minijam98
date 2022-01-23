@@ -4,6 +4,7 @@ import { zeroAccelerationIfBlocked } from "./utils";
 export class HosePlayer extends Player {
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     particles: Phaser.Physics.Arcade.Group;
+    isAnchored: boolean;
 
     NUM_PARTICLES = 400;
     ACCELERATION_X = 500;
@@ -16,6 +17,7 @@ export class HosePlayer extends Player {
         // this.sprite.setFrictionX(100000)
         this.sprite.refreshBody();
         this.sprite.setMaxVelocity(MAX_VELOCITY_X, 100000);
+        this.isAnchored = false;
 
         scene.anims.create({
             key: 'left',
@@ -41,7 +43,6 @@ export class HosePlayer extends Player {
         this.cursors = scene.input.keyboard.createCursorKeys();
 
         // Water sprinkler
-
         this.particles = scene.physics.add.group({
             bounceX: 0.4,
             bounceY: 0.4,
@@ -58,30 +59,42 @@ export class HosePlayer extends Player {
     public update(time, delta) {
         super.update(time, delta);
 
-        if (this.cursors.left.isDown) {
-            this.sprite.setAccelerationX(-this.ACCELERATION_X);
-            this.sprite.flipX = false;
-            this.sprite.anims.play('left', true);
-        } else if (this.cursors.right.isDown) {
-            this.sprite.setAccelerationX(this.ACCELERATION_X);
-            this.sprite.flipX = true;
-            this.sprite.anims.play('right', true);
-        } else {
-            this.sprite.setAccelerationX(0);
+        let diff = new Phaser.Math.Vector2(0, 0);
+        this.isAnchored = false;
 
+        if (this.cursors.up.isDown) {
+            diff.y += -50;
             this.sprite.anims.play('turn');
         }
+        if (this.cursors.down.isDown) {
+            diff.y += 50;
+            this.sprite.anims.play('turn');
+        }
+        if (this.cursors.left.isDown) {
+            diff.x += -50;
+            this.sprite.flipX = true;
+            this.sprite.anims.play('right', true);
+        }
+        if (this.cursors.right.isDown) {
+            diff.x += 50;
+            this.sprite.flipX = false;
+            this.sprite.anims.play('left', true);
+        }
 
-        if (this.cursors.up.isDown && this.sprite.body.blocked.down) {
-            this.sprite.setAccelerationY(0);
-            this.sprite.setVelocityY(this.JUMP_VELOCITY_Y);
+        if (this.cursors.shift.isDown && this.sprite.body.blocked.down) {
+            this.sprite.setVelocity(0, 0);
+            this.isAnchored = true;
         }
 
         zeroAccelerationIfBlocked(this.sprite.body);
 
-        let pointer = this.scene.input.activePointer;
+        // Mouse overrides the arrow controls.
+        const pointer = this.scene.input.activePointer;
         if (pointer.leftButtonDown()) {
-            let diff = new Phaser.Math.Vector2(pointer.x - this.sprite.x, pointer.y - this.sprite.y);
+            diff = new Phaser.Math.Vector2(pointer.x - this.sprite.x, pointer.y - this.sprite.y);
+        }
+
+        if (diff.length() != 0) {
 
             const numToFire = 6;
             for (let i = 0; i < numToFire; i++) {
@@ -91,7 +104,7 @@ export class HosePlayer extends Player {
                 if (p != null) {
                     p.collided = false;
                     p.body.enable = true;
-                    p.anims.play("droplet_alive", true);	
+                    p.anims.play("droplet_alive", true);
                     p.setVelocity(speed * Math.cos(angle), speed * Math.sin(angle));
                     p.setVisible(true);
                     p.setActive(true);
@@ -99,15 +112,17 @@ export class HosePlayer extends Player {
                 }
             }
 
-            this.sprite.setVelocity(
-                this.sprite.body.velocity.x - Math.cos(diff.angle()) * this.SPRINKLER_ACC,
-                this.sprite.body.velocity.y - Math.sin(diff.angle()) * this.SPRINKLER_ACC);
+            if (!this.isAnchored) {
+                this.sprite.setVelocity(
+                    this.sprite.body.velocity.x - Math.cos(diff.angle()) * this.SPRINKLER_ACC,
+                    this.sprite.body.velocity.y - Math.sin(diff.angle()) * this.SPRINKLER_ACC);
+            }
         }
     }
 }
 
 export function hideParticle(particle, scene) {
-    particle.anims.play("droplet_death", true);	
+    particle.anims.play("droplet_death", true);
     particle.on('animationcomplete', () => {
         scene.hosePlayer.particles.killAndHide(particle);
     }, this);

@@ -153,7 +153,7 @@ export class LevelScene extends Phaser.Scene {
 
         // Create hose.
         this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
-        this.hose.attachEndTo(this.hosePlayer.sprite.body);
+        this.hose.attachEndTo(this.hosePlayer);
 
         this.physics.disableUpdate();
     }
