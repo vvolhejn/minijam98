@@ -79,6 +79,12 @@ export class Hose extends Phaser.GameObjects.Container {
 
     setStartTo(p: Phaser.Math.Vector2) {
         this.startPoint = p;
+        for (let i = 0; i < this.N_PARTS; i++) {
+            this.parts[i].setVelocity(0, 0);
+            let coef = i / (this.N_PARTS - 1);
+            let pos = p.clone().scale(1 - coef).add(this.endAttachedTo.sprite.getCenter().scale(coef));
+            this.parts[i].setPosition(pos.x, pos.y);
+        }
     }
 
     getSpringForces(velocities): Array<Phaser.Math.Vector2> {

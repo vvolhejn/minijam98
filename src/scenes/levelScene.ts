@@ -30,6 +30,7 @@ export class LevelScene extends Phaser.Scene {
     fires: Phaser.Physics.Arcade.StaticGroup;
     doors: Phaser.Physics.Arcade.StaticGroup;
     thanksWalls: Phaser.Physics.Arcade.StaticGroup;
+    hydrants: Phaser.Physics.Arcade.StaticGroup;
 
     elVictimos: Phaser.Physics.Arcade.Group;
     platforms;
@@ -52,7 +53,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('ground', 'assets/platform.png');
         this.load.image('tiles', 'assets/TilesetMap.png');
         this.load.image('debugball', 'assets/debugball.png');
-        this.load.image('debugstar', 'assets/star.png');
+        this.load.image('debugstar', 'assets/debugstar.png');
         this.load.image('door', 'assets/door.png');
         this.load.image('key', 'assets/key.png');
         this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
@@ -114,6 +115,10 @@ export class LevelScene extends Phaser.Scene {
         this.hosePlayer.sprite.setDepth(1);
         this.groundPlayer.sprite.setDepth(1);
 
+        let hydrant1 = this.physics.add.staticSprite(300, 600, "debugstar").setState(0);
+        let hydrant2 = this.physics.add.staticSprite(600, 600, "debugstar").setState(0);
+        this.hydrants = this.physics.add.staticGroup([hydrant1, hydrant2]);
+
         // Load rooms.
         this.fires = this.physics.add.staticGroup();
         this.thanksWalls = this.physics.add.staticGroup();
@@ -123,13 +128,9 @@ export class LevelScene extends Phaser.Scene {
         this.elVictimos.runChildUpdate = true;
 
         let rooms = this.levelGenerator.generateLevel();
-        rooms.forEach( (room, idx) => {
+        rooms.forEach((room, idx) => {
             this.loadRoom(room, idx);
         });
-
-        // let door = new Door(this, 600, 400);
-        // this.doors = this.physics.add.staticGroup([door.doorSprite]);
-        // door.addKey(this, 800, 400);
 
         //  The score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
@@ -140,6 +141,7 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
         this.physics.add.collider(this.elVictimos, this.platforms);
         this.physics.add.overlap(this.elVictimos, this.thanksWalls, this.onVictimInThanksWall, null, this);
+        this.physics.add.overlap(this.hydrants, this.hosePlayer.sprite, this.onTouchHydrant, null, this);
 
         // Collide with floor map.
         for (let wall of this.walls) {
@@ -214,6 +216,17 @@ export class LevelScene extends Phaser.Scene {
         thanksWall.handleVictim(victim);
     }
 
+    private onTouchHydrant(_player, hydrant: Phaser.Physics.Arcade.Sprite) {
+        if (hydrant.state === 1) return;  // Already attached
+        this.hydrants.children.iterate((otherHydrant: Phaser.Physics.Arcade.Sprite) => {
+            otherHydrant.setState(0);
+            otherHydrant.clearTint();
+        });
+        hydrant.setState(1);
+        this.hose.setStartTo(hydrant.getCenter());
+        hydrant.setTint(0xff0000);
+    }
+
     private loadRoom(roomId, floorNum: number) {
         let map = this.make.tilemap({ key: roomId });
         // let map = roomMap.copy();
@@ -259,7 +272,7 @@ export class LevelScene extends Phaser.Scene {
             door.doorSprite.refreshBody();
             this.doors.add(door.doorSprite, true);
             const fittingKeys = keys.filter((key) => {
-                return key.properties.color == doorTile.properties.color
+                return key.properties.color == doorTile.properties.color;
             });
             for (let key of fittingKeys) {
                 door.addKey(this, offsetX + key.x, offsetY + key.y);
@@ -267,7 +280,7 @@ export class LevelScene extends Phaser.Scene {
         });
 
         // Sounds
-        const thanksSounds = []
+        const thanksSounds = [];
         for (let i = 0; i < THANKS_COUNT; ++i) {
             thanksSounds.push(this.sound.add(`thanks${i}`, { loop: false }));
         }
@@ -280,8 +293,8 @@ export class LevelScene extends Phaser.Scene {
             [SCREEN_WIDTH - 3 * TILE_SIZE, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE] // Right bottom
         ].forEach((rect) => {
             const wall = new ThanksWall(this, rect[0], rect[1], rect[2], rect[3], 'ground', thanksSounds);
-            this.thanksWalls.add(wall, true)
-        })
+            this.thanksWalls.add(wall, true);
+        });
 
 
     }
