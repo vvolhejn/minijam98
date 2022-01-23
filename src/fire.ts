@@ -25,9 +25,9 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         // const offset = -(scale - 1) * this.height / 2
         // this.setOffset(0, offset)
         if (this.fireNum == 2)
-            this.body.setOffset(10, 20);
+            this.body.setOffset(10, 25);
         else
-            this.body.setOffset(10, 10);
+            this.body.setOffset(10, 15);
 
     }
 

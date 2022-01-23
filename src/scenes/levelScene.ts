@@ -65,7 +65,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.spritesheet("droplet", 'assets/droplets.png', { frameWidth: 10, frameHeight: 10 });
 
         for (let i = 1; i <= 3; i++) {
-            this.load.spritesheet(`fire${i}`, `assets/fire${i}.png`, { frameWidth: 50, frameHeight: 60 });
+            this.load.spritesheet(`fire${i}`, `assets/fire${i}.png`, { frameWidth: 50, frameHeight: 70 });
         }
 
         for (let i = 0; i < THANKS_COUNT; i++) {

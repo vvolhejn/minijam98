@@ -34,7 +34,7 @@ export class Hose extends Phaser.GameObjects.Container {
     FRICTION_COEF = 0.5;
 
     // how much the hose likes to slide along walls, non-negative
-    SLIDING_COEF = 0.5;
+    SLIDING_COEF = 0.7;
     SLIDING_MAX = 50;
 
     endAttachedTo: HosePlayer = null;
