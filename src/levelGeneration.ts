@@ -7,7 +7,7 @@ export class LevelGenerator {
 
     constructor(scene) {
         this.scene = scene;
-        for (let i = 1; i <= this.NUM_ROOMS; i++) {
+        for (let i = 0; i <= this.NUM_ROOMS; i++) {
             const key = `room${i}`;
             scene.load.tilemapTiledJSON(key, `assets/room${i}.json`);
         }
@@ -17,7 +17,7 @@ export class LevelGenerator {
 
     public create() {
         this.rooms = Array();
-        for (let i = 1; i <= this.NUM_ROOMS; i++) {
+        for (let i = 0; i <= this.NUM_ROOMS; i++) {
             const key = `room${i}`;
             let map = this.scene.make.tilemap({ key: key });
             map['properties'] = parseProperties(map['properties']);
@@ -37,9 +37,9 @@ export class LevelGenerator {
             let entryConstraints;
             while (heightLeft > 0) {
                 if (groundFloor) {
-                    level = [this.rooms[0]];
-                    entryConstraints = this.rooms[0].properties.exit;
-                    heightLeft = 2;
+                    level = [this.rooms[1]];
+                    entryConstraints = this.rooms[1].properties.exit;
+                    heightLeft = 3 - this.rooms[1].properties.height;
                 } else {
                     level = [];
                     entryConstraints = ['teleport'];
@@ -92,5 +92,4 @@ export class LevelGenerator {
     private randomChoice(array) {
         return array[Math.floor(Math.random() * array.length)];
     }
-
 }

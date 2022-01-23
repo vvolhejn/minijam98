@@ -11,6 +11,7 @@ import { LevelGenerator } from "../levelGeneration";
 import assert = require("assert");
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../main";
 import { Box } from "../box";
+import { Timer } from "../timer";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -35,6 +36,7 @@ export class LevelScene extends Phaser.Scene {
     hydrants: Phaser.Physics.Arcade.StaticGroup;
     boxes: Phaser.Physics.Arcade.Group;
 
+    timer: Timer;
     elVictimos: Phaser.Physics.Arcade.Group;
     platforms;
     players: Phaser.Physics.Arcade.Group;
@@ -157,16 +159,17 @@ export class LevelScene extends Phaser.Scene {
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
 
         this.setCollisions();
-
-
+        
         // Create hose.
         this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
         this.hose.attachEndTo(this.hosePlayer);
-
+        
+        this.timer = new Timer(this, TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE * 3 / 4, SCREEN_WIDTH - 2 * TILE_SIZE, TILE_SIZE / 2, 'door');
         this.physics.disableUpdate();
     }
 
     private setCollisions() {
+
         // Collisions.
         this.physics.add.collider(this.players, this.platforms);
         this.physics.add.collider(this.players, this.doors);
@@ -198,6 +201,8 @@ export class LevelScene extends Phaser.Scene {
     }
 
     public update(time, delta) {  // delta is in ms
+        this.timer.update(time, delta);
+
         if (this.gameOver) {
             return;
         }
