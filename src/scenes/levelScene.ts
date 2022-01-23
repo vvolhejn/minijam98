@@ -10,6 +10,7 @@ import { ThanksWall } from "../thanksWall";
 import { LevelGenerator } from "../levelGeneration";
 import assert = require("assert");
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../main";
+import { Box } from "../box";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -31,6 +32,7 @@ export class LevelScene extends Phaser.Scene {
     doors: Phaser.Physics.Arcade.StaticGroup;
     thanksWalls: Phaser.Physics.Arcade.StaticGroup;
     hydrants: Phaser.Physics.Arcade.StaticGroup;
+    boxes: Phaser.Physics.Arcade.Group;
 
     elVictimos: Phaser.Physics.Arcade.Group;
     platforms;
@@ -123,6 +125,7 @@ export class LevelScene extends Phaser.Scene {
         this.fires = this.physics.add.staticGroup();
         this.thanksWalls = this.physics.add.staticGroup();
         this.doors = this.physics.add.staticGroup();
+        this.boxes = this.physics.add.group({ collideWorldBounds: true });
         this.walls = [];
         this.elVictimos = this.physics.add.group({ collideWorldBounds: true });
         this.elVictimos.runChildUpdate = true;
@@ -305,6 +308,8 @@ export class LevelScene extends Phaser.Scene {
             this.thanksWalls.add(wall, true);
         });
 
+        // Boxes
+        this.boxes.add(new Box(this, 0, 0, 100, 100, 'box'), true);
 
     }
 
