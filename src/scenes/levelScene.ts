@@ -261,7 +261,6 @@ export class LevelScene extends Phaser.Scene {
 
     private loadRoom(room, floorNum: number) {
         let map = this.make.tilemap({ key: room.mapKey });
-        // let map = roomMap.copy();
 
         const tileset = map.addTilesetImage('TilesetMap', 'tiles');
         const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
