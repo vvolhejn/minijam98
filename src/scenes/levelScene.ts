@@ -250,7 +250,6 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.boxes, this.elVictimos);
         this.physics.add.collider(this.boxes, this.platforms);
         this.physics.add.collider(this.boxes, this.hydrants);
-        this.physics.add.collider(this.boxes, this.fires);
         this.physics.add.collider(this.boxes, this.doors);
         this.physics.add.collider(this.boxes, this.walls);
         this.physics.add.collider(this.boxes, this.players);
@@ -263,7 +262,7 @@ export class LevelScene extends Phaser.Scene {
 
         this.physics.add.overlap(this.groundPlayer.sprite, this.elVictimos, this.pickUpElVictimo, null, this);
         this.physics.add.collider(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
-        this.physics.add.collider(this.boxes, this.fires, this.extinguishFireWithBox, null, this);
+        this.physics.add.overlap(this.boxes, this.fires, this.extinguishFireWithBox, null, this);
         this.physics.add.overlap(this.players, this.fires, this.onPlayerFireCollision, null, this);
         this.physics.add.overlap(this.elVictimos, this.fires, this.onVictimFireCollision, null, this);
 
@@ -300,6 +299,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     public extinguishFireWithBox(box, fire) {
+        console.log("here")
         fire.lowerHp();
     }
 
