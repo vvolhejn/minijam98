@@ -48,30 +48,6 @@
                 {
                  "gid":27,
                  "height":32,
-                 "id":30,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":128,
-                 "y":160
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
-                 "id":31,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":96,
-                 "y":160
-                }, 
-                {
-                 "gid":27,
-                 "height":32,
                  "id":49,
                  "name":"",
                  "rotation":0,
