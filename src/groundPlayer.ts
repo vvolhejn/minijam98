@@ -38,6 +38,13 @@ export class GroundPlayer extends Player {
             frameRate: 20
         });
 
+        scene.anims.create({
+            key: 'grandLeftSaving',
+            frames: scene.anims.generateFrameNumbers(spriteKey, { start: 7, end: 12 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
         //  Input Events
         this.cursors = scene.input.keyboard.addKeys(
             {
@@ -61,12 +68,22 @@ export class GroundPlayer extends Player {
             this.sprite.setAccelerationX(-this.ACCELERATION_X);
             this.lastDirection = VictimDirection.LEFT;
 
-            this.sprite.anims.play('grandLeft', true);
+            if (this.saving) {
+                this.sprite.anims.play('grandLeftSaving', true);
+                this.saving.flipX = false;
+            } else {
+                this.sprite.anims.play('grandLeft', true);
+            }
         } else if (this.cursors.right.isDown) {
             this.sprite.setAccelerationX(this.ACCELERATION_X);
             this.lastDirection = VictimDirection.RIGHT;
 
-            this.sprite.anims.play('grandLeft', true);
+            if (this.saving) {
+                this.sprite.anims.play('grandLeftSaving', true);
+                this.saving.flipX = true;
+            } else {
+                this.sprite.anims.play('grandLeft', true);
+            }
             this.sprite.flipX = true;
         } else {
             this.sprite.setAccelerationX(0);
