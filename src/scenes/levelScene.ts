@@ -259,6 +259,7 @@ export class LevelScene extends Phaser.Scene {
 
         this.physics.add.overlap(this.groundPlayer.sprite, this.elVictimos, this.pickUpElVictimo, null, this);
         this.physics.add.collider(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
+        this.physics.add.collider(this.boxes, this.fires, this.extinguishFireWithBox, null, this);
         this.physics.add.overlap(this.players, this.fires, this.onPlayerFireCollision, null, this);
 
         // Hose collisions.
@@ -290,6 +291,16 @@ export class LevelScene extends Phaser.Scene {
 
     public extinguishFire(particle, fire) {
         hideParticle(particle, this);
+        fire.lowerHp();
+
+        //  Add and update the score
+        if (fire.hp <= 0) {
+            this.score += 1;
+            this.redrawScore();
+        }
+    }
+
+    public extinguishFireWithBox(box, fire) {
         fire.lowerHp();
 
         //  Add and update the score

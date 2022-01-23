@@ -46,7 +46,6 @@ export abstract class Player extends Phaser.GameObjects.Container {
         this.sprite.setVelocityX(this.ON_DAMAGE_VELOCITY_X * (positionDiff.x > 0 ? 1 : (-1)));
         this.sprite.setVelocityY(-this.ON_DAMAGE_VELOCITY_Y);
 
-        console.log(scene.timer.total_ms);
         scene.timer.total_ms = Math.max(scene.timer.total_ms - FIRE_PLAYER_COLLISION_PENALTY_MS, 0);
         this.sprite.setTint(0xFF0000);
         // this.invincible = true;
