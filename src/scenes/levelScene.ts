@@ -167,12 +167,12 @@ export class LevelScene extends Phaser.Scene {
 
         // Load rooms.
         this.hydrants = this.physics.add.staticGroup();
-        this.fires = this.physics.add.staticGroup();
         this.thanksWalls = this.physics.add.staticGroup();
         this.doors = this.physics.add.staticGroup();
         this.boxes = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
         this.walls = [];
         this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
+        this.fires = this.physics.add.staticGroup();
 
 
         let rooms = this.levelGenerator.generateLevel(true);
@@ -383,14 +383,6 @@ export class LevelScene extends Phaser.Scene {
         this.walls.push(layer);
         this.buildingHeight += 7 * room.properties.height;
 
-        // Fires.
-        map.getObjectLayer('fires')?.objects.sort((a, b) => a.y - b.y).forEach((fireTile) => {
-            let fire = new Fire(this, offsetX + fireTile.x + 15, offsetY + fireTile.y - 38, 'fire');
-            this.fires.add(fire, true);
-            fire.body.setSize(30, 60, true);
-            fire.updateScale();
-        });
-
         // Victims.
         map.getObjectLayer('victims')?.objects.forEach((victimTile) => {
             let victim = new ElVictimo(
@@ -459,6 +451,14 @@ export class LevelScene extends Phaser.Scene {
             hydrant.setState(0);
             this.hydrants.add(hydrant);
         });
+
+        // Fires.
+        map.getObjectLayer('fires')?.objects.sort((a, b) => a.y - b.y).forEach((fireTile) => {
+            let fire = new Fire(this, offsetX + fireTile.x + 15, offsetY + fireTile.y - 38, 'fire');
+            this.fires.add(fire, true);
+            fire.body.setSize(30, 60, true);
+            fire.updateScale();
+        });
     }
 
     private checkVictory() {
@@ -473,11 +473,11 @@ export class LevelScene extends Phaser.Scene {
         console.log("VICTORY");
 
         this.hydrants = this.physics.add.staticGroup();
-        this.fires = this.physics.add.staticGroup();
         this.doors = this.physics.add.staticGroup();
         this.boxes = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
         this.walls = [];
         this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
+        this.fires = this.physics.add.staticGroup();
 
         let rooms = this.levelGenerator.generateLevel(false);
         for (let room of rooms) {
