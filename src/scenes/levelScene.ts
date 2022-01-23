@@ -74,7 +74,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
 
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 38, frameHeight: 39 });
-        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
+        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/grand_sprites.png', { frameWidth: 32, frameHeight: 60 });
 
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
         this.load.spritesheet("droplet", 'assets/droplets.png', { frameWidth: 10, frameHeight: 10 });
@@ -126,7 +126,7 @@ export class LevelScene extends Phaser.Scene {
 
         // Create players.
         this.hosePlayer = new HosePlayer(this, 30, SCREEN_HEIGHT - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
-        this.groundPlayer = new GroundPlayer(this, 60, SCREEN_HEIGHT - 32 - 20, GROUND_PLAYER_SPRITE_KEY);
+        this.groundPlayer = new GroundPlayer(this, 60, SCREEN_HEIGHT - 60 - 20, GROUND_PLAYER_SPRITE_KEY);
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
         this.hosePlayer.setPhysicsProperties();
         this.groundPlayer.setPhysicsProperties();
