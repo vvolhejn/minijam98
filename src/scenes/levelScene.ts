@@ -42,8 +42,10 @@ export class LevelScene extends Phaser.Scene {
     platforms;
     players: Phaser.Physics.Arcade.Group;
     score = 0;
+    level = 1;
     isGameOver = false;
     scoreText: Phaser.GameObjects.Text;
+    levelText: Phaser.GameObjects.Text;
     gameOverText: Phaser.GameObjects.Text;
     gameOverBackground: Phaser.GameObjects.Rectangle;
 
@@ -162,6 +164,9 @@ export class LevelScene extends Phaser.Scene {
 
         //  The score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
+        configureText(this.scoreText)
+        this.levelText = this.add.text(16, 64, 'Level: 1', { fontSize: '32px' });
+        configureText(this.levelText)
 
         this.gameOverBackground = this.add.rectangle(600, 250, 800, 200, 0x320032);
         this.gameOverText = this.add.text(300, 200, 'Game over!', { fontSize: '100px', color: '#f00' });
@@ -408,8 +413,11 @@ export class LevelScene extends Phaser.Scene {
         let x = this.cameras.main.centerX;
         let y = this.cameras.main.centerY;
         this.cameras.main.pan(x, y - SCREEN_HEIGHT, 5 * 1000);
+
+        this.level++;
+        this.levelText.setText('Level: ' + this.level);
     }
-    
+
     public setGameOver(enable: boolean) {
         this.isGameOver = enable;
         this.gameOverText.setVisible(enable);
@@ -418,4 +426,16 @@ export class LevelScene extends Phaser.Scene {
             setTimeout(() => this.setGameOver(false), 500); // debug stuff
         }
     }
+}
+
+function configureText(text: Phaser.GameObjects.Text) {
+    text.setDepth(100)
+        .setShadowOffset(2, 2)
+        .setShadowColor("black")
+        .setShadowStroke(true)
+        .setShadowFill(true)
+        .setBackgroundColor("#dd0000")
+        .setPadding(3)
+        .setAlpha(0.8)
+        .setScrollFactor(0);
 }
