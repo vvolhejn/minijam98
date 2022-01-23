@@ -6,13 +6,18 @@ import { ElVictimo } from "../elVictimo";
 import { Player } from "../player";
 import { Door } from "../door";
 import { parseAllProperties } from "../utils";
+import { ThanksWall } from "../thanksWall";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
 const EL_VICTIMO_SPRITE_KEY = 'elVictimo';
 
-const FLOOR_WIDTH = 32 * 32;
-const FLOOR_HEIGHT = 32 * 7;
+const SCREEN_WIDTH = 1200;
+const SCREEN_HEIGHT = 700;
+
+const TILE_SIZE = 32;
+const FLOOR_WIDTH = 32 * TILE_SIZE;
+const FLOOR_HEIGHT = 7 * TILE_SIZE;
 
 export class LevelScene extends Phaser.Scene {
     hosePlayer: HosePlayer;
@@ -20,6 +25,8 @@ export class LevelScene extends Phaser.Scene {
     walls: Array<Phaser.Tilemaps.TilemapLayer>;
     fires: Phaser.Physics.Arcade.StaticGroup;
     doors: Phaser.Physics.Arcade.StaticGroup;
+    thanksWalls: Phaser.Physics.Arcade.StaticGroup;
+
     elVictimos: Phaser.Physics.Arcade.Group;
     platforms;
     players: Phaser.Physics.Arcade.Group;
@@ -103,9 +110,10 @@ export class LevelScene extends Phaser.Scene {
 
         // Load rooms.
         this.fires = this.physics.add.staticGroup();
+        this.thanksWalls = this.physics.add.staticGroup();
         this.doors = this.physics.add.staticGroup();
         this.walls = [];
-        this.elVictimos = this.physics.add.group();
+        this.elVictimos = this.physics.add.group({ collideWorldBounds: true });
         this.elVictimos.runChildUpdate = true;
         this.loadRoom('room1', 0);
         this.loadRoom('room2', 1);
@@ -117,7 +125,7 @@ export class LevelScene extends Phaser.Scene {
         // door.addKey(this, 800, 400);
 
         //  The score
-        this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px' });
+        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
 
         // Collisions.
         this.physics.add.collider(this.players, this.platforms);
@@ -125,6 +133,7 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
         this.physics.add.overlap(this.hosePlayer.particles, this.groundPlayer.sprite, this.onGrandWaterCollision, null, this);
         this.physics.add.collider(this.elVictimos, this.platforms);
+        this.physics.add.overlap(this.elVictimos, this.thanksWalls, this.onVictimInThanksWall, null, this);
 
         // Collide with floor map.
         for (let wall of this.walls) {
@@ -169,7 +178,7 @@ export class LevelScene extends Phaser.Scene {
         //  Add and update the score
         if (fire.hp <= 0) {
             this.score += 1;
-            this.scoreText.setText('Score: ' + this.score);
+            this.redrawScore();
         }
 
         if (this.fires.countActive(true) === 0) {
@@ -207,12 +216,16 @@ export class LevelScene extends Phaser.Scene {
         water.collided = true;
     }
 
+    private onVictimInThanksWall(victim: ElVictimo, thanksWall: ThanksWall) {
+        thanksWall.handleVictim(victim);
+    }
+
     private loadRoom(roomId: string, floorNum: number) {
         let map = this.make.tilemap({ key: roomId });
 
         const tileset = map.addTilesetImage('TilesetMap', 'tiles');
-        const offsetX = (1200 - FLOOR_WIDTH) / 2;
-        const offsetY = 700 - 32 - (FLOOR_HEIGHT * (floorNum + 1));
+        const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
+        const offsetY = SCREEN_HEIGHT - 32 - (FLOOR_HEIGHT * (floorNum + 1));
         let layer = map.createLayer('walls', tileset, offsetX, offsetY);
         map.createLayer('background', tileset, offsetX, offsetY);
         layer.setCollisionByExclusion([-1], true);
@@ -257,5 +270,22 @@ export class LevelScene extends Phaser.Scene {
                 door.addKey(this, offsetX + key.x, offsetY + key.y);
             }
         });
+
+        // Walls of Thanks.
+        [
+            // [0, 0, 2 * TILE_SIZE, SCREEN_HEIGHT], // Left long
+            [0, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE], // Left bottom
+            // [SCREEN_WIDTH - 2 * TILE_SIZE, 0, 2 * TILE_SIZE, SCREEN_HEIGHT],    // Right long
+            [SCREEN_WIDTH - 3 * TILE_SIZE, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE] // Right bottom
+        ].forEach((rect) => {
+            const wall = new ThanksWall(this, rect[0], rect[1], rect[2], rect[3], 'ground');
+            this.thanksWalls.add(wall, true)
+        })
+
+
+    }
+
+    public redrawScore() {
+        this.scoreText.setText('Score: ' + this.score);
     }
 }
