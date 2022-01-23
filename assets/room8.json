@@ -278,7 +278,7 @@
         {
          "name":"exit",
          "type":"string",
-         "value":"teleporter"
+         "value":"teleport"
         }, 
         {
          "name":"height",
