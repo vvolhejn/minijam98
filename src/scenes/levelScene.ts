@@ -214,12 +214,12 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.boxes, this.doors);
         this.physics.add.collider(this.boxes, this.walls);
         this.physics.add.collider(this.boxes, this.players);
+        this.physics.add.overlap(this.boxes, this.hosePlayer.particles, this.onBoxWaterCollision, null, this);
 
         // Collide with floor map.
         this.physics.add.collider(this.players, this.walls);
         this.physics.add.collider(this.elVictimos, this.walls);
         this.physics.add.collider(this.hosePlayer.particles, this.walls);
-
 
         this.physics.add.overlap(this.groundPlayer.sprite, this.elVictimos, this.pickUpElVictimo, null, this);
         this.physics.add.collider(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
@@ -301,6 +301,20 @@ export class LevelScene extends Phaser.Scene {
         hydrant.setTint(0xff0000);
     }
 
+    private onBoxWaterCollision(box, water) {
+        // water.collided is a semihack
+        if (water.collided) return;
+        box.body.setVelocity(
+            water.body.velocity.x / Box.WATER_STRENGTH_FACTOR,
+            water.body.velocity.y / Box.WATER_STRENGTH_FACTOR);
+
+        const f = Box.BOX_STRENGTH_ON_WATER_FACTOR;
+        water.body.setVelocity(-water.body.velocity.x / Phaser.Math.Between(f - 2, f + 2), -water.body.velocity.y / Phaser.Math.Between(f - 2, f + 2));
+        water.collided = true;
+    }
+
+
+
     private loadRoom(room) {
         let map = this.make.tilemap({ key: room.mapKey });
 
@@ -381,6 +395,7 @@ export class LevelScene extends Phaser.Scene {
                 'box'
             );
             this.boxes.add(box, true);
+            box.setMass(1.5);
         }, this);
 
         // Hydrants
@@ -404,7 +419,9 @@ export class LevelScene extends Phaser.Scene {
     }
 
     private checkVictory() {
-        const allSaved = this.elVictimos.getChildren().every((victim) => { return (victim as ElVictimo).saved; })
+        const allSaved = this.elVictimos.getChildren().every((victim) => {
+            return (victim as ElVictimo).saved;
+        })
         if (!allSaved) {
             // console.log("not everyone is saved)");
             // console.log(this.elVictimos);
