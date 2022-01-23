@@ -40,6 +40,9 @@ export class LevelScene extends Phaser.Scene {
     boxes: Phaser.Physics.Arcade.Group;
 
     timer: Timer;
+    timeFactor: number = 1;
+    timeFactorDecrease: number = 0.98;
+    timePerVictim: number = 30 * 1000; // ms
     elVictimos: Phaser.Physics.Arcade.Group;
     platforms;
     players: Phaser.Physics.Arcade.Group;
@@ -177,6 +180,12 @@ export class LevelScene extends Phaser.Scene {
         for (let room of rooms) {
             this.loadRoom(room);
         }
+
+        this.timer = new Timer(this, SCREEN_WIDTH - TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE, TILE_SIZE / 2, SCREEN_HEIGHT - 2 * TILE_SIZE, 'timeBar');
+        this.timer.start(this.timePerVictim * this.timeFactor * this.elVictimos.getChildren().length);
+
+
+        // Hydrant in the beginning.
         let hydrant = this.physics.add.staticSprite(
             0,
             SCREEN_HEIGHT - 32,
@@ -221,9 +230,6 @@ export class LevelScene extends Phaser.Scene {
 
         this.gameOverBackground.setVisible(false);
         this.gameOverText.setVisible(false);
-
-        this.timer = new Timer(this, SCREEN_WIDTH - TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE, TILE_SIZE / 2, SCREEN_HEIGHT - 2 * TILE_SIZE, 'timeBar');
-        this.timer.start(5 * 1000 * 10);
 
         this.setCollisions();
 
@@ -513,7 +519,9 @@ export class LevelScene extends Phaser.Scene {
         const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
         // console.log()
         console.log(this.levelEntrance.x, this.levelEntrance.y, this.cameraOffsetY);
-        let dy = this.levelEntrance.y + (this.cameraOffsetY - 48);
+
+        let heightOfRoomsAbove = rooms.map((room) => room.properties.height).sum() - rooms[0].properties.height;
+        let dy = this.levelEntrance.y + (this.cameraOffsetY - 48) + heightOfRoomsAbove;
         let dx = this.levelEntrance.x + offsetX;
         this.levelEntrance = new Vector2(dx, dy);
         console.log(dx, dy, "offsetX", offsetX, this.cameraOffsetY);
@@ -530,6 +538,9 @@ export class LevelScene extends Phaser.Scene {
 
         this.level++;
         this.levelText.setText('Level: ' + this.level);
+
+        this.timeFactor = this.timeFactorDecrease * this.timeFactor;
+        this.timer.start(this.timePerVictim * this.timeFactor * this.elVictimos.getChildren().length);
     }
 
     public setGameOver(enable: boolean) {
