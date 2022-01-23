@@ -4,7 +4,7 @@ import { hideParticle, HosePlayer } from "../hosePlayer";
 import { Fire } from "../fire";
 import { ElVictimo } from "../elVictimo";
 import { Player } from "../player";
-import { Door } from "../door";
+import { TeleportManager } from "../teleportManager";
 import { parseAllProperties } from "../utils";
 import { ThanksWall } from "../thanksWall";
 import { LevelGenerator } from "../levelGeneration";
@@ -13,11 +13,13 @@ import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../main";
 import { Box } from "../box";
 import { Timer } from "../timer";
 import Vector2 = Phaser.Math.Vector2;
+import { Door } from "../door";
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
 const EL_VICTIMO_SPRITE_KEY = 'elVictimo';
 const THANKS_COUNT = 10;
+const AU_COUNT = 11;
 
 
 const TILE_SIZE = 32;
@@ -39,6 +41,7 @@ export class LevelScene extends Phaser.Scene {
     hydrants: Phaser.Physics.Arcade.StaticGroup;
     boxes: Phaser.Physics.Arcade.Group;
 
+    teleportManager: TeleportManager;
     timer: Timer;
     timeFactor: number = 1;
     timeFactorDecrease: number = 0.98;
@@ -52,6 +55,7 @@ export class LevelScene extends Phaser.Scene {
     gameOverText: Phaser.GameObjects.Text;
     gameOverBackground: Phaser.GameObjects.Rectangle;
     levelEntrance = new Vector2(60, SCREEN_HEIGHT - 60 - 20);
+    auSounds;
 
     hose: Hose;
 
@@ -93,6 +97,9 @@ export class LevelScene extends Phaser.Scene {
 
         for (let i = 0; i < THANKS_COUNT; i++) {
             this.load.audio(`thanks${i}`, `assets/sounds/thanks${i}.mp3`);
+        }
+        for (let i = 0; i < AU_COUNT; i++) {
+            this.load.audio(`au${i}`, `assets/sounds/au${i}.mp3`);
         }
     }
 
@@ -172,8 +179,8 @@ export class LevelScene extends Phaser.Scene {
         this.boxes = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
         this.walls = [];
         this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
+        this.teleportManager = new TeleportManager(this);
         this.fires = this.physics.add.staticGroup();
-
 
         let rooms = this.levelGenerator.generateLevel(true);
         this.buildingHeight = 0;
@@ -202,6 +209,10 @@ export class LevelScene extends Phaser.Scene {
         const thanksSounds = [];
         for (let i = 0; i < THANKS_COUNT; ++i) {
             thanksSounds.push(this.sound.add(`thanks${i}`, { loop: false }));
+        }
+        this.auSounds = [];
+        for (let i = 0; i < AU_COUNT; ++i) {
+            this.auSounds.push(this.sound.add(`au${i}`, { loop: false }));
         }
 
         // Walls of Thanks.
@@ -271,6 +282,9 @@ export class LevelScene extends Phaser.Scene {
             this.physics.add.collider(part, this.platforms);
             this.physics.add.collider(part, this.walls);
         });
+
+        // Teleporters
+        this.physics.add.overlap(this.players, this.teleportManager.teleports, this.onTouchTeleport, null, this);
     }
 
     public update(time, delta) {  // delta is in ms
@@ -344,9 +358,9 @@ export class LevelScene extends Phaser.Scene {
         if (this.groundPlayer !== undefined
             && playerSprite === this.groundPlayer.sprite
             && (playerSprite.x > 500 || this.level > 1)) {
-            console.log("yes", this.levelEntrance.x, this.levelEntrance.y)
-            this.groundPlayer.sprite.x = this.levelEntrance.x
-            this.groundPlayer.sprite.y = this.levelEntrance.y
+            console.log("yes", this.levelEntrance.x, this.levelEntrance.y);
+            this.groundPlayer.sprite.x = this.levelEntrance.x;
+            this.groundPlayer.sprite.y = this.levelEntrance.y;
         }
     }
 
@@ -371,6 +385,27 @@ export class LevelScene extends Phaser.Scene {
         const f = Box.BOX_STRENGTH_ON_WATER_FACTOR;
         water.body.setVelocity(-water.body.velocity.x / Phaser.Math.Between(f - 2, f + 2), -water.body.velocity.y / Phaser.Math.Between(f - 2, f + 2));
         water.collided = true;
+    }
+
+    private onTouchTeleport(
+        playerSprite: Phaser.Physics.Arcade.Sprite,
+        tp: Phaser.Physics.Arcade.Sprite,
+    ) {
+        let otherTp = this.teleportManager.getCorrespondingTeleport(tp);
+        console.log(otherTp);
+        if (otherTp === null) return;
+
+        let player: Player = (playerSprite === this.hosePlayer.sprite) ? this.hosePlayer : this.groundPlayer;
+
+        if (player.canTeleport) {
+            playerSprite.x = otherTp.x;
+            playerSprite.y = otherTp.y - 32;
+            player.onTeleport();
+
+            if (player === this.hosePlayer) {
+                this.hose.setStartTo(new Vector2(otherTp.x, otherTp.y - 32))
+            }
+        }
     }
 
 
@@ -460,6 +495,8 @@ export class LevelScene extends Phaser.Scene {
             hydrant.setState(0);
             this.hydrants.add(hydrant);
         });
+
+        this.teleportManager.addRoom(map, offsetX, offsetY);
 
         // Fires.
         map.getObjectLayer('fires')?.objects.sort((a, b) => a.y - b.y).forEach((fireTile) => {

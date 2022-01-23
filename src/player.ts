@@ -13,8 +13,12 @@ export abstract class Player extends Phaser.GameObjects.Container {
     RIGHT_ANIM_KEY: string;
     TURN_ANIM_KEY: string;
 
+    TELEPORT_COOLDOWN_MS = 3000;
+
     // CURRENTLY UNUSED!
     invincible = false;  // briefly true after damage
+
+    canTeleport = true;
 
     constructor(scene: Phaser.Scene, x: integer, y: integer, spriteKey: string) {
         super(scene);
@@ -33,5 +37,13 @@ export abstract class Player extends Phaser.GameObjects.Container {
     }
 
     public update(_time, _delta): void {
+    }
+
+    public onTeleport() {
+        this.canTeleport = false;
+        this.scene.time.delayedCall(
+            this.TELEPORT_COOLDOWN_MS,
+            () => { this.canTeleport = true; }, [], this
+        );
     }
 }
