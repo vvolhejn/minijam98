@@ -31,11 +31,11 @@ export class LevelGenerator {
         if (levelFromUrl != null) {
             level = levelFromUrl;
         } else {
-            let heightLeft = 3;
+            let heightLeft = 2;
             while (heightLeft > 0) {
-                level = [];
-                let entryConstraints = [];
-                heightLeft = 3;
+                level = [this.rooms[0]];
+                let entryConstraints = this.rooms[0].properties.exit;
+                heightLeft = 2;
                 while (heightLeft > 0) {
                     // console.log(heightLeft);
 
