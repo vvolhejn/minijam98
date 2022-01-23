@@ -19,6 +19,7 @@ const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
 const EL_VICTIMO_SPRITE_KEY = 'elVictimo';
 const THANKS_COUNT = 10;
+const AU_COUNT = 11;
 
 
 const TILE_SIZE = 32;
@@ -54,6 +55,7 @@ export class LevelScene extends Phaser.Scene {
     gameOverText: Phaser.GameObjects.Text;
     gameOverBackground: Phaser.GameObjects.Rectangle;
     levelEntrance = new Vector2(60, SCREEN_HEIGHT - 60 - 20);
+    auSounds;
 
     hose: Hose;
 
@@ -95,6 +97,9 @@ export class LevelScene extends Phaser.Scene {
 
         for (let i = 0; i < THANKS_COUNT; i++) {
             this.load.audio(`thanks${i}`, `assets/sounds/thanks${i}.mp3`);
+        }
+        for (let i = 0; i < AU_COUNT; i++) {
+            this.load.audio(`au${i}`, `assets/sounds/au${i}.mp3`);
         }
     }
 
@@ -204,6 +209,10 @@ export class LevelScene extends Phaser.Scene {
         const thanksSounds = [];
         for (let i = 0; i < THANKS_COUNT; ++i) {
             thanksSounds.push(this.sound.add(`thanks${i}`, { loop: false }));
+        }
+        this.auSounds = [];
+        for (let i = 0; i < AU_COUNT; ++i) {
+            this.auSounds.push(this.sound.add(`au${i}`, { loop: false }));
         }
 
         // Walls of Thanks.

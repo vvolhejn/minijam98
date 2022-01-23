@@ -81,6 +81,8 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
     }
 
     public onFireCollision(damagedGuy: Player | ElVictimo, scene: LevelScene) {
+        scene.auSounds[Math.floor(Math.random() * scene.auSounds.length)].play();
+
         if (damagedGuy.invincible) return;
 
         let damagedSprite: Phaser.GameObjects.Sprite | any;
