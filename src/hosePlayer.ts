@@ -38,7 +38,7 @@ export class HosePlayer extends Player {
         this.particles = scene.physics.add.group({
             bounceX: 0.3,
             bounceY: 0.3,
-            collideWorldBounds: false,
+            collideWorldBounds: true,
         });
 
         for (let i = 0; i < this.NUM_PARTICLES; i++) {
@@ -70,6 +70,8 @@ export class HosePlayer extends Player {
 
         this.sprite.flipY = false;
         this.sprite.flipX = false;
+        // Default.
+        this.sprite.anims.play('joseUp');
         this.sprite.angle = 0;
 
         let angleY = null;
@@ -109,6 +111,7 @@ export class HosePlayer extends Player {
         }
 
         if (this.isAnchored) {
+            this.sprite.angle = 0;
             this.sprite.flipX = false;
             this.sprite.flipY = false;
             if (this.cursors.up.isDown) {
@@ -133,9 +136,6 @@ export class HosePlayer extends Player {
             } else {
                 this.sprite.anims.play('joseRightAchnored');
             }
-
-        } else {
-            this.sprite.anims.play('joseUp');
         }
 
         zeroAccelerationIfBlocked(this.sprite.body);

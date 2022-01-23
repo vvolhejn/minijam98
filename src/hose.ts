@@ -62,8 +62,6 @@ export class Hose extends Phaser.GameObjects.Container {
             }
             this.parts.push(part);
             part.setCollideWorldBounds(true);
-            scene.physics.add.collider(part, scene.platforms);
-            scene.physics.add.collider(part, scene.walls);
 
             part.setScale(this.PART_SCALE);
 
@@ -258,11 +256,5 @@ export class Hose extends Phaser.GameObjects.Container {
         // }
 
         return wantedVelocity;
-    }
-
-    public setCollideWorldBounds(value) {
-        for (let p of this.parts) {
-            p.setCollideWorldBounds(value);
-        }
     }
 }
