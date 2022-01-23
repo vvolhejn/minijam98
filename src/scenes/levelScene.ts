@@ -71,7 +71,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('key', 'assets/key.png');
         this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
 
-        this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 32, frameHeight: 60 });
+        this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 38, frameHeight: 39 });
         this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/hosePlayer.png', { frameWidth: 32, frameHeight: 48 });
 
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
@@ -170,6 +170,11 @@ export class LevelScene extends Phaser.Scene {
 
         this.gameOverBackground = this.add.rectangle(600, 250, 800, 200, 0x320032);
         this.gameOverText = this.add.text(300, 200, 'Game over!', { fontSize: '100px', color: '#f00' });
+        [this.scoreText, this.gameOverBackground, this.gameOverText].forEach( (obj)=> {
+            obj.setDepth(1000);
+            obj.setScrollFactor(0, 0);
+        })
+
         this.gameOverBackground.setVisible(false);
         this.gameOverText.setVisible(false);
 
@@ -179,7 +184,7 @@ export class LevelScene extends Phaser.Scene {
         this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
         this.hose.attachEndTo(this.hosePlayer);
 
-        this.timer = new Timer(this, TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE * 3 / 4, SCREEN_WIDTH - 2 * TILE_SIZE, TILE_SIZE / 2, 'timeBar');
+        this.timer = new Timer(this, SCREEN_WIDTH - TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE, TILE_SIZE / 2, SCREEN_HEIGHT - 2 * TILE_SIZE, 'timeBar');
         this.timer.start(5 * 1000);
 
         this.physics.disableUpdate();
@@ -359,8 +364,8 @@ export class LevelScene extends Phaser.Scene {
 
             const box = new Box(
                 this,
-                boxTile.x,
-                boxTile.y,
+                boxTile.x + offsetX,
+                boxTile.y + offsetY,
                 boxTile.width,
                 boxTile.height,
                 'box'
