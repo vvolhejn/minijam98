@@ -7,7 +7,8 @@ export enum VictimDirection {
 export class ElVictimo extends Phaser.Physics.Arcade.Sprite {
     savior: GroundPlayer;
     saved: boolean;
-
+    invincible: boolean;
+    
     FRICTION_COEF = 0.7;
     THROW_VELOCITY_X = 500;
     THROW_VELOCITY_Y = -300;
