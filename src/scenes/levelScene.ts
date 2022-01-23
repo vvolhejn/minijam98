@@ -124,8 +124,12 @@ export class LevelScene extends Phaser.Scene {
         //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
         this.platforms.create(SCREEN_WIDTH / 2, SCREEN_HEIGHT + 16, 'ground').setScale(3).refreshBody(); // 3 * 32 / 2 = 48
 
+        // Create hose.
+        this.hose = new Hose(this, 30, SCREEN_HEIGHT - 32 - 40);
+
         // Create players.
-        this.hosePlayer = new HosePlayer(this, 30, SCREEN_HEIGHT - 32 - 40, HOSE_PLAYER_SPRITE_KEY);
+        this.hosePlayer = new HosePlayer(this, this.hose.initialX, this.hose.initialY, HOSE_PLAYER_SPRITE_KEY);
+        this.hose.attachEndTo(this.hosePlayer);
         this.groundPlayer = new GroundPlayer(this, 60, SCREEN_HEIGHT - 60 - 20, GROUND_PLAYER_SPRITE_KEY);
         this.players = this.physics.add.group([this.hosePlayer.sprite, this.groundPlayer.sprite]);
         this.hosePlayer.setPhysicsProperties();
@@ -175,17 +179,13 @@ export class LevelScene extends Phaser.Scene {
 
         this.gameOverBackground = this.add.rectangle(600, 250, 800, 200, 0x320032);
         this.gameOverText = this.add.text(300, 200, 'Game over!', { fontSize: '100px', color: '#f00' });
-        [this.scoreText, this.gameOverBackground, this.gameOverText].forEach( (obj)=> {
+        [this.scoreText, this.gameOverBackground, this.gameOverText].forEach((obj) => {
             obj.setDepth(1000);
             obj.setScrollFactor(0, 0);
         });
 
         this.gameOverBackground.setVisible(false);
         this.gameOverText.setVisible(false);
-
-        // Create hose.
-        this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
-        this.hose.attachEndTo(this.hosePlayer);
 
         this.timer = new Timer(this, SCREEN_WIDTH - TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE, TILE_SIZE / 2, SCREEN_HEIGHT - 2 * TILE_SIZE, 'timeBar');
         this.timer.start(5 * 1000 * 10);
