@@ -55,6 +55,8 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
         this.hp--;
 
         if (this.hp <= 0 && this.active) {
+            this.scene.tssSounds[Math.floor(Math.random() * this.scene.tssSounds.length)].play();
+
             this.setActive(false);
             // this.setVisible(false);
             this.body.enable = false;
