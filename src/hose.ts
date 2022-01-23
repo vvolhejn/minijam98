@@ -5,6 +5,8 @@ import { clampIfBlocked, zeroAccelerationIfBlocked } from "./utils";
 export class Hose extends Phaser.GameObjects.Container {
 
     parts: Array<Phaser.Physics.Arcade.Sprite> = new Array();
+    initialX: number;
+    initialY: number;
 
     DISTANCE_BETWEEN_PARTS: number = 5;  // what *should* the distance be?
     SPRING_COEF: number = 300;  // how strong the force is that is proportional to the distance
@@ -46,6 +48,9 @@ export class Hose extends Phaser.GameObjects.Container {
 
     constructor(scene: LevelScene, x, y) {
         super(scene, 0, 0);
+        this.initialX = x;
+        this.initialY = y;
+        
         this.debugText = scene.add.text(700, 100, 'Debug text');
         if (!this.HOSE_DEBUG_VIEW) {
             this.debugText.setVisible(false);
