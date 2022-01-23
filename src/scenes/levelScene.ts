@@ -129,7 +129,7 @@ export class LevelScene extends Phaser.Scene {
         this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
 
 
-        let rooms = this.levelGenerator.generateLevel();
+        let rooms = this.levelGenerator.generateLevel(true);
         let h = 0;
         for (let room of rooms) {
             this.loadRoom(room, h);
@@ -144,9 +144,9 @@ export class LevelScene extends Phaser.Scene {
 
         // Walls of Thanks.
         [
-            [0, 0, 2 * TILE_SIZE, SCREEN_HEIGHT], // Left long
+            [0, -1000 * SCREEN_HEIGHT, 2 * TILE_SIZE, 1001 * SCREEN_HEIGHT], // Left long
             [0, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE], // Left bottom
-            [SCREEN_WIDTH - 2 * TILE_SIZE, 0, 2 * TILE_SIZE, SCREEN_HEIGHT],    // Right long
+            [SCREEN_WIDTH - 2 * TILE_SIZE, -1000 * SCREEN_HEIGHT, 2 * TILE_SIZE, 1001 * SCREEN_HEIGHT],    // Right long
             [SCREEN_WIDTH - 3 * TILE_SIZE, SCREEN_HEIGHT - 2 * TILE_SIZE, 3 * TILE_SIZE, 2 * TILE_SIZE] // Right bottom
         ].forEach((rect) => {
             const wall = new ThanksWall(this, rect[0], rect[1], rect[2], rect[3], 'ground', thanksSounds);
