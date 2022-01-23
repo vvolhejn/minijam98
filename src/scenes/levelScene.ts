@@ -116,7 +116,7 @@ export class LevelScene extends Phaser.Scene {
         });
 
         this.anims.create({
-            key: "victimanim",
+            key: "victimsad",
             frames: this.anims.generateFrameNumbers(EL_VICTIMO_SPRITE_KEY, { start: 0, end: 1 }),
             frameRate: 3,
             repeat: -1,
@@ -124,6 +124,12 @@ export class LevelScene extends Phaser.Scene {
         this.anims.create({
             key: "victimcarried",
             frames: this.anims.generateFrameNumbers(EL_VICTIMO_SPRITE_KEY, { start: 2, end: 2 }),
+            frameRate: 3,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: "victimhappy",
+            frames: this.anims.generateFrameNumbers(EL_VICTIMO_SPRITE_KEY, { start: 3, end: 4 }),
             frameRate: 3,
             repeat: -1,
         });
@@ -214,7 +220,7 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.players, this.platforms);
         this.physics.add.collider(this.players, this.doors);
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
-        this.physics.add.collider(this.elVictimos, this.platforms);
+        this.physics.add.collider(this.elVictimos, this.platforms, this.onVictimHitGround);
         this.physics.add.overlap(this.elVictimos, this.thanksWalls, this.onVictimInThanksWall, null, this);
         this.physics.add.overlap(this.hydrants, this.hosePlayer.sprite, this.onTouchHydrant, null, this);
 
@@ -293,6 +299,7 @@ export class LevelScene extends Phaser.Scene {
 
     private onVictimInThanksWall(victim: ElVictimo, thanksWall: ThanksWall) {
         thanksWall.handleVictim(victim);
+        victim.getSaved();
         this.checkVictory();
     }
 
@@ -457,7 +464,7 @@ export class LevelScene extends Phaser.Scene {
         let x = this.cameras.main.centerX;
         let y = this.cameras.main.scrollY + this.cameras.main.centerY;
         this.cameraOffsetY -= 21 * TILE_SIZE;
-        this.cameras.main.pan(x, y - 21 * TILE_SIZE, 3 * 1000);
+        this.cameras.main.pan(x, y - 21 * TILE_SIZE, 2000, "Quad.easeInOut");
 
         let entrance = rooms[0].getObjectLayer('entryteleport').objects[0];
         const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
