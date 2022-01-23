@@ -545,7 +545,7 @@ export class LevelScene extends Phaser.Scene {
         // console.log()
         console.log(this.levelEntrance.x, this.levelEntrance.y, this.cameraOffsetY);
 
-        let heightOfRoomsAbove = rooms.map((room) => room.properties.height).sum() - rooms[0].properties.height;
+        let heightOfRoomsAbove = rooms.map((room) => room.properties.height).reduce((a, b) => a + b) - rooms[0].properties.height;
         let dy = this.levelEntrance.y + (this.cameraOffsetY - 48) + heightOfRoomsAbove;
         let dx = this.levelEntrance.x + offsetX;
         this.levelEntrance = new Vector2(dx, dy);
