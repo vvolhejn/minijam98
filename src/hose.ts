@@ -7,9 +7,9 @@ export class Hose extends Phaser.GameObjects.Container {
     parts: Array<Phaser.Physics.Arcade.Sprite> = new Array();
 
     DISTANCE_BETWEEN_PARTS: number = 1;  // what *should* the distance be?
-    SPRING_COEF: number = 500;  // how strong the force is that is proportional to the distance
+    SPRING_COEF: number = 250;  // how strong the force is that is proportional to the distance
     DAMPING_COEF: number = 100;  // how quickly velocity decays to 0
-    ATTACHED_PULL_COEF = 0.003; // how strongly the attached object is pulled
+    ATTACHED_PULL_COEF = 0.001; // how strongly the attached object is pulled
     N_PHYSICS_ITERATIONS = 1; // more = less bouncy, but more CPU - 1 should be ok
     N_PARTS = 50;  // how many parts of the rope
     MAX_ACCELERATION = 100000;
@@ -19,13 +19,13 @@ export class Hose extends Phaser.GameObjects.Container {
     VELOCITY_SMOOTHING_COEF = 0.5;
 
     // temporary fix
-    HOSE_START_POINT = new Phaser.Math.Vector2(100, 500);
+    HOSE_START_POINT = new Phaser.Math.Vector2(200, 500);
 
     HOSE_DEBUG_VIEW = false;  // Disable the line, switch to particles
     HOSE_COLOR_1 = 0x333333;
     HOSE_COLOR_2 = 0x666666;
     HOSE_THICKNESS = 15;
-    PART_SCALE = 2; // How big are the balls?
+    PART_SCALE = 1; // How big are the balls?
     MAX_DISTANCE = 1000; // Limits the force applied when the balls are further than this (px)
 
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
