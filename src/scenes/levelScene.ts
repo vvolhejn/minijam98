@@ -68,13 +68,17 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('tiles', 'assets/TilesetMap.png');
         this.load.image('debugball', 'assets/debugball.png');
         this.load.image('debugstar', 'assets/debugstar.png');
+        this.load.image('hydrant', 'assets/hydrant.png');
         this.load.image('door', 'assets/door.png');
         this.load.image('box', 'assets/box.png');
         this.load.image('timeBar', 'assets/timeBar.png');
         this.load.image('key', 'assets/key.png');
 
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 38, frameHeight: 39 });
-        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/grand_sprites.png', { frameWidth: 32, frameHeight: 60 });
+        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/grand_sprites.png', {
+            frameWidth: 32,
+            frameHeight: 60
+        });
         this.load.spritesheet(EL_VICTIMO_SPRITE_KEY, 'assets/citizen_sprites.png', { frameWidth: 15, frameHeight: 18 });
 
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
@@ -173,6 +177,17 @@ export class LevelScene extends Phaser.Scene {
         for (let room of rooms) {
             this.loadRoom(room);
         }
+        let hydrant = this.physics.add.staticSprite(
+            0,
+            SCREEN_HEIGHT - 32,
+            'hydrant',
+        );
+        hydrant.setDepth(1);
+        hydrant.setOrigin(0, 1);
+        hydrant.refreshBody();
+        hydrant.setState(0);
+        this.hydrants.add(hydrant);
+
 
         // Sounds
         const thanksSounds = [];
@@ -346,7 +361,6 @@ export class LevelScene extends Phaser.Scene {
     }
 
 
-
     private loadRoom(room) {
         let map = this.make.tilemap({ key: room.mapKey });
 
@@ -435,10 +449,10 @@ export class LevelScene extends Phaser.Scene {
             let hydrant = this.physics.add.staticSprite(
                 offsetX + hydrantTile.x,
                 offsetY + hydrantTile.y,
-                'debugstar',
+                'hydrant',
             );
             hydrant.setOrigin(0, 1);
-            hydrant.setDisplaySize(hydrantTile.width, hydrantTile.height);
+            hydrant.setDepth(1);
             hydrant.refreshBody();
 
             hydrant.setState(0);
