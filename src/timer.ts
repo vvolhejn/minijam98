@@ -30,7 +30,6 @@ export class Timer {
 
     public update(time, _delta) {
         if (!this.isRunning) return;
-
         const elapsedFraction = Math.min(1, (time - this.startTime_ms) / this.total_ms);
         this.sprite.setDisplaySize(this.width, this.height - this.height * elapsedFraction);
         if (elapsedFraction == 1) {

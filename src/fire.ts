@@ -92,13 +92,13 @@ export class Fire extends Phaser.Physics.Arcade.Sprite {
             damagedSprite = damagedGuy
         } else {
             damagedSprite = damagedGuy.sprite;
+            scene.timer.total_ms = Math.max(scene.timer.total_ms - this.FIRE_PLAYER_COLLISION_PENALTY_MS, 0);
         }
     
         const positionDiff = damagedSprite.getCenter().clone().subtract(this.getCenter());
         damagedSprite.setVelocityX(this.ON_DAMAGE_VELOCITY_X * (positionDiff.x > 0 ? 1 : (-1)));
         damagedSprite.setVelocityY(-this.ON_DAMAGE_VELOCITY_Y);
 
-        scene.timer.total_ms = Math.max(scene.timer.total_ms - this.FIRE_PLAYER_COLLISION_PENALTY_MS, 0);
         damagedSprite.setTint(0xFF0000);
         // this.invincible = true;
         // serol.alpha = 0.5;
