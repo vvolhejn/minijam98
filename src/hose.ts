@@ -6,12 +6,12 @@ export class Hose extends Phaser.GameObjects.Container {
 
     parts: Array<Phaser.Physics.Arcade.Sprite> = new Array();
 
-    DISTANCE_BETWEEN_PARTS: number = 1;  // what *should* the distance be?
-    SPRING_COEF: number = 250;  // how strong the force is that is proportional to the distance
-    DAMPING_COEF: number = 100;  // how quickly velocity decays to 0
-    ATTACHED_PULL_COEF = 0.001; // how strongly the attached object is pulled
+    DISTANCE_BETWEEN_PARTS: number = 5;  // what *should* the distance be?
+    SPRING_COEF: number = 400;  // how strong the force is that is proportional to the distance
+    DAMPING_COEF: number = 200;  // how quickly velocity decays to 0
+    ATTACHED_PULL_COEF = 0.002; // how strongly the attached object is pulled
     N_PHYSICS_ITERATIONS = 1; // more = less bouncy, but more CPU - 1 should be ok
-    N_PARTS = 50;  // how many parts of the rope
+    N_PARTS = 25;  // how many parts of the rope
     MAX_ACCELERATION = 100000;
 
     // Smooths the force applied to the hose parts over time. In [0, 1].
@@ -25,13 +25,17 @@ export class Hose extends Phaser.GameObjects.Container {
     HOSE_COLOR_1 = 0x333333;
     HOSE_COLOR_2 = 0x666666;
     HOSE_THICKNESS = 15;
-    PART_SCALE = 1; // How big are the balls?
+    PART_SCALE = 2; // How big are the balls?
     MAX_DISTANCE = 1000; // Limits the force applied when the balls are further than this (px)
 
     // horizontal speed is multiplied by (1 - FRICTION_COEF) each second
     // so values between 0 and 1 are reasonable
     // Note: this happens for the parts in the air as well
     FRICTION_COEF = 0.5;
+
+    // how much the hose likes to slide along walls, non-negative
+    SLIDING_COEF = 0.5;
+    SLIDING_MAX = 50;
 
     endAttachedTo: HosePlayer = null;
     startPoint: Phaser.Math.Vector2;
@@ -135,7 +139,7 @@ export class Hose extends Phaser.GameObjects.Container {
         let newVelocities: Array<Phaser.Math.Vector2> = [];
         for (let i = 0; i < this.parts.length; i++) {
             newVelocities.push(this.parts[i].body.velocity.clone());
-            zeroAccelerationIfBlocked(this.parts[i].body);
+            // zeroAccelerationIfBlocked(this.parts[i].body);
         }
 
         const nIterations = this.N_PHYSICS_ITERATIONS;
@@ -170,9 +174,6 @@ export class Hose extends Phaser.GameObjects.Container {
             }
         }
 
-        this.parts[1].setTint(0xff0000);
-        this.parts[0].setVelocity(0, 0);
-
         const vecToString = (v) => `(${v.x.toFixed(2)}, ${v.y.toFixed(2)})`;
 
         for (let i = 1; i < this.parts.length; i++) {
@@ -184,12 +185,15 @@ export class Hose extends Phaser.GameObjects.Container {
                     .add(newVelocities[i].clone().scale(1 - curCoef))
             );
 
-            this.parts[i].setVelocity(this.smoothedVelocities[i].x, this.smoothedVelocities[i].y);
+            let appliedVelocity = this.redirectIfBlocked(this.parts[i], this.smoothedVelocities[i]);
+
+            this.parts[i].setVelocity(appliedVelocity.x, appliedVelocity.y);
         }
 
         if (this.HOSE_DEBUG_VIEW) {
+            this.parts[3].setTint(0xff0000);
             this.debugText.setText(
-                vecToString(this.smoothedVelocities[1]) + "\n" +
+                vecToString(this.smoothedVelocities[3]) + "\n" +
                 vecToString(forces[0]) + "\n" +
                 vecToString(forces[1]) + "\n"
             );
@@ -202,6 +206,7 @@ export class Hose extends Phaser.GameObjects.Container {
                 playerBody.position.x + playerBody.width / 2,
                 playerBody.position.y + playerBody.height / 2,
             );
+            this.parts[0].setVelocity(0, 0);
 
             forces[0].scale(this.ATTACHED_PULL_COEF * delta / 1000);
 
@@ -221,5 +226,31 @@ export class Hose extends Phaser.GameObjects.Container {
         }
 
         this.draw();
+    }
+
+    private redirectIfBlocked(
+        part: Phaser.Physics.Arcade.Sprite,
+        wantedVelocity: Phaser.Math.Vector2,
+    ) {
+        wantedVelocity = wantedVelocity.clone()
+
+        let compute = (para, perp) => {
+            return para + Math.sign(para) * Math.min(Math.abs(perp) * this.SLIDING_COEF, this.SLIDING_MAX);
+        };
+
+        if (part.body.blocked.left) {
+            wantedVelocity.y = compute(wantedVelocity.y, wantedVelocity.x);
+        }
+        if (part.body.blocked.right) {
+            wantedVelocity.y = compute(wantedVelocity.y, wantedVelocity.x);
+        }
+        if (part.body.blocked.up) {
+            wantedVelocity.y = compute(wantedVelocity.x, wantedVelocity.y);
+        }
+        if (part.body.blocked.down) {
+            wantedVelocity.y = compute(wantedVelocity.x, wantedVelocity.y);
+        }
+
+        return wantedVelocity;
     }
 }
