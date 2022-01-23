@@ -147,12 +147,6 @@ export class HosePlayer extends Player {
 
         zeroAccelerationIfBlocked(this.sprite.body);
 
-        // Mouse overrides the arrow controls.
-        const pointer = this.scene.input.activePointer;
-        if (pointer.leftButtonDown()) {
-            diff = new Phaser.Math.Vector2(pointer.x - this.sprite.x, pointer.y - this.sprite.y);
-        }
-
         if (diff.length() != 0) {
 
             const numToFire = 6;
