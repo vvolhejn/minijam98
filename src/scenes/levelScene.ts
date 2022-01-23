@@ -358,8 +358,8 @@ export class LevelScene extends Phaser.Scene {
 
             const box = new Box(
                 this,
-                boxTile.x,
-                boxTile.y,
+                boxTile.x + offsetX,
+                boxTile.y + offsetY,
                 boxTile.width,
                 boxTile.height,
                 'box'
