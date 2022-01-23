@@ -430,19 +430,20 @@ export class LevelScene extends Phaser.Scene {
         let entrance = rooms[0].getObjectLayer('entryteleport').objects[0];
         const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
         // console.log()
-        entrance.y += (this.cameraOffsetY - 48);
-        entrance.x += offsetX;
-        console.log(entrance, this.cameraOffsetY);
+        console.log(entrance.x, entrance.y, this.cameraOffsetY);
+        let dy = entrance.y + (this.cameraOffsetY - 48);
+        let dx = entrance.x + offsetX;
+        console.log(dx, dy, "offsetX", offsetX, this.cameraOffsetY);
 
-        this.hosePlayer.sprite.x = entrance.x - 10;
-        this.hosePlayer.sprite.y = entrance.y;
-        this.groundPlayer.sprite.x = entrance.x + 10;
+        this.hosePlayer.sprite.x = dx - 10;
+        this.hosePlayer.sprite.y = dy;
+        this.groundPlayer.sprite.x = dx + 10;
 
-        this.groundPlayer.sprite.y = entrance.y;
+        this.groundPlayer.sprite.y = dy;
         this.hosePlayer.sprite.body.setVelocity(0, 0);
         this.groundPlayer.sprite.body.setVelocity(0, 0);
 
-        this.hose.setStartTo(new Vector2(entrance.x - 10, entrance.y - 32));
+        this.hose.setStartTo(new Vector2(dx - 10, dy - 32));
 
         this.level++;
         this.levelText.setText('Level: ' + this.level);
