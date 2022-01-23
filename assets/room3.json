@@ -66,7 +66,7 @@
         {
          "draworder":"topdown",
          "id":8,
-         "name":"teleporter",
+         "name":"entryteleport",
          "objects":[
                 {
                  "gid":14,
@@ -89,7 +89,7 @@
         {
          "draworder":"topdown",
          "id":6,
-         "name":"hydrant",
+         "name":"hydrants",
          "objects":[
                 {
                  "gid":45,

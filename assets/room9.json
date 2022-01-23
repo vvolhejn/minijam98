@@ -19,7 +19,7 @@
         {
          "draworder":"topdown",
          "id":6,
-         "name":"teleporter",
+         "name":"exitteleport",
          "objects":[
                 {
                  "gid":14,
@@ -32,6 +32,29 @@
                  "width":32,
                  "x":896,
                  "y":192
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":7,
+         "name":"hydrants",
+         "objects":[
+                {
+                 "gid":45,
+                 "height":32,
+                 "id":18,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":64,
+                 "y":96
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -192,8 +215,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":7,
- "nextobjectid":18,
+ "nextlayerid":8,
+ "nextobjectid":19,
  "orientation":"orthogonal",
  "properties":[
         {

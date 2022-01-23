@@ -26,6 +26,7 @@ const FLOOR_HEIGHT = 7 * TILE_SIZE;
 export class LevelScene extends Phaser.Scene {
     levelGenerator: LevelGenerator;
     buildingHeight: number;
+    sky;
 
     hosePlayer: HosePlayer;
     groundPlayer: GroundPlayer;
@@ -41,8 +42,11 @@ export class LevelScene extends Phaser.Scene {
     platforms;
     players: Phaser.Physics.Arcade.Group;
     score = 0;
-    gameOver = false;
-    scoreText;
+    isGameOver = false;
+    scoreText: Phaser.GameObjects.Text;
+    gameOverText: Phaser.GameObjects.Text;
+    gameOverBackground: Phaser.GameObjects.Rectangle;
+
     hose: Hose;
 
     constructor() {
@@ -61,6 +65,7 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('debugstar', 'assets/debugstar.png');
         this.load.image('door', 'assets/door.png');
         this.load.image('box', 'assets/box.png');
+        this.load.image('timeBar', 'assets/timeBar.png');
         this.load.image('key', 'assets/key.png');
         this.load.image(EL_VICTIMO_SPRITE_KEY, 'assets/elVictimo.png');
 
@@ -104,7 +109,7 @@ export class LevelScene extends Phaser.Scene {
         });
 
         //  A simple background for our game
-        this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 'sky').setScale(2).setTint(0x666666);
+        this.sky = this.add.image(SCREEN_WIDTH / 2, 0, 'sky').setScale(6).setTint(0x666666);
 
         //  The platforms group contains the ground
         this.platforms = this.physics.add.staticGroup();
@@ -158,13 +163,20 @@ export class LevelScene extends Phaser.Scene {
         //  The score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
 
+        this.gameOverBackground = this.add.rectangle(600, 250, 800, 200, 0x320032);
+        this.gameOverText = this.add.text(300, 200, 'Game over!', { fontSize: '100px', color: '#f00' });
+        this.gameOverBackground.setVisible(false);
+        this.gameOverText.setVisible(false);
+
         this.setCollisions();
-        
+
         // Create hose.
         this.hose = new Hose(this, this.hosePlayer.sprite.x, this.hosePlayer.sprite.y);
         this.hose.attachEndTo(this.hosePlayer);
-        
-        this.timer = new Timer(this, TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE * 3 / 4, SCREEN_WIDTH - 2 * TILE_SIZE, TILE_SIZE / 2, 'door');
+
+        this.timer = new Timer(this, TILE_SIZE, SCREEN_HEIGHT - TILE_SIZE * 3 / 4, SCREEN_WIDTH - 2 * TILE_SIZE, TILE_SIZE / 2, 'timeBar');
+        this.timer.start(5 * 1000);
+
         this.physics.disableUpdate();
     }
 
@@ -203,7 +215,7 @@ export class LevelScene extends Phaser.Scene {
     public update(time, delta) {  // delta is in ms
         this.timer.update(time, delta);
 
-        if (this.gameOver) {
+        if (this.isGameOver) {
             return;
         }
 
@@ -255,6 +267,7 @@ export class LevelScene extends Phaser.Scene {
 
     private onVictimInThanksWall(victim: ElVictimo, thanksWall: ThanksWall) {
         thanksWall.handleVictim(victim);
+        this.checkVictory();
     }
 
     private onTouchHydrant(_player, hydrant: Phaser.Physics.Arcade.Sprite) {
@@ -351,7 +364,7 @@ export class LevelScene extends Phaser.Scene {
         }, this);
 
         // Hydrants
-        map.getObjectLayer('hydrant')?.objects.forEach((hydrantTile) => {
+        map.getObjectLayer('hydrants')?.objects.forEach((hydrantTile) => {
             let hydrant = this.physics.add.staticSprite(
                 offsetX + hydrantTile.x,
                 offsetY + hydrantTile.y,
@@ -368,5 +381,41 @@ export class LevelScene extends Phaser.Scene {
 
     public redrawScore() {
         this.scoreText.setText('Score: ' + this.score);
+    }
+
+    private checkVictory() {
+        const allSaved = this.elVictimos.getChildren().every((victim) => { return (victim as ElVictimo).saved; })
+        if (!allSaved)
+            return;
+
+        // this.hydrants = this.physics.add.staticGroup();
+        // this.fires = this.physics.add.staticGroup();
+        // this.thanksWalls = this.physics.add.staticGroup();
+        // this.doors = this.physics.add.staticGroup();
+        // this.boxes = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
+        // this.walls = [];
+        // this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
+        //
+
+
+        let rooms = this.levelGenerator.generateLevel(false);
+        for (let room of rooms) {
+            this.loadRoom(room);
+        }
+
+
+        this.sky.y = this.sky.y - SCREEN_HEIGHT;
+        let x = this.cameras.main.centerX;
+        let y = this.cameras.main.centerY;
+        this.cameras.main.pan(x, y - SCREEN_HEIGHT, 5 * 1000);
+    }
+    
+    public setGameOver(enable: boolean) {
+        this.isGameOver = enable;
+        this.gameOverText.setVisible(enable);
+        this.gameOverBackground.setVisible(enable);
+        if (enable) {
+            setTimeout(() => this.setGameOver(false), 500); // debug stuff
+        }
     }
 }

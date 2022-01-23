@@ -209,7 +209,7 @@
         {
          "draworder":"topdown",
          "id":4,
-         "name":"teleporter",
+         "name":"exitteleport",
          "objects":[
                 {
                  "gid":14,
