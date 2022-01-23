@@ -12,6 +12,7 @@ import assert = require("assert");
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../main";
 import { Box } from "../box";
 import { Timer } from "../timer";
+import Vector2 = Phaser.Math.Vector2;
 
 const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
@@ -26,6 +27,7 @@ const FLOOR_HEIGHT = 7 * TILE_SIZE;
 export class LevelScene extends Phaser.Scene {
     levelGenerator: LevelGenerator;
     buildingHeight: number;
+    cameraOffsetY: number = 0;
     sky;
 
     hosePlayer: HosePlayer;
@@ -290,7 +292,7 @@ export class LevelScene extends Phaser.Scene {
 
         const tileset = map.addTilesetImage('TilesetMap', 'tiles');
         const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
-        const offsetY = SCREEN_HEIGHT - 32 - (FLOOR_HEIGHT * (this.buildingHeight + room.properties.height));
+        const offsetY = SCREEN_HEIGHT - 32 - (TILE_SIZE * (this.buildingHeight + 7 * room.properties.height));
 
         for (let i = 0; i < room.properties.height; i++) {
             let bgMap = this.make.tilemap({ key: "background1" });
@@ -301,7 +303,7 @@ export class LevelScene extends Phaser.Scene {
         map.createLayer('windows', tileset, offsetX, offsetY);
         layer.setCollisionByExclusion([-1], true);
         this.walls.push(layer);
-        this.buildingHeight += room.properties.height;
+        this.buildingHeight += 7 * room.properties.height;
 
         // Fires.
         map.getObjectLayer('fires')?.objects.sort((a, b) => a.y - b.y).forEach((fireTile) => {
@@ -392,14 +394,13 @@ export class LevelScene extends Phaser.Scene {
         if (!allSaved)
             return;
 
-        // this.hydrants = this.physics.add.staticGroup();
-        // this.fires = this.physics.add.staticGroup();
-        // this.thanksWalls = this.physics.add.staticGroup();
-        // this.doors = this.physics.add.staticGroup();
-        // this.boxes = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
-        // this.walls = [];
-        // this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
-        //
+        this.hydrants = this.physics.add.staticGroup();
+        this.fires = this.physics.add.staticGroup();
+        this.thanksWalls = this.physics.add.staticGroup();
+        this.doors = this.physics.add.staticGroup();
+        this.boxes = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
+        this.walls = [];
+        this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
 
 
         let rooms = this.levelGenerator.generateLevel(false);
@@ -407,11 +408,39 @@ export class LevelScene extends Phaser.Scene {
             this.loadRoom(room);
         }
 
+        this.setCollisions();
 
         this.sky.y = this.sky.y - SCREEN_HEIGHT;
         let x = this.cameras.main.centerX;
         let y = this.cameras.main.centerY;
-        this.cameras.main.pan(x, y - SCREEN_HEIGHT, 5 * 1000);
+        this.cameraOffsetY -= 21 * TILE_SIZE;
+        this.cameras.main.pan(x, y - 21 * TILE_SIZE, 3 * 1000);
+
+        let entrance = rooms[0].getObjectLayer('entryteleport').objects[0];
+        const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
+        // console.log()
+        entrance.y += (this.cameraOffsetY - 48);
+        entrance.x += offsetX;
+        console.log(entrance, this.cameraOffsetY);
+
+        this.hose.setCollideWorldBounds(false);
+        this.hosePlayer.sprite.setCollideWorldBounds(false);
+        this.groundPlayer.sprite.setCollideWorldBounds(false);
+
+        this.hosePlayer.sprite.x = entrance.x - 10;
+        this.hosePlayer.sprite.y = entrance.y;
+        this.groundPlayer.sprite.x = entrance.x + 10;
+
+        this.groundPlayer.sprite.y = entrance.y;
+        this.hosePlayer.sprite.body.setVelocity(0, 0);
+        this.groundPlayer.sprite.body.setVelocity(0, 0);
+
+        this.hose.setStartTo(new Vector2(entrance.x - 10, entrance.y - 32));
+
+        // TODO: this needs to be set back after an update
+        // this.hose.setCollideWorldBounds(true);
+        // this.hosePlayer.sprite.setCollideWorldBounds(true);
+        // this.groundPlayer.sprite.setCollideWorldBounds(true);
     }
 
     public setGameOver(enable: boolean) {
