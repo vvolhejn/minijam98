@@ -26,6 +26,7 @@ const FLOOR_HEIGHT = 7 * TILE_SIZE;
 export class LevelScene extends Phaser.Scene {
     levelGenerator: LevelGenerator;
     buildingHeight: number;
+    sky;
 
     hosePlayer: HosePlayer;
     groundPlayer: GroundPlayer;
@@ -104,7 +105,7 @@ export class LevelScene extends Phaser.Scene {
         });
 
         //  A simple background for our game
-        this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 'sky').setScale(2).setTint(0x666666);
+        this.sky = this.add.image(SCREEN_WIDTH / 2, 0, 'sky').setScale(6).setTint(0x666666);
 
         //  The platforms group contains the ground
         this.platforms = this.physics.add.staticGroup();
@@ -255,6 +256,7 @@ export class LevelScene extends Phaser.Scene {
 
     private onVictimInThanksWall(victim: ElVictimo, thanksWall: ThanksWall) {
         thanksWall.handleVictim(victim);
+        this.checkVictory();
     }
 
     private onTouchHydrant(_player, hydrant: Phaser.Physics.Arcade.Sprite) {
@@ -336,7 +338,7 @@ export class LevelScene extends Phaser.Scene {
         map.getObjectLayer('boxes')?.objects.forEach((boxTile) => {
             if (boxTile.polygon) {
                 console.log("Polygon boxes are not supported..");
-                return
+                return;
             }
 
             const box = new Box(
@@ -350,9 +352,50 @@ export class LevelScene extends Phaser.Scene {
             this.boxes.add(box, true);
         }, this);
 
+        // Hydrants
+        map.getObjectLayer('hydrant')?.objects.forEach((hydrantTile) => {
+            let hydrant = this.physics.add.staticSprite(
+                offsetX + hydrantTile.x,
+                offsetY + hydrantTile.y,
+                'debugstar',
+            );
+            hydrant.setOrigin(0, 1);
+            hydrant.setDisplaySize(hydrantTile.width, hydrantTile.height);
+            hydrant.refreshBody();
+
+            hydrant.setState(0);
+            this.hydrants.add(hydrant);
+        });
     }
 
     public redrawScore() {
         this.scoreText.setText('Score: ' + this.score);
+    }
+
+    private checkVictory() {
+        const allSaved = this.elVictimos.getChildren().every((victim) => { return (victim as ElVictimo).saved; })
+        if (!allSaved)
+            return;
+
+        // this.hydrants = this.physics.add.staticGroup();
+        // this.fires = this.physics.add.staticGroup();
+        // this.thanksWalls = this.physics.add.staticGroup();
+        // this.doors = this.physics.add.staticGroup();
+        // this.boxes = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
+        // this.walls = [];
+        // this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
+        //
+
+
+        let rooms = this.levelGenerator.generateLevel(false);
+        for (let room of rooms) {
+            this.loadRoom(room);
+        }
+
+
+        this.sky.y = this.sky.y - SCREEN_HEIGHT;
+        let x = this.cameras.main.centerX;
+        let y = this.cameras.main.centerY;
+        this.cameras.main.pan(x, y - SCREEN_HEIGHT, 5 * 1000);
     }
 }

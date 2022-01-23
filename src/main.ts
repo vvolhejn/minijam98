@@ -7,7 +7,7 @@ let levels = [
     levelScene,
 ];
 
-export const SCREEN_HEIGHT = 700;
+export const SCREEN_HEIGHT = 704;
 export const SCREEN_WIDTH = 1200;
 
 const gameConfig = {
@@ -25,7 +25,8 @@ const gameConfig = {
         }
     },
     scene: levels,
-    seed: ["42"]
+    seed: ["42"],
+    pixelArt: true,
 };
 
 export const game = new Phaser.Game(gameConfig);
