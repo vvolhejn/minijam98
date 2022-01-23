@@ -11,6 +11,8 @@ export class LevelGenerator {
             const key = `room${i}`;
             scene.load.tilemapTiledJSON(key, `assets/room${i}.json`);
         }
+
+        scene.load.tilemapTiledJSON("background1", "assets/background1.json");
     }
 
     public create() {

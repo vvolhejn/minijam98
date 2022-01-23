@@ -53,6 +53,7 @@ export class HosePlayer extends Player {
             this.particles.create(0, 0, 'droplet', 0, false, false).setScale(1, 1);
             // Otherwise they appear as invisible objects that players can collide with.
             this.particles.getLast().body.enable = false;
+            this.particles.getLast().setDepth(10)
         }
     }
 

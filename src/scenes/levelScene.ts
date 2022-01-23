@@ -232,13 +232,18 @@ export class LevelScene extends Phaser.Scene {
 
     private loadRoom(room, floorNum: number) {
         let map = this.make.tilemap({ key: room.mapKey });
-        // let map = roomMap.copy();
 
         const tileset = map.addTilesetImage('TilesetMap', 'tiles');
         const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
         const offsetY = SCREEN_HEIGHT - 32 - (FLOOR_HEIGHT * (floorNum + room.properties.height));
+
+        for (let i = 0; i < room.properties.height; i++) {
+            let bgMap = this.make.tilemap({ key: "background1" });
+            bgMap.createLayer('background', tileset, offsetX, offsetY + FLOOR_HEIGHT * i).setDepth(0);
+        }
+
         let layer = map.createLayer('walls', tileset, offsetX, offsetY);
-        map.createLayer('background', tileset, offsetX, offsetY);
+        map.createLayer('windows', tileset, offsetX, offsetY);
         layer.setCollisionByExclusion([-1], true);
         this.walls.push(layer);
 
