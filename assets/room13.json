@@ -26,11 +26,11 @@
                  "height":32,
                  "id":16,
                  "name":"",
-                 "rotation":-90,
+                 "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":224,
+                 "x":192,
                  "y":128
                 }],
          "opacity":1,
