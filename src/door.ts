@@ -39,7 +39,7 @@ export class Door {
         this.keySprite.setActive(false);
         this.keySprite.setVisible(false);
         this.keySprite.body.enable = false;
-        this.doorSprite.setTint(0x00ffff);
+        this.doorSprite.setVisible(false);
     }
 
     public setOpenSides(openLeft: boolean, openRight: boolean, openUp = false, openDown = false) {

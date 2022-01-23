@@ -50,6 +50,7 @@ export class LevelScene extends Phaser.Scene {
     levelText: Phaser.GameObjects.Text;
     gameOverText: Phaser.GameObjects.Text;
     gameOverBackground: Phaser.GameObjects.Rectangle;
+    levelEntrance = new Vector2(60, SCREEN_HEIGHT - 60 - 20);
 
     hose: Hose;
 
@@ -67,13 +68,17 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('tiles', 'assets/TilesetMap.png');
         this.load.image('debugball', 'assets/debugball.png');
         this.load.image('debugstar', 'assets/debugstar.png');
+        this.load.image('hydrant', 'assets/hydrant.png');
         this.load.image('door', 'assets/door.png');
         this.load.image('box', 'assets/box.png');
         this.load.image('timeBar', 'assets/timeBar.png');
         this.load.image('key', 'assets/key.png');
 
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 38, frameHeight: 39 });
-        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/grand_sprites.png', { frameWidth: 32, frameHeight: 60 });
+        this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/grand_sprites.png', {
+            frameWidth: 32,
+            frameHeight: 60
+        });
         this.load.spritesheet(EL_VICTIMO_SPRITE_KEY, 'assets/citizen_sprites.png', { frameWidth: 15, frameHeight: 18 });
 
         this.load.atlas('flares', 'assets/flares.png', 'assets/flares.json');
@@ -172,6 +177,17 @@ export class LevelScene extends Phaser.Scene {
         for (let room of rooms) {
             this.loadRoom(room);
         }
+        let hydrant = this.physics.add.staticSprite(
+            0,
+            SCREEN_HEIGHT - 32,
+            'hydrant',
+        );
+        hydrant.setDepth(1);
+        hydrant.setOrigin(0, 1);
+        hydrant.refreshBody();
+        hydrant.setState(0);
+        this.hydrants.add(hydrant);
+
 
         // Sounds
         const thanksSounds = [];
@@ -192,9 +208,9 @@ export class LevelScene extends Phaser.Scene {
 
         //  The score
         this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px' });
-        configureText(this.scoreText)
+        configureText(this.scoreText);
         this.levelText = this.add.text(16, 64, 'Level: 1', { fontSize: '32px' });
-        configureText(this.levelText)
+        configureText(this.levelText);
 
         this.gameOverBackground = this.add.rectangle(600, 250, 800, 200, 0x320032);
         this.gameOverText = this.add.text(300, 200, 'Game over!', { fontSize: '100px', color: '#f00' });
@@ -217,7 +233,7 @@ export class LevelScene extends Phaser.Scene {
     private setCollisions() {
 
         // Collisions.
-        this.physics.add.collider(this.players, this.platforms);
+        this.physics.add.collider(this.players, this.platforms, this.onPlayerHitGround, null, this);
         this.physics.add.collider(this.players, this.doors);
         this.physics.add.collider(this.hosePlayer.particles, this.platforms);
         this.physics.add.collider(this.elVictimos, this.platforms, this.onVictimHitGround);
@@ -248,7 +264,7 @@ export class LevelScene extends Phaser.Scene {
         this.hose.parts.forEach((part) => {
             this.physics.add.collider(part, this.platforms);
             this.physics.add.collider(part, this.walls);
-        })
+        });
     }
 
     public update(time, delta) {  // delta is in ms
@@ -304,7 +320,21 @@ export class LevelScene extends Phaser.Scene {
     }
 
     private onVictimHitGround(victim: ElVictimo, _) {
-        victim.onHitGround(this)
+        victim.onHitGround(this);
+    }
+
+    private onPlayerHitGround(playerSprite, _) {
+        // console.log(playerSprite.x)
+        // console.log(this.groundPlayer !== undefined)
+        // console.log(playerSprite === this.groundPlayer.sprite)
+        // console.log(this.level > 1)
+        if (this.groundPlayer !== undefined
+            && playerSprite === this.groundPlayer.sprite
+            && (playerSprite.x > 500 || this.level > 1)) {
+            console.log("yes", this.levelEntrance.x, this.levelEntrance.y)
+            this.groundPlayer.sprite.x = this.levelEntrance.x
+            this.groundPlayer.sprite.y = this.levelEntrance.y
+        }
     }
 
     private onTouchHydrant(_player, hydrant: Phaser.Physics.Arcade.Sprite) {
@@ -329,7 +359,6 @@ export class LevelScene extends Phaser.Scene {
         water.body.setVelocity(-water.body.velocity.x / Phaser.Math.Between(f - 2, f + 2), -water.body.velocity.y / Phaser.Math.Between(f - 2, f + 2));
         water.collided = true;
     }
-
 
 
     private loadRoom(room) {
@@ -420,10 +449,10 @@ export class LevelScene extends Phaser.Scene {
             let hydrant = this.physics.add.staticSprite(
                 offsetX + hydrantTile.x,
                 offsetY + hydrantTile.y,
-                'debugstar',
+                'hydrant',
             );
             hydrant.setOrigin(0, 1);
-            hydrant.setDisplaySize(hydrantTile.width, hydrantTile.height);
+            hydrant.setDepth(1);
             hydrant.refreshBody();
 
             hydrant.setState(0);
@@ -438,7 +467,7 @@ export class LevelScene extends Phaser.Scene {
     private checkVictory() {
         const allSaved = this.elVictimos.getChildren().every((victim) => {
             return (victim as ElVictimo).saved;
-        })
+        });
         if (!allSaved) {
             // console.log("not everyone is saved)");
             // console.log(this.elVictimos);
@@ -466,12 +495,13 @@ export class LevelScene extends Phaser.Scene {
         this.cameraOffsetY -= 21 * TILE_SIZE;
         this.cameras.main.pan(x, y - 21 * TILE_SIZE, 2000, "Quad.easeInOut");
 
-        let entrance = rooms[0].getObjectLayer('entryteleport').objects[0];
+        this.levelEntrance = rooms[0].getObjectLayer('entryteleport').objects[0];
         const offsetX = (SCREEN_WIDTH - FLOOR_WIDTH) / 2;
         // console.log()
-        console.log(entrance.x, entrance.y, this.cameraOffsetY);
-        let dy = entrance.y + (this.cameraOffsetY - 48);
-        let dx = entrance.x + offsetX;
+        console.log(this.levelEntrance.x, this.levelEntrance.y, this.cameraOffsetY);
+        let dy = this.levelEntrance.y + (this.cameraOffsetY - 48);
+        let dx = this.levelEntrance.x + offsetX;
+        this.levelEntrance = new Vector2(dx, dy);
         console.log(dx, dy, "offsetX", offsetX, this.cameraOffsetY);
 
         this.hosePlayer.sprite.x = dx - 10;
