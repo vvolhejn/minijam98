@@ -26,41 +26,58 @@ export class LevelGenerator {
     }
 
     public generateLevel() {
-        let heightLeft = 3;
+        let levelFromUrl = this.levelFromUrl();
         let level;
-        while (heightLeft > 0) {
-            level = [];
-            let entryConstraints = [];
-            heightLeft = 3;
+        if (levelFromUrl != null) {
+            level = levelFromUrl;
+        } else {
+            let heightLeft = 2;
             while (heightLeft > 0) {
-                // console.log(heightLeft);
+                level = [this.rooms[0]];
+                let entryConstraints = this.rooms[0].properties.exit;
+                heightLeft = 2;
+                while (heightLeft > 0) {
+                    // console.log(heightLeft);
 
-                let availableRooms = this.rooms.filter( (map) => {
-                    let h = map.properties.height;
-                    let ok = h <= heightLeft;
-                    if (entryConstraints.length > 0) {
-                        let options = entryConstraints.map( (entryOption) => {
-                            return map.properties.entry.includes(entryOption);
-                        });
-                        // console.log(map.mapKey, map);
-                        // console.log("enrtryu Constraing", entryConstraints);
-                        // console.log(options);
-                        ok = ok && options.includes(true);
-                    }
-                    return ok;
-                });
-                // console.log("Available rooms", availableRooms);
-                if (availableRooms.length == 0)
-                    break;
-                let room = this.randomChoice(availableRooms);
-                level.push(room);
-                entryConstraints = room.properties.exit;
-                let h = room.properties.height;
-                heightLeft -= h;
+                    let availableRooms = this.rooms.filter((map) => {
+                        let h = map.properties.height;
+                        let ok = h <= heightLeft;
+                        if (entryConstraints.length > 0) {
+                            let options = entryConstraints.map((entryOption) => {
+                                return map.properties.entry.includes(entryOption);
+                            });
+                            // console.log(map.mapKey, map);
+                            // console.log("enrtryu Constraing", entryConstraints);
+                            // console.log(options);
+                            ok = ok && options.includes(true);
+                        }
+                        return ok;
+                    });
+                    // console.log("Available rooms", availableRooms);
+                    if (availableRooms.length == 0)
+                        break;
+                    let room = this.randomChoice(availableRooms);
+                    level.push(room);
+                    entryConstraints = room.properties.exit;
+                    let h = room.properties.height;
+                    heightLeft -= h;
+                }
             }
         }
-        // console.log("Final levels:", level);
+        console.log("Level: ", level.map((room) => room.mapKey));
         return level;
+    }
+
+    private levelFromUrl() {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        if (!urlParams.has('rooms')) {
+            return null;
+        }
+        let wantedRooms = urlParams.get('rooms')?.split(',').map((x) => +x);
+        console.log("Wanted rooms: ", wantedRooms);
+        wantedRooms = wantedRooms?.map((x) => this.rooms[x]);
+        return wantedRooms;
     }
 
     private randomChoice(array) {

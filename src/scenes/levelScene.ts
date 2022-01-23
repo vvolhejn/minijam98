@@ -127,6 +127,7 @@ export class LevelScene extends Phaser.Scene {
         this.elVictimos = this.physics.add.group({ collideWorldBounds: true });
         this.elVictimos.runChildUpdate = true;
 
+
         let rooms = this.levelGenerator.generateLevel();
         let h = 0;
         for (let room of rooms) {
