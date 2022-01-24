@@ -546,6 +546,7 @@ export class LevelScene extends Phaser.Scene {
         this.walls = [];
         this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
         this.fires = this.physics.add.staticGroup();
+        this.teleportManager.clearOld()
 
         let rooms = this.levelGenerator.generateLevel(false);
         for (let room of rooms) {
@@ -569,7 +570,7 @@ export class LevelScene extends Phaser.Scene {
 
         let heightOfRoomsAbove = rooms.map((room) => +room.properties.height).reduce((a, b) => a + b) - rooms[0].properties.height;
         console.log("Height Above", heightOfRoomsAbove);
-        let dy = this.levelEntrance.y + (this.cameraOffsetY - 48) + 7 * heightOfRoomsAbove;
+        let dy = this.levelEntrance.y + (this.cameraOffsetY - 48) + 32 * 7 * heightOfRoomsAbove;
         let dx = this.levelEntrance.x + offsetX;
         this.levelEntrance = new Vector2(dx, dy);
         console.log(dx, dy, "offsetX", offsetX, this.cameraOffsetY);
