@@ -29,6 +29,8 @@ const FLOOR_WIDTH = 32 * TILE_SIZE;
 const FLOOR_HEIGHT = 7 * TILE_SIZE;
 
 export class LevelScene extends Phaser.Scene {
+    keyInManager: string;
+
     levelGenerator: LevelGenerator;
     buildingHeight: number;
     cameraOffsetY: number = 0;
@@ -63,10 +65,11 @@ export class LevelScene extends Phaser.Scene {
 
     hose: Hose;
 
-    constructor() {
+    constructor(key: string) {
         super({
-            key: 'level',
+            key: key,
         });
+        this.keyInManager = key;
     }
 
     public preload() {
@@ -120,7 +123,6 @@ export class LevelScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         this.levelGenerator.create();
-
         for (let i = 1; i <= 3; i++) {
             this.anims.create({
                 key: `fire${i}anim`,
@@ -332,8 +334,7 @@ export class LevelScene extends Phaser.Scene {
         fire.lowerHp();
     }
 
-    public extinguishFireWithBox(box, fire) {
-        console.log("here")
+    public extinguishFireWithBox(_box, fire) {
         fire.lowerHp();
     }
 
@@ -567,8 +568,9 @@ export class LevelScene extends Phaser.Scene {
         // console.log()
         console.log(this.levelEntrance.x, this.levelEntrance.y, this.cameraOffsetY);
 
-        let heightOfRoomsAbove = rooms.map((room) => room.properties.height).reduce((a, b) => a + b) - rooms[0].properties.height;
-        let dy = this.levelEntrance.y + (this.cameraOffsetY - 48) + heightOfRoomsAbove;
+        let heightOfRoomsAbove = rooms.map((room) => +room.properties.height).reduce((a, b) => a + b) - rooms[0].properties.height;
+        console.log("Height Above", heightOfRoomsAbove);
+        let dy = this.levelEntrance.y + (this.cameraOffsetY - 48) + 7 * heightOfRoomsAbove;
         let dx = this.levelEntrance.x + offsetX;
         this.levelEntrance = new Vector2(dx, dy);
         console.log(dx, dy, "offsetX", offsetX, this.cameraOffsetY);
@@ -595,7 +597,14 @@ export class LevelScene extends Phaser.Scene {
         this.gameOverText.setVisible(enable);
         this.gameOverBackground.setVisible(enable);
         if (enable) {
-            setTimeout(() => this.setGameOver(false), 500); // debug stuff
+            setTimeout(() => {
+                const key = `JoseHose${this.time.now}`;
+                const manager = this.scene.manager;
+                manager.remove(this.keyInManager);
+                manager.add(key, new LevelScene(key));
+                manager.run(key);
+                manager.bringToTop(key);
+            }, 4000) // debug stuff
         }
     }
 }

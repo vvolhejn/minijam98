@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
 import {LevelScene} from './scenes/levelScene';
 
-let levelScene = new LevelScene();
+let levelScene = new LevelScene('JoseHose');
 
 let levels = [
     levelScene,

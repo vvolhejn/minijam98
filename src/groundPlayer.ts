@@ -13,7 +13,7 @@ export class GroundPlayer extends Player {
     ACCELERATION_X = 3000;
     JUMP_VELOCITY_Y = -430;
 
-    GRAND_FRICTION_COEF = 0.99;
+    GRAND_FRICTION_COEF = 0.999;
 
     LEFT_ANIM_KEY: string;
     RIGHT_ANIM_KEY: string;
