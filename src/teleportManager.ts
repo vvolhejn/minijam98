@@ -63,4 +63,12 @@ export class TeleportManager {
         }
         return null;
     }
+
+    public clearOld() {
+        let n = this.entryTeleports.length;
+        for (let i = 0; i < n; i++) {
+            this.entryTeleports[i] = null;
+            this.exitTeleports[i] = null;
+        }
+    }
 }
