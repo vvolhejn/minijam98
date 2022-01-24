@@ -135,7 +135,7 @@
                  "type":"key",
                  "visible":true,
                  "width":32,
-                 "x":160,
+                 "x":32,
                  "y":416
                 }],
          "opacity":1,
@@ -360,8 +360,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":32,
-                 "y":416
+                 "x":160,
+                 "y":320
                 }, 
                 {
                  "gid":27,
