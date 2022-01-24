@@ -75,7 +75,7 @@ export class LevelScene extends Phaser.Scene {
     public preload() {
         this.levelGenerator = new LevelGenerator(this);
 
-        this.load.image('sky', 'assets/background.png');
+        this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
         this.load.image('tiles', 'assets/TilesetMap.png');
         this.load.image('debugball', 'assets/debugball.png');
