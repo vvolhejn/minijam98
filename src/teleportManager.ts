@@ -51,7 +51,6 @@ export class TeleportManager {
     }
 
     public getCorrespondingTeleport(sprite: Phaser.Physics.Arcade.Sprite) {
-        console.log(this.entryTeleports, this.exitTeleports);
         let n = this.entryTeleports.length;
         for (let i = 0; i < n; i++) {
             if (i < n - 1 && this.exitTeleports[i] === sprite) {
