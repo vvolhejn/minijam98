@@ -415,7 +415,6 @@ export class LevelScene extends Phaser.Scene {
         tp: Phaser.Physics.Arcade.Sprite,
     ) {
         let otherTp = this.teleportManager.getCorrespondingTeleport(tp);
-        console.log(otherTp);
         if (otherTp === null) return;
 
         let player: Player = (playerSprite === this.hosePlayer.sprite) ? this.hosePlayer : this.groundPlayer;
