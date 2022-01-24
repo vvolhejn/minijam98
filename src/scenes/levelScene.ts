@@ -19,7 +19,9 @@ const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
 const EL_VICTIMO_SPRITE_KEY = 'elVictimo';
 const THANKS_COUNT = 10;
-const AU_COUNT = 11;
+const TSS_COUNT = 5;
+const ATTACH_COUNT = 5;
+const AU_COUNT = 12;
 
 
 const TILE_SIZE = 32;
@@ -27,6 +29,8 @@ const FLOOR_WIDTH = 32 * TILE_SIZE;
 const FLOOR_HEIGHT = 7 * TILE_SIZE;
 
 export class LevelScene extends Phaser.Scene {
+    keyInManager: string;
+
     levelGenerator: LevelGenerator;
     buildingHeight: number;
     cameraOffsetY: number = 0;
@@ -56,19 +60,22 @@ export class LevelScene extends Phaser.Scene {
     gameOverBackground: Phaser.GameObjects.Rectangle;
     levelEntrance = new Vector2(60, SCREEN_HEIGHT - 60 - 20);
     auSounds;
+    tssSounds;
+    attachSounds;
 
     hose: Hose;
 
-    constructor() {
+    constructor(key: string) {
         super({
-            key: 'level',
+            key: key,
         });
+        this.keyInManager = key;
     }
 
     public preload() {
         this.levelGenerator = new LevelGenerator(this);
 
-        this.load.image('sky', 'assets/sky.png');
+        this.load.image('sky', 'assets/background.png');
         this.load.image('ground', 'assets/platform.png');
         this.load.image('tiles', 'assets/TilesetMap.png');
         this.load.image('debugball', 'assets/debugball.png');
@@ -80,6 +87,8 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('box', 'assets/box.png');
         this.load.image('timeBar', 'assets/timeBar.png');
         this.load.image('key', 'assets/key.png');
+        this.load.image('stairsdown', 'assets/stairsdown.png');
+        this.load.image('stairsup', 'assets/stairsup.png');
 
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 38, frameHeight: 39 });
         this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/grand_sprites.png', {
@@ -101,6 +110,12 @@ export class LevelScene extends Phaser.Scene {
         for (let i = 0; i < AU_COUNT; i++) {
             this.load.audio(`au${i}`, `assets/sounds/au${i}.mp3`);
         }
+        for (let i = 0; i < TSS_COUNT; i++) {
+            this.load.audio(`tss${i}`, `assets/sounds/tss${i}.mp3`);
+        }
+        for (let i = 0; i < ATTACH_COUNT; i++) {
+            this.load.audio(`attach${i}`, `assets/sounds/attach${i}.mp3`);
+        }
     }
 
     public create() {
@@ -108,7 +123,6 @@ export class LevelScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         this.levelGenerator.create();
-
         for (let i = 1; i <= 3; i++) {
             this.anims.create({
                 key: `fire${i}anim`,
@@ -214,6 +228,14 @@ export class LevelScene extends Phaser.Scene {
         for (let i = 0; i < AU_COUNT; ++i) {
             this.auSounds.push(this.sound.add(`au${i}`, { loop: false }));
         }
+        this.tssSounds = [];
+        for (let i = 0; i < TSS_COUNT; ++i) {
+            this.tssSounds.push(this.sound.add(`tss${i}`, { loop: false }));
+        }
+        this.attachSounds = [];
+        for (let i = 0; i < ATTACH_COUNT; ++i) {
+            this.attachSounds.push(this.sound.add(`attach${i}`, { loop: false }));
+        }
 
         // Walls of Thanks.
         [
@@ -312,8 +334,7 @@ export class LevelScene extends Phaser.Scene {
         fire.lowerHp();
     }
 
-    public extinguishFireWithBox(box, fire) {
-        console.log("here")
+    public extinguishFireWithBox(_box, fire) {
         fire.lowerHp();
     }
 
@@ -373,6 +394,8 @@ export class LevelScene extends Phaser.Scene {
         hydrant.setState(1);
         this.hose.setStartTo(hydrant.getCenter());
         hydrant.setTint(0xff0000);
+        this.attachSounds[Math.floor(Math.random() * this.attachSounds.length)].play();
+
     }
 
     private onBoxWaterCollision(box, water) {
@@ -573,7 +596,14 @@ export class LevelScene extends Phaser.Scene {
         this.gameOverText.setVisible(enable);
         this.gameOverBackground.setVisible(enable);
         if (enable) {
-            setTimeout(() => this.setGameOver(false), 500); // debug stuff
+            setTimeout(() => {
+                const key = `JoseHose${this.time.now}`;
+                const manager = this.scene.manager;
+                manager.remove(this.keyInManager);
+                manager.add(key, new LevelScene(key));
+                manager.run(key);
+                manager.bringToTop(key);
+            }, 4000) // debug stuff
         }
     }
 }
