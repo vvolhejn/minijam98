@@ -355,12 +355,12 @@
         {
          "name":"entry",
          "type":"string",
-         "value":"right"
+         "value":"wow"
         }, 
         {
          "name":"exit",
          "type":"string",
-         "value":"right"
+         "value":"nobody likes this room"
         }, 
         {
          "name":"height",

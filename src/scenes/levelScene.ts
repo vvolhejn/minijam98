@@ -19,7 +19,9 @@ const HOSE_PLAYER_SPRITE_KEY = 'hosePlayer';
 const GROUND_PLAYER_SPRITE_KEY = 'groundPlayer';
 const EL_VICTIMO_SPRITE_KEY = 'elVictimo';
 const THANKS_COUNT = 10;
-const AU_COUNT = 11;
+const TSS_COUNT = 5;
+const ATTACH_COUNT = 5;
+const AU_COUNT = 12;
 
 
 const TILE_SIZE = 32;
@@ -27,6 +29,8 @@ const FLOOR_WIDTH = 32 * TILE_SIZE;
 const FLOOR_HEIGHT = 7 * TILE_SIZE;
 
 export class LevelScene extends Phaser.Scene {
+    keyInManager: string;
+
     levelGenerator: LevelGenerator;
     buildingHeight: number;
     cameraOffsetY: number = 0;
@@ -56,13 +60,16 @@ export class LevelScene extends Phaser.Scene {
     gameOverBackground: Phaser.GameObjects.Rectangle;
     levelEntrance = new Vector2(60, SCREEN_HEIGHT - 60 - 20);
     auSounds;
+    tssSounds;
+    attachSounds;
 
     hose: Hose;
 
-    constructor() {
+    constructor(key: string) {
         super({
-            key: 'level',
+            key: key,
         });
+        this.keyInManager = key;
     }
 
     public preload() {
@@ -80,6 +87,8 @@ export class LevelScene extends Phaser.Scene {
         this.load.image('box', 'assets/box.png');
         this.load.image('timeBar', 'assets/timeBar.png');
         this.load.image('key', 'assets/key.png');
+        this.load.image('stairsdown', 'assets/stairsdown.png');
+        this.load.image('stairsup', 'assets/stairsup.png');
 
         this.load.spritesheet(HOSE_PLAYER_SPRITE_KEY, 'assets/jose_sprites.png', { frameWidth: 38, frameHeight: 39 });
         this.load.spritesheet(GROUND_PLAYER_SPRITE_KEY, 'assets/grand_sprites.png', {
@@ -101,6 +110,12 @@ export class LevelScene extends Phaser.Scene {
         for (let i = 0; i < AU_COUNT; i++) {
             this.load.audio(`au${i}`, `assets/sounds/au${i}.mp3`);
         }
+        for (let i = 0; i < TSS_COUNT; i++) {
+            this.load.audio(`tss${i}`, `assets/sounds/tss${i}.mp3`);
+        }
+        for (let i = 0; i < ATTACH_COUNT; i++) {
+            this.load.audio(`attach${i}`, `assets/sounds/attach${i}.mp3`);
+        }
     }
 
     public create() {
@@ -108,7 +123,6 @@ export class LevelScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         this.levelGenerator.create();
-
         for (let i = 1; i <= 3; i++) {
             this.anims.create({
                 key: `fire${i}anim`,
@@ -214,6 +228,14 @@ export class LevelScene extends Phaser.Scene {
         for (let i = 0; i < AU_COUNT; ++i) {
             this.auSounds.push(this.sound.add(`au${i}`, { loop: false }));
         }
+        this.tssSounds = [];
+        for (let i = 0; i < TSS_COUNT; ++i) {
+            this.tssSounds.push(this.sound.add(`tss${i}`, { loop: false }));
+        }
+        this.attachSounds = [];
+        for (let i = 0; i < ATTACH_COUNT; ++i) {
+            this.attachSounds.push(this.sound.add(`attach${i}`, { loop: false }));
+        }
 
         // Walls of Thanks.
         [
@@ -261,7 +283,6 @@ export class LevelScene extends Phaser.Scene {
         this.physics.add.collider(this.boxes, this.elVictimos);
         this.physics.add.collider(this.boxes, this.platforms);
         this.physics.add.collider(this.boxes, this.hydrants);
-        this.physics.add.collider(this.boxes, this.fires);
         this.physics.add.collider(this.boxes, this.doors);
         this.physics.add.collider(this.boxes, this.walls);
         this.physics.add.collider(this.boxes, this.players);
@@ -274,7 +295,7 @@ export class LevelScene extends Phaser.Scene {
 
         this.physics.add.overlap(this.groundPlayer.sprite, this.elVictimos, this.pickUpElVictimo, null, this);
         this.physics.add.collider(this.hosePlayer.particles, this.fires, this.extinguishFire, null, this);
-        this.physics.add.collider(this.boxes, this.fires, this.extinguishFireWithBox, null, this);
+        this.physics.add.overlap(this.boxes, this.fires, this.extinguishFireWithBox, null, this);
         this.physics.add.overlap(this.players, this.fires, this.onPlayerFireCollision, null, this);
         this.physics.add.overlap(this.elVictimos, this.fires, this.onVictimFireCollision, null, this);
 
@@ -313,7 +334,7 @@ export class LevelScene extends Phaser.Scene {
         fire.lowerHp();
     }
 
-    public extinguishFireWithBox(box, fire) {
+    public extinguishFireWithBox(_box, fire) {
         fire.lowerHp();
     }
 
@@ -373,6 +394,8 @@ export class LevelScene extends Phaser.Scene {
         hydrant.setState(1);
         this.hose.setStartTo(hydrant.getCenter());
         hydrant.setTint(0xff0000);
+        this.attachSounds[Math.floor(Math.random() * this.attachSounds.length)].play();
+
     }
 
     private onBoxWaterCollision(box, water) {
@@ -392,7 +415,6 @@ export class LevelScene extends Phaser.Scene {
         tp: Phaser.Physics.Arcade.Sprite,
     ) {
         let otherTp = this.teleportManager.getCorrespondingTeleport(tp);
-        console.log(otherTp);
         if (otherTp === null) return;
 
         let player: Player = (playerSprite === this.hosePlayer.sprite) ? this.hosePlayer : this.groundPlayer;
@@ -524,6 +546,7 @@ export class LevelScene extends Phaser.Scene {
         this.walls = [];
         this.elVictimos = this.physics.add.group({ collideWorldBounds: true, runChildUpdate: true });
         this.fires = this.physics.add.staticGroup();
+        this.teleportManager.clearOld()
 
         let rooms = this.levelGenerator.generateLevel(false);
         for (let room of rooms) {
@@ -545,8 +568,9 @@ export class LevelScene extends Phaser.Scene {
         // console.log()
         console.log(this.levelEntrance.x, this.levelEntrance.y, this.cameraOffsetY);
 
-        let heightOfRoomsAbove = rooms.map((room) => room.properties.height).sum() - rooms[0].properties.height;
-        let dy = this.levelEntrance.y + (this.cameraOffsetY - 48) + heightOfRoomsAbove;
+        let heightOfRoomsAbove = rooms.map((room) => +room.properties.height).reduce((a, b) => a + b) - rooms[0].properties.height;
+        console.log("Height Above", heightOfRoomsAbove);
+        let dy = this.levelEntrance.y + (this.cameraOffsetY - 48) + 32 * 7 * heightOfRoomsAbove;
         let dx = this.levelEntrance.x + offsetX;
         this.levelEntrance = new Vector2(dx, dy);
         console.log(dx, dy, "offsetX", offsetX, this.cameraOffsetY);
@@ -573,7 +597,14 @@ export class LevelScene extends Phaser.Scene {
         this.gameOverText.setVisible(enable);
         this.gameOverBackground.setVisible(enable);
         if (enable) {
-            setTimeout(() => this.setGameOver(false), 500); // debug stuff
+            setTimeout(() => {
+                const key = `JoseHose${this.time.now}`;
+                const manager = this.scene.manager;
+                manager.remove(this.keyInManager);
+                manager.add(key, new LevelScene(key));
+                manager.run(key);
+                manager.bringToTop(key);
+            }, 4000) // debug stuff
         }
     }
 }

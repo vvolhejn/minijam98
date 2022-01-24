@@ -2,10 +2,10 @@
 set -xe
 
 # Update git from remote
-git checkout master
+git checkout main
 git pull
 git checkout gh-pages
-git merge -X theirs master
+git merge -X theirs main
 
 # Build and push
 npm run build
