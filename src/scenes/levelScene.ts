@@ -48,7 +48,7 @@ export class LevelScene extends Phaser.Scene {
     teleportManager: TeleportManager;
     timer: Timer;
     timeFactor: number = 1;
-    timeFactorDecrease: number = 0.98;
+    timeFactorDecrease: number = 0.90;
     timePerVictim: number = 30 * 1000; // ms
     elVictimos: Phaser.Physics.Arcade.Group;
     platforms;
